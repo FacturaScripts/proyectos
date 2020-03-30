@@ -22,6 +22,7 @@ use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
 use FacturaScripts\Core\Lib\ExtendedController\EditController;
 use FacturaScripts\Core\Lib\ExtendedController\EditView;
 use FacturaScripts\Plugins\Proyectos\Model\Proyecto;
+use FacturaScripts\Plugins\Proyectos\Model\UserProyecto;
 
 /**
  * Description of EditProyecto
@@ -58,6 +59,7 @@ class EditProyecto extends EditController
     protected function createViews()
     {
         parent::createViews();
+        $this->createViewsUsers();
         $this->createViewsBusinessDocument('PresupuestoProveedor', 'supplier-estimations');
         $this->createViewsBusinessDocument('PedidoProveedor', 'supplier-orders');
         $this->createViewsBusinessDocument('AlbaranProveedor', 'supplier-delivery-notes');
@@ -79,6 +81,16 @@ class EditProyecto extends EditController
         $this->addListView($viewName, $modelName, $title, 'fas fa-copy');
         $this->views[$viewName]->addOrderBy(['fecha', 'hora'], 'date', 2);
         $this->views[$viewName]->addOrderBy(['total'], 'total');
+    }
+
+    /**
+     * 
+     * @param string $viewName
+     */
+    protected function createViewsUsers(string $viewName = 'EditUserProyecto')
+    {
+        $this->addEditListView($viewName, 'UserProyecto', 'users', 'fas fa-users');
+        $this->views[$viewName]->disableColumn('project');
     }
 
     /**
@@ -117,10 +129,15 @@ class EditProyecto extends EditController
      */
     protected function userCanSee($project): bool
     {
-        if ($this->user->admin || false === $project->privado) {
+        if ($this->user->admin || false === $project->privado || $project->nick === $this->user->nick) {
             return true;
         }
 
-        return $project->nick === $this->user->nick;
+        $userProject = new UserProyecto();
+        $where = [
+            new DataBaseWhere('idproyecto', $this->getViewModelValue($this->getMainViewName(), 'idproyecto')),
+            new DataBaseWhere('nick', $this->user->nick)
+        ];
+        return $userProject->loadFromCode('', $where);
     }
 }

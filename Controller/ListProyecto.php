@@ -112,9 +112,11 @@ class ListProyecto extends ListController
                 break;
 
             case 'ListProyecto-private':
+                $sql = 'SELECT idproyecto FROM proyectos WHERE nick = ' . $this->dataBase->var2str($this->user->nick)
+                    . ' UNION SELECT idproyecto FROM proyectos_users WHERE nick = ' . $this->dataBase->var2str($this->user->nick);
                 $where = [
-                    new DataBaseWhere('nick', $this->user->nick),
-                    new DataBaseWhere('privado', true)
+                    new DataBaseWhere('privado', true),
+                    new DataBaseWhere('idproyecto', $sql, 'IN')
                 ];
                 $view->loadData('', $where);
                 break;
