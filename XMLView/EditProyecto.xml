@@ -38,7 +38,7 @@
                 </widget>
             </column>
             <column name="customer" order="120">
-                <widget type="autocomplete" fieldname="codcliente">
+                <widget type="autocomplete" fieldname="codcliente" onclick="EditCliente">
                     <values source="clientes" fieldcode="codcliente" fieldtitle="nombre" />
                 </widget>
             </column>

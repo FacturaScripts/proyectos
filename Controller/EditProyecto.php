@@ -111,6 +111,8 @@ class EditProyecto extends EditController
                     $view->model->nick = $this->user->nick;
                 } elseif (false === $this->userCanSee($view->model)) {
                     $this->setTemplate('Error/AccessDenied');
+                } elseif (false === $view->model->privado) {
+                    $this->setSettings('EditUserProyecto', 'active', false);
                 }
                 break;
 

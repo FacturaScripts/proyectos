@@ -66,6 +66,14 @@ class ListProyecto extends ListController
         $this->addOrderBy($viewName, ['fechafin'], 'end-date');
         $this->addOrderBy($viewName, ['nombre'], 'name');
         $this->addSearchFields($viewName, ['nombre', 'descripcion']);
+
+        /// filters
+        $this->addFilterPeriod($viewName, 'fecha', 'date', 'fecha');
+
+        $this->addFilterAutocomplete($viewName, 'codcliente', 'customer', 'codcliente', 'clientes', 'codcliente', 'nombre');
+
+        $status = $this->codeModel->all('proyectos_estados', 'idestado', 'nombre');
+        $this->addFilterSelect($viewName, 'idestado', 'status', 'idestado', $status);
     }
 
     /**
@@ -80,6 +88,17 @@ class ListProyecto extends ListController
         $this->addOrderBy($viewName, ['fechafin'], 'end-date');
         $this->addOrderBy($viewName, ['nombre'], 'name');
         $this->addSearchFields($viewName, ['nombre', 'descripcion']);
+
+        /// filters
+        $this->addFilterPeriod($viewName, 'fecha', 'date', 'fecha');
+
+        $users = $this->codeModel->all('users', 'nick', 'nick');
+        $this->addFilterSelect($viewName, 'nick', 'admin', 'nick', $users);
+
+        $this->addFilterAutocomplete($viewName, 'codcliente', 'customer', 'codcliente', 'clientes', 'codcliente', 'nombre');
+
+        $status = $this->codeModel->all('proyectos_estados', 'idestado', 'nombre');
+        $this->addFilterSelect($viewName, 'idestado', 'status', 'idestado', $status);
     }
 
     /**

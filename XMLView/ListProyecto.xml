@@ -20,18 +20,21 @@
                 <values source="clientes" fieldcode="codcliente" fieldtitle="nombre" />
             </widget>
         </column>
-        <column name="start-date" display="right" order="150">
+        <column name="admin" order="150">
+            <widget type="text" fieldname="nick" />
+        </column>
+        <column name="start-date" display="right" order="160">
             <widget type="date" fieldname="fechainicio" />
         </column>
-        <column name="end-date" display="left" order="160">
+        <column name="end-date" display="left" order="170">
             <widget type="date" fieldname="fechafin" />
         </column>
-        <column name="status" display="right" order="170">
+        <column name="status" display="right" order="180">
             <widget type="select" fieldname="idestado">
                 <values source="proyectos_estados" fieldcode="idestado" fieldtitle="nombre" />
             </widget>
         </column>
-        <column name="date" display="right" order="180">
+        <column name="date" display="right" order="190">
             <widget type="date" fieldname="fecha" />
         </column>
     </columns>
