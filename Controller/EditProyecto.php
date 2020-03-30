@@ -21,6 +21,7 @@ namespace FacturaScripts\Plugins\Proyectos\Controller;
 use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
 use FacturaScripts\Core\Lib\ExtendedController\EditController;
 use FacturaScripts\Core\Lib\ExtendedController\EditView;
+use FacturaScripts\Plugins\Proyectos\Model\Proyecto;
 
 /**
  * Description of EditProyecto
@@ -96,6 +97,8 @@ class EditProyecto extends EditController
                     $view->model->codalmacen = $this->user->codalmacen;
                     $view->model->idempresa = $this->user->idempresa;
                     $view->model->nick = $this->user->nick;
+                } elseif (false === $this->userCanSee($view->model)) {
+                    $this->setTemplate('Error/AccessDenied');
                 }
                 break;
 
@@ -104,5 +107,20 @@ class EditProyecto extends EditController
                 $view->loadData('', $where);
                 break;
         }
+    }
+
+    /**
+     * 
+     * @param Proyecto $project
+     *
+     * @return bool
+     */
+    protected function userCanSee($project): bool
+    {
+        if ($this->user->admin || false === $project->privado) {
+            return true;
+        }
+
+        return $project->nick === $this->user->nick;
     }
 }
