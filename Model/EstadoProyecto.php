@@ -74,8 +74,29 @@ class EstadoProyecto extends Base\ModelClass
      * 
      * @return string
      */
+    public function primaryDescriptionColumn(): string
+    {
+        return 'nombre';
+    }
+
+    /**
+     * 
+     * @return string
+     */
     public static function tableName(): string
     {
         return 'proyectos_estados';
+    }
+
+    /**
+     * 
+     * @param string $type
+     * @param string $list
+     *
+     * @return string
+     */
+    public function url(string $type = 'auto', string $list = 'ListProyecto?activetab=List'): string
+    {
+        return parent::url($type, $list);
     }
 }
