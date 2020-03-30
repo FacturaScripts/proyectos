@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view>
+    <columns>
+        <group name="main">
+            <column name="code" display="none" order="100">
+                <widget type="text" fieldname="idproyecto" />
+            </column>
+            <column name="name" order="110">
+                <widget type="text" fieldname="nombre" required="true" />
+            </column>
+            <column name="date" display="right" order="120">
+                <widget type="date" fieldname="fecha" readonly="true" required="true" />
+            </column>
+            <column name="status" display="right" order="130">
+                <widget type="select" fieldname="idestado" required="">
+                    <values source="proyectos_estados" fieldcode="idestado" fieldtitle="nombre" />
+                </widget>
+            </column>
+            <column name="start-date" display="right" order="140">
+                <widget type="date" fieldname="fechainicio" />
+            </column>
+            <column name="end-date" display="right" order="150">
+                <widget type="date" fieldname="fechafin" />
+            </column>
+            <column name="description" numcolumns="12" order="160">
+                <widget type="textarea" fieldname="descripcion" />
+            </column>
+        </group>
+        <group name="advanced" numcolumns="12" valign="bottom">
+            <column name="company" order="100">
+                <widget type="select" fieldname="idempresa" readonly="dinamic" required="true">
+                    <values source="empresas" fieldcode="idempresa" fieldtitle="nombrecorto" />
+                </widget>
+            </column>
+            <column name="warehouse" order="110">
+                <widget type="select" fieldname="codalmacen" required="true">
+                    <values source="almacenes" fieldcode="codalmacen" fieldtitle="nombre" />
+                </widget>
+            </column>
+            <column name="customer" order="120">
+                <widget type="autocomplete" fieldname="codcliente">
+                    <values source="clientes" fieldcode="codcliente" fieldtitle="nombre" />
+                </widget>
+            </column>
+            <column name="admin" order="130">
+                <widget type="select" fieldname="nick" required="true">
+                    <values source="users" fieldcode="nick" fieldtitle="nick" />
+                </widget>
+            </column>
+            <column name="private" order="140">
+                <widget type="checkbox" fieldname="privado" />
+            </column>
+        </group>
+    </columns>
+</view>
