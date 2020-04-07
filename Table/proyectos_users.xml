@@ -19,10 +19,12 @@
     <column>
         <name>idproyecto</name>
         <type>integer</type>
+        <null>NO</null>
     </column>
     <column>
         <name>nick</name>
         <type>character varying(50)</type>
+        <null>NO</null>
     </column>
     <constraint>
         <name>proyectos_users_pkey</name>
