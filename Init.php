@@ -35,6 +35,6 @@ class Init extends InitClass
 
     public function update()
     {
-        ;
+        new Model\UserProyecto();
     }
 }

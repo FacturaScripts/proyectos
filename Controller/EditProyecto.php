@@ -100,13 +100,13 @@ class EditProyecto extends EditController
      */
     protected function loadData($viewName, $view)
     {
-        $idproyecto = $this->getViewModelValue($this->getMainViewName(), 'idproyecto');
+        $mainViewName = $this->getMainViewName();
+        $idproyecto = $this->getViewModelValue($mainViewName, 'idproyecto');
 
         switch ($viewName) {
-            case $this->getMainViewName():
+            case $mainViewName:
                 parent::loadData($viewName, $view);
                 if (false === $view->model->exists()) {
-                    $view->model->codalmacen = $this->user->codalmacen;
                     $view->model->idempresa = $this->user->idempresa;
                     $view->model->nick = $this->user->nick;
                 } elseif (false === $this->userCanSee($view->model)) {

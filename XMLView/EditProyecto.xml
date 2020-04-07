@@ -32,22 +32,17 @@
                     <values source="empresas" fieldcode="idempresa" fieldtitle="nombrecorto" />
                 </widget>
             </column>
-            <column name="warehouse" order="110">
-                <widget type="select" fieldname="codalmacen" required="true">
-                    <values source="almacenes" fieldcode="codalmacen" fieldtitle="nombre" />
-                </widget>
-            </column>
-            <column name="customer" order="120">
+            <column name="customer" order="110">
                 <widget type="autocomplete" fieldname="codcliente" onclick="EditCliente">
                     <values source="clientes" fieldcode="codcliente" fieldtitle="nombre" />
                 </widget>
             </column>
-            <column name="admin" order="130">
+            <column name="admin" order="120">
                 <widget type="select" fieldname="nick" required="true">
                     <values source="users" fieldcode="nick" fieldtitle="nick" />
                 </widget>
             </column>
-            <column name="private" order="140">
+            <column name="private" order="130">
                 <widget type="checkbox" fieldname="privado" />
             </column>
         </group>

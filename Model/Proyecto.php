@@ -34,12 +34,6 @@ class Proyecto extends Base\ModelOnChangeClass
      *
      * @var string
      */
-    public $codalmacen;
-
-    /**
-     *
-     * @var string
-     */
     public $codcliente;
 
     /**

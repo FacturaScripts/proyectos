@@ -60,6 +60,14 @@ class UserProyecto extends Base\ModelClass
         $this->fecha = \date(self::DATE_STYLE);
     }
 
+    public function install()
+    {
+        /// needed dependencies
+        new Proyecto();
+
+        return parent::install();
+    }
+
     /**
      * 
      * @return string
