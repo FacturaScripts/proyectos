@@ -36,7 +36,7 @@
     </constraint>
     <constraint>
         <name>ca_proyectos_users_users</name>
-        <type>FOREIGN KEY (nick) REFERENCES users (nick) ON DELETE SET NULL ON UPDATE CASCADE</type>
+        <type>FOREIGN KEY (nick) REFERENCES users (nick) ON DELETE CASCADE ON UPDATE CASCADE</type>
     </constraint>
     <constraint>
         <name>unique_projects_users</name>
