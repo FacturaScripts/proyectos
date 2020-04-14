@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view>
+    <columns>
+        <column name="product" display="none" order="90">
+            <widget type="text" fieldname="idproducto" onclick="EditProducto" />
+        </column>
+        <column name="reference" order="100">
+            <widget type="text" fieldname="referencia" />
+        </column>
+        <column name="quantity" display="right" order="110">
+            <widget type="number" fieldname="cantidad" />
+        </column>
+        <column name="reserved" display="right" order="120">
+            <widget type="number" fieldname="reservada" />
+        </column>
+        <column name="pending-reception" display="right" order="130">
+            <widget type="number" fieldname="pterecibir" />
+        </column>
+        <column name="available" display="right" order="140">
+            <widget type="number" fieldname="disponible" />
+        </column>
+    </columns>
+    <rows>
+        <row type="status">
+            <option color="danger" fieldname="cantidad">lt:0</option>
+            <option color="warning" fieldname="cantidad">0</option>
+            <option color="success" fieldname="cantidad">gt:0</option>
+        </row>
+    </rows>
+</view>

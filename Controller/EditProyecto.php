@@ -60,6 +60,7 @@ class EditProyecto extends EditController
     {
         parent::createViews();
         $this->createViewsUsers();
+        $this->createViewsStock();
         $this->createViewsBusinessDocument('PresupuestoProveedor', 'supplier-estimations');
         $this->createViewsBusinessDocument('PedidoProveedor', 'supplier-orders');
         $this->createViewsBusinessDocument('AlbaranProveedor', 'supplier-delivery-notes');
@@ -81,6 +82,26 @@ class EditProyecto extends EditController
         $this->addListView($viewName, $modelName, $title, 'fas fa-copy');
         $this->views[$viewName]->addOrderBy(['fecha', 'hora'], 'date', 2);
         $this->views[$viewName]->addOrderBy(['total'], 'total');
+    }
+
+    /**
+     * 
+     * @param string $viewName
+     */
+    protected function createViewsStock(string $viewName = 'ListStockProyecto')
+    {
+        $this->addListView($viewName, 'StockProyecto', 'stock', 'fas fa-dolly');
+        $this->views[$viewName]->addSearchFields(['referencia']);
+        $this->views[$viewName]->addOrderBy(['referencia'], 'reference');
+        $this->views[$viewName]->addOrderBy(['cantidad'], 'quantity');
+        $this->views[$viewName]->addOrderBy(['disponible'], 'available');
+        $this->views[$viewName]->addOrderBy(['reservada'], 'reserved');
+        $this->views[$viewName]->addOrderBy(['pterecibir'], 'pending-reception');
+
+        /// disable buttons
+        $this->setSettings($viewName, 'btnDelete', false);
+        $this->setSettings($viewName, 'btnNew', false);
+        $this->setSettings($viewName, 'checkBoxes', false);
     }
 
     /**
