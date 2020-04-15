@@ -16,27 +16,35 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-namespace FacturaScripts\Plugins\Proyectos;
-
-use FacturaScripts\Core\Base\InitClass;
+namespace FacturaScripts\Plugins\Proyectos\Extension\Model\Base;
 
 /**
- * Description of Init
+ * Description of BusinessDocument
  *
  * @author Carlos Garcia Gomez <carlos@facturascripts.com>
  */
-class Init extends InitClass
+class BusinessDocument
 {
 
-    public function init()
+    protected function onChange()
     {
-        $this->loadExtension(new Extension\Controller\EditCliente());
-        $this->loadExtension(new Extension\Model\Base\BusinessDocument());
-        $this->loadExtension(new Extension\Model\Base\BusinessDocumentLine());
+        return function($field) {
+            if ($field != 'idproyecto') {
+                return true;
+            }
+
+            foreach ($this->getLines() as $line) {
+                $line->projectTransfer($this->previousData['idproyecto'], $this->idproyecto);
+            }
+
+            return true;
+        };
     }
 
-    public function update()
+    protected function setPreviousDataMore()
     {
-        new Model\UserProyecto();
+        return function() {
+            return ['idproyecto'];
+        };
     }
 }

@@ -49,6 +49,40 @@ class BusinessDocumentLine
         };
     }
 
+    protected function projectTransfer()
+    {
+        return function($fromIdproyecto, $toIdproyecto) {
+            /// find the project stock
+            $fromStock = new StockProyecto();
+            $where = [
+                new DataBaseWhere('idproyecto', $fromIdproyecto),
+                new DataBaseWhere('referencia', $this->referencia)
+            ];
+            if (!empty($fromIdproyecto) && $fromStock->loadFromCode('', $where)) {
+                $this->applyProyectStockChanges($this->previousData['actualizastock'], $this->previousData['cantidad'] * -1, $fromStock);
+                $fromStock->save();
+            }
+
+            /// find new project stock
+            $toStock = new StockProyecto();
+            $where2 = [
+                new DataBaseWhere('idproyecto', $toIdproyecto),
+                new DataBaseWhere('referencia', $this->referencia)
+            ];
+            if (empty($toIdproyecto)) {
+                return;
+            } elseif (false === $toStock->loadFromCode('', $where2)) {
+                /// stock not found, then create one
+                $toStock->idproducto = $this->idproducto;
+                $toStock->idproyecto = $toIdproyecto;
+                $toStock->referencia = $this->referencia;
+            }
+
+            $this->applyProyectStockChanges($this->actualizastock, $this->cantidad, $toStock);
+            $toStock->save();
+        };
+    }
+
     protected function updateStock()
     {
         return function() {
