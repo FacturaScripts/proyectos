@@ -19,6 +19,14 @@
 namespace FacturaScripts\Plugins\Proyectos;
 
 use FacturaScripts\Core\Base\InitClass;
+use FacturaScripts\Dinamic\Model\AlbaranCliente;
+use FacturaScripts\Dinamic\Model\AlbaranProveedor;
+use FacturaScripts\Dinamic\Model\FacturaCliente;
+use FacturaScripts\Dinamic\Model\FacturaProveedor;
+use FacturaScripts\Dinamic\Model\PedidoCliente;
+use FacturaScripts\Dinamic\Model\PedidoProveedor;
+use FacturaScripts\Dinamic\Model\PresupuestoCliente;
+use FacturaScripts\Dinamic\Model\PresupuestoProveedor;
 
 /**
  * Description of Init
@@ -38,5 +46,13 @@ class Init extends InitClass
     public function update()
     {
         new Model\UserProyecto();
+        new AlbaranCliente();
+        new AlbaranProveedor();
+        new FacturaCliente();
+        new FacturaProveedor();
+        new PedidoCliente();
+        new PedidoProveedor();
+        new PresupuestoCliente();
+        new PresupuestoProveedor();
     }
 }

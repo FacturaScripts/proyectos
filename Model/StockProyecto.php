@@ -19,6 +19,8 @@
 namespace FacturaScripts\Plugins\Proyectos\Model;
 
 use FacturaScripts\Core\Model\Base;
+use FacturaScripts\Dinamic\Model\Producto;
+use FacturaScripts\Dinamic\Model\Variante;
 
 /**
  * Description of StockProyecto
@@ -87,6 +89,20 @@ class StockProyecto extends Base\ModelClass
         $this->disponible = 0.0;
         $this->pterecibir = 0.0;
         $this->reservada = 0.0;
+    }
+
+    /**
+     * 
+     * @return string
+     */
+    public function install()
+    {
+        /// needed dependecies
+        new Proyecto();
+        new Producto();
+        new Variante();
+
+        return parent::install();
     }
 
     /**

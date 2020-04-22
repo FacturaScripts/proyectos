@@ -19,6 +19,7 @@
 namespace FacturaScripts\Plugins\Proyectos\Model;
 
 use FacturaScripts\Core\Model\Base;
+use FacturaScripts\Dinamic\Model\Cliente;
 
 /**
  * Description of Proyecto
@@ -153,6 +154,7 @@ class Proyecto extends Base\ModelOnChangeClass
     {
         /// needed dependencies
         new EstadoProyecto();
+        new Cliente();
 
         return parent::install();
     }
