@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+    Document   : tareas_fases.xml
+    Author     : Daniel Fernández Giménez
+    Description:
+        Structure for the tareas_fases table.
+-->
+<table>
+    <column>
+        <name>idestado</name>
+        <type>integer</type>
+    </column>
+    <column>
+        <name>idfase</name>
+        <type>serial</type>
+        <null>NO</null>
+    </column>
+    <column>
+        <name>nombre</name>
+        <type>character varying(100)</type>
+        <null>NO</null>
+    </column>
+    <column>
+        <name>predeterminado</name>
+        <type>boolean</type>
+    </column>
+    <column>
+        <name>tipo</name>
+        <type>integer</type>
+    </column>
+    <constraint>
+        <name>tareas_fases_pkey</name>
+        <type>PRIMARY KEY (idfase)</type>
+    </constraint>
+    <constraint>
+        <name>ca_tareas_fases_proyectos_estados</name>
+        <type>FOREIGN KEY (idestado) REFERENCES proyectos_estados (idestado) ON DELETE RESTRICT ON UPDATE CASCADE</type>
+    </constraint>
+</table>

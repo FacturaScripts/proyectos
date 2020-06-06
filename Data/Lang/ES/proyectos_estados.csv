@@ -1,4 +1,5 @@
 idestado;nombre;predeterminado;editable
 1;Nuevo;true;true
-2;Completado;false;false
-3;Rechazado;false;false
+2;Procesando;false;true
+3;Completado;false;false
+4;Rechazado;false;false

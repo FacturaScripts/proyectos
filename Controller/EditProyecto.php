@@ -21,8 +21,6 @@ namespace FacturaScripts\Plugins\Proyectos\Controller;
 use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
 use FacturaScripts\Core\Lib\ExtendedController\EditController;
 use FacturaScripts\Core\Lib\ExtendedController\EditView;
-use FacturaScripts\Plugins\Proyectos\Model\Proyecto;
-use FacturaScripts\Plugins\Proyectos\Model\UserProyecto;
 
 /**
  * Description of EditProyecto
@@ -59,6 +57,7 @@ class EditProyecto extends EditController
     protected function createViews()
     {
         parent::createViews();
+        $this->createViewsTasks();
         $this->createViewsUsers();
         $this->createViewsStock();
         $this->createViewsBusinessDocument('PresupuestoProveedor', 'supplier-estimations');
@@ -113,6 +112,16 @@ class EditProyecto extends EditController
         $this->addEditListView($viewName, 'UserProyecto', 'users', 'fas fa-users');
         $this->views[$viewName]->disableColumn('project');
     }
+    
+    /**
+     * 
+     * @param string $viewName
+     */
+    protected function createViewsTasks(string $viewName = 'ListTarea')
+    {
+        $this->addListView($viewName, 'Tarea', 'tasks', 'fas fa-project-diagram');
+        $this->views[$viewName]->disableColumn('project');
+    }
 
     /**
      * 
@@ -123,14 +132,14 @@ class EditProyecto extends EditController
     {
         $mainViewName = $this->getMainViewName();
         $idproyecto = $this->getViewModelValue($mainViewName, 'idproyecto');
-
+        
         switch ($viewName) {
             case $mainViewName:
                 parent::loadData($viewName, $view);
                 if (false === $view->model->exists()) {
                     $view->model->idempresa = $this->user->idempresa;
                     $view->model->nick = $this->user->nick;
-                } elseif (false === $this->userCanSee($view->model)) {
+                } elseif (false === $view->model->userCanSee($this->user)) {
                     $this->setTemplate('Error/AccessDenied');
                 } elseif (false === $view->model->privado) {
                     $this->setSettings('EditUserProyecto', 'active', false);
@@ -142,25 +151,5 @@ class EditProyecto extends EditController
                 $view->loadData('', $where);
                 break;
         }
-    }
-
-    /**
-     * 
-     * @param Proyecto $project
-     *
-     * @return bool
-     */
-    protected function userCanSee($project): bool
-    {
-        if ($this->user->admin || false === $project->privado || $project->nick === $this->user->nick) {
-            return true;
-        }
-
-        $userProject = new UserProyecto();
-        $where = [
-            new DataBaseWhere('idproyecto', $this->getViewModelValue($this->getMainViewName(), 'idproyecto')),
-            new DataBaseWhere('nick', $this->user->nick)
-        ];
-        return $userProject->loadFromCode('', $where);
     }
 }
