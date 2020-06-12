@@ -66,7 +66,6 @@ class EditTarea extends EditController
     protected function loadData($viewName, $view)
     {
         $mainViewName = $this->getMainViewName();
-        $idtarea = $this->getViewModelValue($mainViewName, 'idtarea');
         
         switch ($viewName) {
             case $mainViewName:
@@ -79,11 +78,6 @@ class EditTarea extends EditController
                 if (false === $project->userCanSee($this->user)) {
                     $this->setTemplate('Error/AccessDenied');
                 }
-                break;
-
-            default:
-                $where = [new DataBaseWhere('idtarea', $idtarea)];
-                $view->loadData('', $where);
                 break;
         }
     }
