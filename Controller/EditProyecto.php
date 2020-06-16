@@ -145,6 +145,11 @@ class EditProyecto extends EditController
                     $this->setSettings('EditUserProyecto', 'active', false);
                 }
                 break;
+                
+            case 'ListTarea':
+                $where = [new DataBaseWhere('idproyecto', $idproyecto)];
+                $view->loadData('', $where);
+                break;
 
             default:
                 $where = [new DataBaseWhere('idproyecto', $idproyecto)];

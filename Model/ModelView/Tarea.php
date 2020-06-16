@@ -66,5 +66,4 @@ class Tarea extends ModelView
             'tareas_fases'
         ];
     }
-
 }

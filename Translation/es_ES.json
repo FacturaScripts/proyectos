@@ -10,5 +10,6 @@
     "status-project": "Estado proyecto",
     "pending": "Pendiente",
     "complete": "Completado",
-    "rejection": "Rechazado"
+    "rejection": "Rechazado",
+    "processing": "Procesando"
 }

@@ -17,6 +17,7 @@
             <widget type="select" fieldname="tipo" translate="true">
                 <values title="complete">0</values>
                 <values title="rejection">1</values>
+                <values title="processing">2</values>
             </widget>
         </column>
         <column name="default" display="center" numcolumns='12' order="140">
