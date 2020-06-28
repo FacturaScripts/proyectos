@@ -22,68 +22,44 @@ use FacturaScripts\Core\Model\Base;
 use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
 
 /**
- * Description of EstadoProyecto
+ * Description of FaseTarea
  *
- * @author Carlos Garcia Gomez <carlos@facturascripts.com>
+ * @author Daniel Fernández Giménez <hola@danielfg.es>
  */
-class EstadoProyecto extends Base\ModelClass
+class FaseTarea extends Base\ModelClass
 {
 
     use Base\ModelTrait;
 
     /**
      *
-     * @var bool
+     * @var integer
      */
-    public $editable;
-
+    public $idestado;
+    
     /**
      *
      * @var integer
      */
-    public $idestado;
+    public $idfase;
 
     /**
      *
      * @var string
      */
     public $nombre;
-
+    
     /**
      *
      * @var bool
      */
     public $predeterminado;
-
-    public function clear()
-    {
-        parent::clear();
-        $this->editable = true;
-        $this->predeterminado = false;
-    }
     
-    public function save() {
-        if (isset($this->predeterminado)) {
-            $this->ResetProjectDefault();
-        }
-        
-        return parent::save();
-    }
-    
-    /*
-     * Set a single default state
+    /**
+     *
+     * @var integer
      */
-    public function ResetProjectDefault()
-    {
-        $modelStatus = new EstadoProyecto();
-        $where = [new DataBaseWhere('predeterminado', true)];
-        $status = $modelStatus->all($where);
-        
-        foreach ($status as $st) {
-            $st->predeterminado = false;
-            $st->saveUpdate();
-        }
-    }
+    public $tipo;
 
     /**
      * 
@@ -91,7 +67,7 @@ class EstadoProyecto extends Base\ModelClass
      */
     public static function primaryColumn(): string
     {
-        return 'idestado';
+        return 'idfase';
     }
 
     /**
@@ -109,7 +85,7 @@ class EstadoProyecto extends Base\ModelClass
      */
     public static function tableName(): string
     {
-        return 'proyectos_estados';
+        return 'tareas_fases';
     }
 
     /**
@@ -119,8 +95,56 @@ class EstadoProyecto extends Base\ModelClass
      *
      * @return string
      */
-    public function url(string $type = 'auto', string $list = 'ListProyecto?activetab=List'): string
+    public function url(string $type = 'auto', string $list = 'ListTarea?activetab=List'): string
     {
         return parent::url($type, $list);
+    }
+    
+    public function clear()
+    {
+        parent::clear();
+        $this->predeterminado = false;
+    }
+    
+    public function save() {
+        if (isset($this->tipo)) {
+            $this->ResetPhaseType();
+        }
+        
+        if (isset($this->predeterminado)) {
+            $this->ResetPhaseDefault();
+        }
+        
+        return parent::save();
+    }
+    
+    /*
+     * Set a single phase by default
+     */
+    public function ResetPhaseDefault()
+    {
+        $modelPhase = new FaseTarea();
+        $where = [new DataBaseWhere('predeterminado', true)];
+        $phases = $modelPhase->all($where);
+        
+        foreach ($phases as $phase) {
+            $phase->predeterminado = false;
+            $phase->saveUpdate();
+        }
+    }
+    
+    /*
+     * Set only one type of phase at a time
+     */
+    public function ResetPhaseType()
+    {
+        $modelPhase = new FaseTarea();
+        $where = [new DataBaseWhere('tipo', $this->tipo)];
+        $phases = $modelPhase->all($where);
+        
+        foreach ($phases as $phase) {
+            $phase->tipo = null;
+            $phase->saveUpdate();
+        }
     }
 }

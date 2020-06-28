@@ -1,0 +1,110 @@
+{#
+    /**
+     * This file is part of Proyectos plugin for FacturaScripts
+ * Copyright (C) 2020 Carlos Garcia Gomez <carlos@facturascripts.com>
+     *
+     * This program is free software: you can redistribute it and/or modify
+     * it under the terms of the GNU Lesser General Public License as
+     * published by the Free Software Foundation, either version 3 of the
+     * License, or (at your option) any later version.
+     *
+     * This program is distributed in the hope that it will be useful,
+     * but WITHOUT ANY WARRANTY; without even the implied warranty of
+     * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+     * GNU Lesser General Public License for more details.
+     *
+     * You should have received a copy of the GNU Lesser General Public License
+     * along with this program. If not, see http://www.gnu.org/licenses/.
+     */
+#}
+
+{% extends 'Master/MenuTemplate.html.twig' %}
+
+{% block bodyHeaderOptions %}
+    {{ parent() }}
+    <div class="container-fluid mb-2">
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="btn-group bg-white">
+                    <a class="btn btn-sm btn-outline-secondary" href="{{ fsc.url() }}" title="{{ i18n.trans('refresh') }}">
+                        <i class="fas fa-redo" aria-hidden="true"></i>
+                    </a>
+                    {% if fsc.getPageData()['name'] == fsc.user.homepage %}
+                        <a class="btn btn-sm btn-outline-secondary active" href="{{ fsc.url() }}?defaultPage=FALSE" title="{{ i18n.trans('marked-as-homepage') }}">
+                            <i class="fas fa-bookmark" aria-hidden="true"></i>
+                        </a>
+                    {% else %}
+                        <a class="btn btn-sm btn-outline-secondary" href="{{ fsc.url() }}?defaultPage=TRUE" title="{{ i18n.trans('mark-as-homepage') }}">
+                            <i class="far fa-bookmark" aria-hidden="true"></i>
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-sm text-right">
+                <h1 class="h3">
+                    {{ fsc.getPageData()['title'] }} <i class="{{ fsc.getPageData()['icon'] }}" aria-hidden="true"></i>
+                </h1>
+            </div>
+        </div>
+    </div>
+    
+    <div class="container-fluid mb-2">
+        <div id="calendar"></div>
+    </div>
+{% endblock %}
+
+
+{% block javascripts %}
+    {{ parent() }}
+    
+    {% set allProjects = fsc.getAllProjects() %}
+    {% set allTaks = fsc.getAllTaks() %}
+    
+    <script type="text/javascript">
+        document.addEventListener('DOMContentLoaded', function() {
+            var calendarDIV = document.getElementById('calendar');
+            var calendar = new FullCalendar.Calendar(calendarDIV, {
+                plugins: ['bootstrap', 'dayGrid'],
+                themeSystem: 'bootstrap',
+                defaultView: 'dayGridMonth',
+                locale: '{{ fsc.CalendarLang }}'
+            });
+            
+            {% for project in allProjects %}
+                var start = '{{ project.fechainicio }}';
+                var newStar = start.split("-").reverse().join("-");
+                
+                var end = '{{ project.fechafin }}';
+                var newEnd = end.split("-").reverse().join("-");
+                
+                calendar.addEvent({
+                    title: '{{ i18n.trans('project') }}: {{ project.nombre }}',
+                    start: newStar,
+                    end: newEnd,
+                    allDay: true,
+                    color: '#ff3a3a',
+                    url: '{{ asset('EditProyecto') }}?code={{ project.idproyecto }}'
+                });
+            {% endfor %}
+            
+            {% for task in allTaks %}
+                var start = '{{ task.fechainicio }}';
+                var newStar = start.split("-").reverse().join("-");
+                
+                var end = '{{ task.fechafin }}';
+                var newEnd = end.split("-").reverse().join("-");
+                
+                calendar.addEvent({
+                    title: '{{ i18n.trans('task') }}: {{ task.nombre }}',
+                    start: newStar,
+                    end: newEnd,
+                    allDay: true,
+                    color: '#70aeff',
+                    url: '{{ asset('EditTarea') }}?code={{ task.idtarea }}'
+                });
+            {% endfor %}
+                
+            calendar.render();
+        });
+    </script>
+{% endblock %}

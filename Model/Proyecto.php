@@ -20,6 +20,8 @@ namespace FacturaScripts\Plugins\Proyectos\Model;
 
 use FacturaScripts\Core\Model\Base;
 use FacturaScripts\Dinamic\Model\Cliente;
+use FacturaScripts\Plugins\Proyectos\Model\UserProyecto;
+use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
 
 /**
  * Description of Proyecto
@@ -109,7 +111,7 @@ class Proyecto extends Base\ModelOnChangeClass
         $this->editable = true;
         $this->fecha = \date(self::DATE_STYLE);
         $this->privado = false;
-
+        
         /// select default status
         foreach ($this->getAvaliableStatus() as $status) {
             if ($status->predeterminado) {
@@ -210,5 +212,25 @@ class Proyecto extends Base\ModelOnChangeClass
     protected function setPreviousData(array $fields = [])
     {
         parent::setPreviousData(\array_merge(['idestado'], $fields));
+    }
+    
+    /**
+     * 
+     * @param User $user
+     *
+     * @return bool
+     */
+    public function userCanSee($user): bool
+    {
+        if ($user->admin || false === $this->privado || $this->nick === $user->nick) {
+            return true;
+        }
+
+        $userProject = new UserProyecto();
+        $where = [
+            new DataBaseWhere('idproyecto', $this->idproyecto),
+            new DataBaseWhere('nick', $user->nick)
+        ];
+        return $userProject->loadFromCode('', $where);
     }
 }

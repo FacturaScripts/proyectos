@@ -1,0 +1,5 @@
+idfase;nombre;idestado;predeterminado
+1;Pendiente;null;true
+2;Procesando;null;false
+3;Completado;null;false
+4;Cencelada;null;false
