@@ -58,13 +58,12 @@ class Calendario extends Base\Controller
     {
         parent::privateCore($response, $user, $permissions);
         $urlCalendar = '/Plugins/Proyectos/node_modules/@fullcalendar/';
-        AssetManager::add('css', FS_ROUTE.$urlCalendar . 'core/main.css');
         AssetManager::add('css', FS_ROUTE.$urlCalendar . 'daygrid/main.css');
-        AssetManager::add('css', FS_ROUTE.$urlCalendar . 'bootstrap/main.min.css');
-        AssetManager::add('js', FS_ROUTE.$urlCalendar . 'core/main.min.js');
+        AssetManager::add('css', FS_ROUTE.$urlCalendar . 'bootstrap/main.css');
+        AssetManager::add('js', FS_ROUTE.$urlCalendar . 'core/main.js');
         AssetManager::add('js', $this->setCalendarLang($urlCalendar, $user));
-        AssetManager::add('js', FS_ROUTE.$urlCalendar . 'daygrid/main.min.js');
-        AssetManager::add('js', FS_ROUTE.$urlCalendar . 'bootstrap/main.min.js');
+        AssetManager::add('js', FS_ROUTE.$urlCalendar . 'daygrid/main.js');
+        AssetManager::add('js', FS_ROUTE.$urlCalendar . 'bootstrap/main.js');
     }
     
     private function setCalendarLang($urlCalendar, $user)
