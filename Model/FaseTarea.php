@@ -36,7 +36,7 @@ class FaseTarea extends Base\ModelClass
      * @var integer
      */
     public $idestado;
-    
+
     /**
      *
      * @var integer
@@ -48,18 +48,36 @@ class FaseTarea extends Base\ModelClass
      * @var string
      */
     public $nombre;
-    
+
     /**
      *
      * @var bool
      */
     public $predeterminado;
-    
+
     /**
      *
      * @var integer
      */
     public $tipo;
+
+    public function clear()
+    {
+        parent::clear();
+        $this->predeterminado = false;
+    }
+
+    /**
+     * 
+     * @return string
+     */
+    public function install()
+    {
+        /// needed dependencies
+        new EstadoProyecto();
+
+        return parent::install();
+    }
 
     /**
      * 
@@ -77,6 +95,23 @@ class FaseTarea extends Base\ModelClass
     public function primaryDescriptionColumn(): string
     {
         return 'nombre';
+    }
+
+    /**
+     * 
+     * @return bool
+     */
+    public function save()
+    {
+        if (isset($this->tipo)) {
+            $this->ResetPhaseType();
+        }
+
+        if (isset($this->predeterminado)) {
+            $this->ResetPhaseDefault();
+        }
+
+        return parent::save();
     }
 
     /**
@@ -99,26 +134,8 @@ class FaseTarea extends Base\ModelClass
     {
         return parent::url($type, $list);
     }
-    
-    public function clear()
-    {
-        parent::clear();
-        $this->predeterminado = false;
-    }
-    
-    public function save() {
-        if (isset($this->tipo)) {
-            $this->ResetPhaseType();
-        }
-        
-        if (isset($this->predeterminado)) {
-            $this->ResetPhaseDefault();
-        }
-        
-        return parent::save();
-    }
-    
-    /*
+
+    /**
      * Set a single phase by default
      */
     public function ResetPhaseDefault()
@@ -126,14 +143,14 @@ class FaseTarea extends Base\ModelClass
         $modelPhase = new FaseTarea();
         $where = [new DataBaseWhere('predeterminado', true)];
         $phases = $modelPhase->all($where);
-        
+
         foreach ($phases as $phase) {
             $phase->predeterminado = false;
             $phase->saveUpdate();
         }
     }
-    
-    /*
+
+    /**
      * Set only one type of phase at a time
      */
     public function ResetPhaseType()
@@ -141,7 +158,7 @@ class FaseTarea extends Base\ModelClass
         $modelPhase = new FaseTarea();
         $where = [new DataBaseWhere('tipo', $this->tipo)];
         $phases = $modelPhase->all($where);
-        
+
         foreach ($phases as $phase) {
             $phase->tipo = null;
             $phase->saveUpdate();

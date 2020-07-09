@@ -31,78 +31,68 @@ use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
  */
 class Tarea extends Base\ModelOnChangeClass
 {
+
     use Base\ModelTrait;
-    
+
     /**
      *
      * @var int
      */
     public $cantidad;
-    
+
     /**
      *
      * @var int
      */
     public $idproyecto;
-    
+
     /**
      *
      * @var int
      */
     public $idtarea;
-    
+
     /**
      *
      * @var int
      */
     public $idfase;
-    
+
     /**
      *
      * @var string
      */
     public $descripcion;
-    
+
     /**
      *
      * @var date
      */
     public $fecha;
-    
+
     /**
      *
      * @var date
      */
     public $fechafin;
-    
+
     /**
      *
      * @var date
      */
     public $fechainicio;
-    
+
     /**
      *
      * @var string
      */
     public $nombre;
-    
-    public static function primaryColumn(): string {
-        return 'idtarea';
-    }
 
-    public static function tableName(): string {
-        return 'tareas';
-    }
-    
-    public function primaryDescriptionColumn(): string {
-        return 'nombre';
-    }
-    
-    public function clear() {
+    public function clear()
+    {
         parent::clear();
         $this->fecha = \date(self::DATE_STYLE);
-        
+
         /// select default status
         foreach ($this->getAvaliablePhases() as $status) {
             if ($status->predeterminado) {
@@ -111,7 +101,7 @@ class Tarea extends Base\ModelOnChangeClass
             }
         }
     }
-    
+
     /**
      * 
      * @return FaseTarea[]
@@ -126,16 +116,52 @@ class Tarea extends Base\ModelOnChangeClass
 
         return $avaliable;
     }
-    
-    public function save() {
+
+    /**
+     * 
+     * @return string
+     */
+    public function install()
+    {
+        /// needed dependencies
+        new Proyecto();
+        new FaseTarea();
+
+        return parent::install();
+    }
+
+    /**
+     * 
+     * @return string
+     */
+    public static function primaryColumn(): string
+    {
+        return 'idtarea';
+    }
+
+    /**
+     * 
+     * @return string
+     */
+    public function primaryDescriptionColumn(): string
+    {
+        return 'nombre';
+    }
+
+    /**
+     * 
+     * @return bool
+     */
+    public function save()
+    {
         $result = parent::save();
-        
+
         $phase = new FaseTarea();
         $phase->loadFromCode($this->idfase);
-        
+
         $project = new Proyecto();
         $project->loadFromCode($this->idproyecto);
-        
+
         if ($phase->predeterminado) {
             $this->setDefaultStatusProject($project);
         } else {
@@ -148,25 +174,36 @@ class Tarea extends Base\ModelOnChangeClass
                 }
             }
         }
-        
+
         return $result;
     }
-    
-    /*
+
+    /**
+     * 
+     * @return string
+     */
+    public static function tableName(): string
+    {
+        return 'tareas';
+    }
+
+    /**
      * If the project is completed or canceled and a new task is added,
      * then it sets the default project status
+     * 
+     * @param string $project
      */
     public function setDefaultStatusProject($project)
     {
         $StatusProject = new EstadoProyecto();
         $where = [new DataBaseWhere('predeterminado', true)];
         $StatusProject->loadFromCode('', $where);
-        
+
         if ($StatusProject) {
             $PhaseTask = new FaseTarea();
             $where = [new DataBaseWhere('idestado', $project->idestado)];
             $PhaseTask->loadFromCode('', $where);
-            
+
             if ($PhaseTask) {
                 if (!is_null($PhaseTask->tipo)) {
                     $project->idestado = $StatusProject->idestado;
@@ -175,24 +212,27 @@ class Tarea extends Base\ModelOnChangeClass
             }
         }
     }
-    
-    /*
+
+    /**
      * We ask if all tasks in a project are completed or canceled.
      * If correct, we mark the status of the project with the linked phase
+     * 
+     * @param FaseTarea $phase
+     * @param Proyecto  $project
      */
     public function phaseTypes($phase, $project)
     {
         $modelTasks = new Tarea();
         $where = [new DataBaseWhere('idproyecto', $project->idproyecto)];
         $tasks = $modelTasks->all($where);
-        
+
         $status = true;
         foreach ($tasks as $task) {
             if ($task->idfase !== $phase->idfase) {
                 $status = false;
             }
         }
-        
+
         if ($status) {
             $project->idestado = $phase->idestado;
             $project->save();
@@ -200,34 +240,37 @@ class Tarea extends Base\ModelOnChangeClass
             $this->combineTypePhases($project, $tasks);
         }
     }
-    
-    /*
+
+    /**
      * We ask if the sum of the completed and canceled tasks is
      * equal to the total project tasks to complete it.
+     * 
+     * @param Proyecto $project
+     * @param Tarea[]  $tasks
      */
     public function combineTypePhases($project, $tasks)
     {
         $typeComplete = 0;
         $typeReject = 0;
-        
+
         $phase = new FaseTarea();
-        
+
         foreach ($tasks as $task) {
             $phase->clear();
             $phase->loadFromCode($task->idfase);
-            
+
             if ($phase->tipo === 0) {
                 $typeComplete++;
             } else if ($phase->tipo === 1) {
                 $typeReject++;
             }
         }
-        
+
         if (($typeComplete + $typeReject) == count($tasks)) {
             $phase->clear();
             $where = [new DataBaseWhere('tipo', 0)];
             $phase->loadFromCode('', $where);
-            
+
             if ($phase) {
                 $project->idestado = $phase->idestado;
                 $project->save();
