@@ -1,5 +1,5 @@
-idfase;nombre;idestado;predeterminado
-1;Pendiente;NULL;true
-2;Procesando;NULL;false
-3;Completado;3;false
-4;Cancelada;4;false
+idfase;nombre;tipo;idestado;predeterminado
+1;Pendiente;NULL;NULL;true
+2;Procesando;NULL;NULL;false
+3;Completado;0;3;false
+4;Cancelada;1;4;false

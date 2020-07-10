@@ -12,23 +12,8 @@
         <null>NO</null>
     </column>
     <column>
-        <name>idproyecto</name>
-        <type>integer</type>
-        <null>NO</null>
-    </column>
-    <column>
-        <name>idtarea</name>
-        <type>serial</type>
-        <null>NO</null>
-    </column>
-    <column>
-        <name>idfase</name>
-        <type>integer</type>
-        <null>NO</null>
-    </column>
-    <column>
         <name>descripcion</name>
-        <type>character varying(500)</type>
+        <type>text</type>
     </column>
     <column>
         <name>fecha</name>
@@ -42,6 +27,21 @@
     <column>
         <name>fechainicio</name>
         <type>date</type>
+    </column>
+    <column>
+        <name>idfase</name>
+        <type>integer</type>
+        <null>NO</null>
+    </column>
+    <column>
+        <name>idproyecto</name>
+        <type>integer</type>
+        <null>NO</null>
+    </column>
+    <column>
+        <name>idtarea</name>
+        <type>serial</type>
+        <null>NO</null>
     </column>
     <column>
         <name>nombre</name>

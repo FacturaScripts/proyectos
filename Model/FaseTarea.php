@@ -18,8 +18,8 @@
  */
 namespace FacturaScripts\Plugins\Proyectos\Model;
 
-use FacturaScripts\Core\Model\Base;
 use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
+use FacturaScripts\Core\Model\Base;
 
 /**
  * Description of FaseTarea
@@ -138,13 +138,13 @@ class FaseTarea extends Base\ModelClass
     /**
      * Set a single phase by default
      */
-    public function ResetPhaseDefault()
+    protected function ResetPhaseDefault()
     {
-        $modelPhase = new FaseTarea();
-        $where = [new DataBaseWhere('predeterminado', true)];
-        $phases = $modelPhase->all($where);
-
-        foreach ($phases as $phase) {
+        $where = [
+            new DataBaseWhere('predeterminado', true),
+            new DataBaseWhere('idfase', $this->idfase, '!=')
+        ];
+        foreach ($this->all($where) as $phase) {
             $phase->predeterminado = false;
             $phase->saveUpdate();
         }
@@ -153,13 +153,13 @@ class FaseTarea extends Base\ModelClass
     /**
      * Set only one type of phase at a time
      */
-    public function ResetPhaseType()
+    protected function ResetPhaseType()
     {
-        $modelPhase = new FaseTarea();
-        $where = [new DataBaseWhere('tipo', $this->tipo)];
-        $phases = $modelPhase->all($where);
-
-        foreach ($phases as $phase) {
+        $where = [
+            new DataBaseWhere('tipo', $this->tipo),
+            new DataBaseWhere('idfase', $this->idfase, '!=')
+        ];
+        foreach ($this->all($where) as $phase) {
             $phase->tipo = null;
             $phase->saveUpdate();
         }

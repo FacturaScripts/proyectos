@@ -112,7 +112,7 @@ class EditProyecto extends EditController
         $this->addEditListView($viewName, 'UserProyecto', 'users', 'fas fa-users');
         $this->views[$viewName]->disableColumn('project');
     }
-    
+
     /**
      * 
      * @param string $viewName
@@ -132,7 +132,7 @@ class EditProyecto extends EditController
     {
         $mainViewName = $this->getMainViewName();
         $idproyecto = $this->getViewModelValue($mainViewName, 'idproyecto');
-        
+
         switch ($viewName) {
             case $mainViewName:
                 parent::loadData($viewName, $view);
@@ -145,7 +145,7 @@ class EditProyecto extends EditController
                     $this->setSettings('EditUserProyecto', 'active', false);
                 }
                 break;
-                
+
             case 'ListTarea':
                 $where = [new DataBaseWhere('idproyecto', $idproyecto)];
                 $view->loadData('', $where);

@@ -40,10 +40,10 @@
     </columns>
     <rows>
         <row type="status">
-            <option color="warning" fieldname="editable">0</option>
-            <option color="secondary" fieldname="privado">1</option>
-            <option color="info" fieldname="codcliente">null:</option>
-            <option color="success" fieldname="editable">1</option>
+            <option color="danger" fieldname="idestado" title="canceled">4</option>
+            <option color="warning" fieldname="idestado" title="processing">2</option>
+            <option color="success" fieldname="idestado" title="completed">3</option>
+            <option color="secondary" fieldname="privado" title="private">1</option>
         </row>
     </rows>
 </view>

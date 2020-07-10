@@ -18,8 +18,8 @@
  */
 namespace FacturaScripts\Plugins\Proyectos\Model;
 
-use FacturaScripts\Core\Model\Base;
 use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
+use FacturaScripts\Core\Model\Base;
 
 /**
  * Description of EstadoProyecto
@@ -61,29 +61,6 @@ class EstadoProyecto extends Base\ModelClass
         $this->editable = true;
         $this->predeterminado = false;
     }
-    
-    public function save() {
-        if (isset($this->predeterminado)) {
-            $this->ResetProjectDefault();
-        }
-        
-        return parent::save();
-    }
-    
-    /*
-     * Set a single default state
-     */
-    public function ResetProjectDefault()
-    {
-        $modelStatus = new EstadoProyecto();
-        $where = [new DataBaseWhere('predeterminado', true)];
-        $status = $modelStatus->all($where);
-        
-        foreach ($status as $st) {
-            $st->predeterminado = false;
-            $st->saveUpdate();
-        }
-    }
 
     /**
      * 
@@ -105,6 +82,19 @@ class EstadoProyecto extends Base\ModelClass
 
     /**
      * 
+     * @return bool
+     */
+    public function save()
+    {
+        if (isset($this->predeterminado)) {
+            $this->ResetProjectDefault();
+        }
+
+        return parent::save();
+    }
+
+    /**
+     * 
      * @return string
      */
     public static function tableName(): string
@@ -122,5 +112,20 @@ class EstadoProyecto extends Base\ModelClass
     public function url(string $type = 'auto', string $list = 'ListProyecto?activetab=List'): string
     {
         return parent::url($type, $list);
+    }
+
+    /**
+     * Set a single default state
+     */
+    protected function ResetProjectDefault()
+    {
+        $where = [
+            new DataBaseWhere('predeterminado', true),
+            new DataBaseWhere('idestado', $this->idestado, '!=')
+        ];
+        foreach ($this->all($where) as $status) {
+            $status->predeterminado = false;
+            $status->saveUpdate();
+        }
     }
 }

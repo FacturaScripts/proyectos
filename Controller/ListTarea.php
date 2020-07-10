@@ -75,7 +75,7 @@ class ListTarea extends ListController
         $status = $this->codeModel->all('tareas_fases', 'idfase', 'nombre');
         $this->addFilterSelect($viewName, 'idfase', 'phase', 'idfase', $status);
     }
-    
+
     /**
      * 
      * @param string $viewName

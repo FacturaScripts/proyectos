@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <view>
     <columns>
         <column name="code" display="none" order="100">
@@ -41,10 +40,9 @@
     </columns>
     <rows>
         <row type="status">
-            <option color="warning" fieldname="editable">0</option>
-            <option color="secondary" fieldname="privado">1</option>
-            <option color="info" fieldname="codcliente">null:</option>
-            <option color="success" fieldname="editable">1</option>
+            <option color="danger" fieldname="idfase" title="canceled">4</option>
+            <option color="success" fieldname="idfase" title="completed">3</option>
+            <option color="warning" fieldname="idfase" title="processing">2</option>
         </row>
     </rows>
 </view>

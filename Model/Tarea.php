@@ -18,45 +18,29 @@
  */
 namespace FacturaScripts\Plugins\Proyectos\Model;
 
-use FacturaScripts\Core\Model\Base;
-use FacturaScripts\Plugins\Proyectos\Model\Proyecto;
-use FacturaScripts\Plugins\Proyectos\Model\EstadoProyecto;
-use FacturaScripts\Plugins\Proyectos\Model\FaseTarea;
 use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
+use FacturaScripts\Core\Model\Base;
 
 /**
  * Description of Tarea
  *
  * @author Daniel Fernández Giménez <hola@danielfg.es>
+ * @author Carlos Garcia Gomez      <carlos@facturascripts.com>
  */
 class Tarea extends Base\ModelOnChangeClass
 {
 
     use Base\ModelTrait;
 
+    const TYPE_COMPLETED = 0;
+    const TYPE_PROCESSING = 2;
+    const TYPE_CANCELED = 1;
+
     /**
      *
      * @var int
      */
     public $cantidad;
-
-    /**
-     *
-     * @var int
-     */
-    public $idproyecto;
-
-    /**
-     *
-     * @var int
-     */
-    public $idtarea;
-
-    /**
-     *
-     * @var int
-     */
-    public $idfase;
 
     /**
      *
@@ -81,6 +65,24 @@ class Tarea extends Base\ModelOnChangeClass
      * @var date
      */
     public $fechainicio;
+
+    /**
+     *
+     * @var int
+     */
+    public $idfase;
+
+    /**
+     *
+     * @var int
+     */
+    public $idproyecto;
+
+    /**
+     *
+     * @var int
+     */
+    public $idtarea;
 
     /**
      *
@@ -115,6 +117,28 @@ class Tarea extends Base\ModelOnChangeClass
         }
 
         return $avaliable;
+    }
+
+    /**
+     * 
+     * @return FaseTarea
+     */
+    public function getPhase()
+    {
+        $phase = new FaseTarea();
+        $phase->loadFromCode($this->idfase);
+        return $phase;
+    }
+
+    /**
+     * 
+     * @return Proyecto
+     */
+    public function getProject()
+    {
+        $project = new Proyecto();
+        $project->loadFromCode($this->idproyecto);
+        return $project;
     }
 
     /**
@@ -154,28 +178,29 @@ class Tarea extends Base\ModelOnChangeClass
      */
     public function save()
     {
-        $result = parent::save();
-
-        $phase = new FaseTarea();
-        $phase->loadFromCode($this->idfase);
-
-        $project = new Proyecto();
-        $project->loadFromCode($this->idproyecto);
-
-        if ($phase->predeterminado) {
-            $this->setDefaultStatusProject($project);
-        } else {
-            if (!is_null($phase->idestado)) {
-                if (!is_null($phase->tipo)) {
-                    $this->phaseTypes($phase, $project);
-                } else {
-                    $project->idestado = $phase->idestado;
-                    $project->save();
-                }
-            }
+        if (false === parent::save()) {
+            return false;
         }
 
-        return $result;
+        $phase = $this->getPhase();
+        if ($phase->predeterminado) {
+            $this->setDefaultProjectStatus();
+            return true;
+        }
+
+        if (null === $phase->idestado) {
+            return true;
+        }
+
+        if (null === $phase->tipo) {
+            $project = $this->getProject();
+            $project->idestado = $phase->idestado;
+            $project->save();
+            return true;
+        }
+
+        $this->checkOtherTasks($phase);
+        return true;
     }
 
     /**
@@ -188,29 +213,15 @@ class Tarea extends Base\ModelOnChangeClass
     }
 
     /**
-     * If the project is completed or canceled and a new task is added,
-     * then it sets the default project status
      * 
-     * @param string $project
+     * @return bool
      */
-    public function setDefaultStatusProject($project)
+    public function test()
     {
-        $StatusProject = new EstadoProyecto();
-        $where = [new DataBaseWhere('predeterminado', true)];
-        $StatusProject->loadFromCode('', $where);
+        $this->descripcion = $this->toolBox()->utils()->noHtml($this->descripcion);
+        $this->nombre = $this->toolBox()->utils()->noHtml($this->nombre);
 
-        if ($StatusProject) {
-            $PhaseTask = new FaseTarea();
-            $where = [new DataBaseWhere('idestado', $project->idestado)];
-            $PhaseTask->loadFromCode('', $where);
-
-            if ($PhaseTask) {
-                if (!is_null($PhaseTask->tipo)) {
-                    $project->idestado = $StatusProject->idestado;
-                    $project->save();
-                }
-            }
-        }
+        return parent::test();
     }
 
     /**
@@ -218,27 +229,20 @@ class Tarea extends Base\ModelOnChangeClass
      * If correct, we mark the status of the project with the linked phase
      * 
      * @param FaseTarea $phase
-     * @param Proyecto  $project
      */
-    public function phaseTypes($phase, $project)
+    protected function checkOtherTasks($phase)
     {
-        $modelTasks = new Tarea();
-        $where = [new DataBaseWhere('idproyecto', $project->idproyecto)];
-        $tasks = $modelTasks->all($where);
-
-        $status = true;
+        $project = $this->getProject();
+        $tasks = $project->getTasks();
         foreach ($tasks as $task) {
             if ($task->idfase !== $phase->idfase) {
-                $status = false;
+                $this->deepTaskCheck($project, $tasks);
+                return;
             }
         }
 
-        if ($status) {
-            $project->idestado = $phase->idestado;
-            $project->save();
-        } else {
-            $this->combineTypePhases($project, $tasks);
-        }
+        $project->idestado = $phase->idestado;
+        $project->save();
     }
 
     /**
@@ -248,33 +252,41 @@ class Tarea extends Base\ModelOnChangeClass
      * @param Proyecto $project
      * @param Tarea[]  $tasks
      */
-    public function combineTypePhases($project, $tasks)
+    protected function deepTaskCheck($project, $tasks)
     {
-        $typeComplete = 0;
-        $typeReject = 0;
-
-        $phase = new FaseTarea();
-
+        $completed = 0;
+        $canceled = 0;
         foreach ($tasks as $task) {
-            $phase->clear();
-            $phase->loadFromCode($task->idfase);
-
-            if ($phase->tipo === 0) {
-                $typeComplete++;
-            } else if ($phase->tipo === 1) {
-                $typeReject++;
+            $phase = $task->getPhase();
+            if ($phase->tipo === self::TYPE_COMPLETED) {
+                $completed++;
+            } elseif ($phase->tipo === self::TYPE_CANCELED) {
+                $canceled++;
             }
         }
 
-        if (($typeComplete + $typeReject) == count($tasks)) {
-            $phase->clear();
-            $where = [new DataBaseWhere('tipo', 0)];
-            $phase->loadFromCode('', $where);
-
-            if ($phase) {
+        if ($completed + $canceled === \count($tasks)) {
+            $phase = new FaseTarea();
+            $where = [new DataBaseWhere('tipo', self::TYPE_COMPLETED)];
+            if ($phase->loadFromCode('', $where)) {
                 $project->idestado = $phase->idestado;
                 $project->save();
             }
+        }
+    }
+
+    /**
+     * If the project is completed or canceled and a new task is added,
+     * then it sets the default project status.
+     */
+    protected function setDefaultProjectStatus()
+    {
+        $defaultStatus = new EstadoProyecto();
+        $where = [new DataBaseWhere('predeterminado', true)];
+        if ($defaultStatus->loadFromCode('', $where)) {
+            $project = $this->getProject();
+            $project->idestado = $defaultStatus->idestado;
+            $project->save();
         }
     }
 }

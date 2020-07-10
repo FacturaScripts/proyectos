@@ -18,10 +18,9 @@
  */
 namespace FacturaScripts\Plugins\Proyectos\Model;
 
+use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
 use FacturaScripts\Core\Model\Base;
 use FacturaScripts\Dinamic\Model\Cliente;
-use FacturaScripts\Plugins\Proyectos\Model\UserProyecto;
-use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
 
 /**
  * Description of Proyecto
@@ -111,7 +110,7 @@ class Proyecto extends Base\ModelOnChangeClass
         $this->editable = true;
         $this->fecha = \date(self::DATE_STYLE);
         $this->privado = false;
-        
+
         /// select default status
         foreach ($this->getAvaliableStatus() as $status) {
             if ($status->predeterminado) {
@@ -146,6 +145,17 @@ class Proyecto extends Base\ModelOnChangeClass
         $status = new EstadoProyecto();
         $status->loadFromCode($this->idestado);
         return $status;
+    }
+
+    /**
+     * 
+     * @return Tarea[]
+     */
+    public function getTasks()
+    {
+        $task = new Tarea();
+        $where = [new DataBaseWhere('idproyecto', $this->idproyecto)];
+        return $task->all($where, [], 0, 0);
     }
 
     /**
@@ -190,6 +200,18 @@ class Proyecto extends Base\ModelOnChangeClass
 
     /**
      * 
+     * @return bool
+     */
+    public function test()
+    {
+        $this->descripcion = $this->toolBox()->utils()->noHtml($this->descripcion);
+        $this->nombre = $this->toolBox()->utils()->noHtml($this->nombre);
+
+        return parent::test();
+    }
+
+    /**
+     * 
      * @param string $field
      *
      * @return bool
@@ -213,7 +235,7 @@ class Proyecto extends Base\ModelOnChangeClass
     {
         parent::setPreviousData(\array_merge(['idestado'], $fields));
     }
-    
+
     /**
      * 
      * @param User $user
