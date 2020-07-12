@@ -125,6 +125,21 @@ class EditProyecto extends EditController
 
     /**
      * 
+     * @param EditView $view
+     */
+    protected function disableProjectColumns(&$view)
+    {
+        foreach ($view->getColumns() as $group) {
+            foreach ($group->columns as $col) {
+                if ($col->name !== 'status') {
+                    $view->disableColumn($col->name, false, 'true');
+                }
+            }
+        }
+    }
+
+    /**
+     * 
      * @param string   $viewName
      * @param EditView $view
      */
@@ -141,6 +156,9 @@ class EditProyecto extends EditController
                     $view->model->nick = $this->user->nick;
                 } elseif (false === $view->model->userCanSee($this->user)) {
                     $this->setTemplate('Error/AccessDenied');
+                } elseif (false === $view->model->editable) {
+                    $this->disableProjectColumns($view);
+                    $this->setSettings('EditUserProyecto', 'active', false);
                 } elseif (false === $view->model->privado) {
                     $this->setSettings('EditUserProyecto', 'active', false);
                 }
