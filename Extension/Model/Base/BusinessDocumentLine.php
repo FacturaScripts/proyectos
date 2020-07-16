@@ -87,6 +87,9 @@ class BusinessDocumentLine
     {
         return function() {
             $idproyecto = $this->getDocument()->idproyecto;
+            if (empty($idproyecto)) {
+                return;
+            }
 
             /// find the project stock
             $stock = new StockProyecto();
