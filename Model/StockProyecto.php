@@ -18,6 +18,7 @@
  */
 namespace FacturaScripts\Plugins\Proyectos\Model;
 
+use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
 use FacturaScripts\Core\Model\Base;
 use FacturaScripts\Dinamic\Model\Producto;
 use FacturaScripts\Dinamic\Model\Variante;
@@ -93,6 +94,18 @@ class StockProyecto extends Base\ModelClass
 
     /**
      * 
+     * @return Variante
+     */
+    public function getVariant()
+    {
+        $variant = new Variante();
+        $where = [new DataBaseWhere('referencia', $this->referencia)];
+        $variant->loadFromCode('', $where);
+        return $variant;
+    }
+
+    /**
+     * 
      * @return string
      */
     public function install()
@@ -145,5 +158,17 @@ class StockProyecto extends Base\ModelClass
 
         $this->disponible = $this->cantidad - $this->reservada;
         return parent::test();
+    }
+
+    /**
+     * 
+     * @param string $type
+     * @param string $list
+     *
+     * @return string
+     */
+    public function url(string $type = 'auto', string $list = 'List'): string
+    {
+        return empty($this->primaryColumnValue()) ? parent::url($type, $list) : $this->getVariant()->url();
     }
 }
