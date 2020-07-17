@@ -36,12 +36,25 @@ use FacturaScripts\Dinamic\Model\PresupuestoProveedor;
 class Init extends InitClass
 {
 
+    /**
+     *
+     * @var bool
+     */
+    private static $disableInit = false;
+
+    public static function disableInit()
+    {
+        self::$disableInit = true;
+    }
+
     public function init()
     {
-        $this->loadExtension(new Extension\Controller\DocumentStitcher());
-        $this->loadExtension(new Extension\Controller\EditCliente());
-        $this->loadExtension(new Extension\Model\Base\BusinessDocument());
-        $this->loadExtension(new Extension\Model\Base\BusinessDocumentLine());
+        if (false === self::$disableInit) {
+            $this->loadExtension(new Extension\Controller\DocumentStitcher());
+            $this->loadExtension(new Extension\Controller\EditCliente());
+            $this->loadExtension(new Extension\Model\Base\BusinessDocument());
+            $this->loadExtension(new Extension\Model\Base\BusinessDocumentLine());
+        }
     }
 
     public function update()

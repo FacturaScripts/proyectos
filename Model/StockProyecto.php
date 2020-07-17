@@ -106,13 +106,23 @@ class StockProyecto extends Base\ModelClass
 
     /**
      * 
+     * @return Producto
+     */
+    public function getProduct()
+    {
+        $product = new Producto();
+        $product->loadFromCode($this->idproducto);
+        return $product;
+    }
+
+    /**
+     * 
      * @return string
      */
     public function install()
     {
         /// needed dependecies
         new Proyecto();
-        new Producto();
         new Variante();
 
         return parent::install();
@@ -169,6 +179,6 @@ class StockProyecto extends Base\ModelClass
      */
     public function url(string $type = 'auto', string $list = 'List'): string
     {
-        return empty($this->primaryColumnValue()) ? parent::url($type, $list) : $this->getVariant()->url();
+        return empty($this->primaryColumnValue()) ? parent::url($type, $list) : $this->getProduct()->url();
     }
 }
