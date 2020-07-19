@@ -21,6 +21,7 @@ namespace FacturaScripts\Plugins\Proyectos\Controller;
 use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
 use FacturaScripts\Core\Lib\ExtendedController\EditController;
 use FacturaScripts\Core\Lib\ExtendedController\EditView;
+use FacturaScripts\Plugins\Proyectos\Lib\ProjectStockManager;
 
 /**
  * Description of EditProyecto
@@ -101,6 +102,13 @@ class EditProyecto extends EditController
         $this->setSettings($viewName, 'btnDelete', false);
         $this->setSettings($viewName, 'btnNew', false);
         $this->setSettings($viewName, 'checkBoxes', false);
+
+        $this->addButton($viewName, [
+            'action' => 'rebuild-stock',
+            'confirm' => true,
+            'icon' => 'fas fa-magic',
+            'label' => 'rebuild-stock'
+        ]);
     }
 
     /**
@@ -135,6 +143,29 @@ class EditProyecto extends EditController
                     $view->disableColumn($col->name, false, 'true');
                 }
             }
+        }
+    }
+
+    /**
+     * 
+     * @param string $action
+     *
+     * @return bool
+     */
+    protected function execPreviousAction($action)
+    {
+        switch ($action) {
+            case 'rebuild-stock':
+                $idproyecto = (int) $this->request->query->get('code');
+                if (ProjectStockManager::rebuild($idproyecto)) {
+                    $this->toolBox()->i18nLog()->notice('project-stock-rebuild-ok');
+                    return true;
+                }
+                $this->toolBox()->i18nLog()->warning('project-stock-rebuild-error');
+                return true;
+
+            default:
+                return parent::execPreviousAction($action);
         }
     }
 

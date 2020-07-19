@@ -5,11 +5,14 @@
     "tasks": "Tareas",
     "task": "Tarea",
     "calendar": "Calendario",
+    "canceled": "Cancelado",
+    "completed": "Completado",
     "phases": "Fases",
     "phase": "Fase",
     "status-project": "Estado proyecto",
     "pending": "Pendiente",
     "complete": "Completado",
+    "rebuild-stock": "Regenerar stock",
     "rejection": "Rechazado",
     "processing": "Procesando"
 }
