@@ -18,9 +18,7 @@
  */
 namespace FacturaScripts\Plugins\Proyectos\Extension\Model\Base;
 
-use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
-use FacturaScripts\Plugins\Proyectos\Lib\ProjectStockManager;
-use FacturaScripts\Plugins\Proyectos\Model\StockProyecto;
+use FacturaScripts\Dinamic\Lib\ProjectStockManager;
 
 /**
  * Description of BusinessDocumentLine
