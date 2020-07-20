@@ -20,6 +20,7 @@ namespace FacturaScripts\Plugins\Proyectos\Lib;
 
 use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
 use FacturaScripts\Core\Model\Base\BusinessDocumentLine;
+use FacturaScripts\Core\Model\Base\TransformerDocument;
 use FacturaScripts\Dinamic\Model\AlbaranCliente;
 use FacturaScripts\Dinamic\Model\AlbaranProveedor;
 use FacturaScripts\Dinamic\Model\DocTransformation;
@@ -103,30 +104,29 @@ class ProjectStockManager
                     static::checkProjectStock($stockData, $line);
                 }
 
-                $childLines = [];
                 foreach ($item->childrenDocuments() as $child) {
-                    /// when we group documents from different projects, the new document has idproyecto = null
-                    /// so we need to check this new document to calculate stock
-                    if (null === $child->idproyecto) {
-                        static::deepCheckProjectStock($stockData, $lines, $child->getLines(), $model->modelClassName());
-                    }
+                    static::deepCheckProjectStock($stockData, $lines, $model->modelClassName(), $child);
                 }
             }
         }
 
-        /// new we save this data
+        /// now we save this data
         foreach ($stockData as $referencia => $data) {
             $stock = new StockProyecto();
             $where = [
                 new DataBaseWhere('idproyecto', $idproyecto),
                 new DataBaseWhere('referencia', $referencia)
             ];
-            if ($stock->loadFromCode('', $where)) {
-                $stock->cantidad = $data['cantidad'];
-                $stock->pterecibir = $data['pterecibir'];
-                $stock->reservada = $data['reservada'];
-                $stock->save();
+            if (false === $stock->loadFromCode('', $where)) {
+                $stock->idproducto = $data['idproducto'];
+                $stock->idproyecto = $idproyecto;
+                $stock->referencia = $referencia;
             }
+
+            $stock->cantidad = $data['cantidad'];
+            $stock->pterecibir = $data['pterecibir'];
+            $stock->reservada = $data['reservada'];
+            $stock->save();
         }
 
         return true;
@@ -199,6 +199,7 @@ class ProjectStockManager
         } elseif (!isset($stockData[$line->referencia])) {
             $stockData[$line->referencia] = [
                 'cantidad' => 0.0,
+                'idproducto' => $line->idproducto,
                 'pterecibir' => 0.0,
                 'reservada' => 0.0
             ];
@@ -225,12 +226,25 @@ class ProjectStockManager
      * 
      * @param array                  $stockData
      * @param BusinessDocumentLine[] $lines
-     * @param BusinessDocumentLine[] $childLines
      * @param string                 $model1
+     * @param TransformerDocument    $child
      */
-    protected static function deepCheckProjectStock(&$stockData, $lines, $childLines, $model1)
+    protected static function deepCheckProjectStock(&$stockData, $lines, $model1, $child)
     {
+        /// when we group documents from different projects, the new document has idproyecto = null
+        /// so we need to check this new document to calculate stock
+        if (null !== $child->idproyecto) {
+            return;
+        }
+
+        $childLines = $child->getLines();
+        $childProjectLines = [];
+
         foreach ($lines as $line) {
+            if (empty($line->referencia)) {
+                continue;
+            }
+
             $docTransformation = new DocTransformation();
             $where = [
                 new DataBaseWhere('idlinea1', $line->primaryColumnValue()),
@@ -238,25 +252,18 @@ class ProjectStockManager
             ];
             foreach ($docTransformation->all($where, [], 0, 0) as $dtl) {
                 foreach ($childLines as $chLine) {
-                    if ($chLine->primaryColumnValue() != $dtl->idlinea2) {
-                        continue;
-                    }
-
-                    switch ($chLine->actualizastock) {
-                        case 1:
-                        case -1:
-                            $stockData[$chLine->referencia]['cantidad'] += $chLine->actualizastock * $chLine->cantidad;
-                            break;
-
-                        case 2:
-                            $stockData[$chLine->referencia]['pterecibir'] += $chLine->cantidad;
-                            break;
-
-                        case -2:
-                            $stockData[$chLine->referencia]['reservada'] += $chLine->cantidad;
-                            break;
+                    if ($chLine->primaryColumnValue() == $dtl->idlinea2) {
+                        static::checkProjectStock($stockData, $chLine);
+                        $childProjectLines[] = $chLine;
                     }
                 }
+            }
+        }
+
+        /// we continue checking children
+        if (!empty($childProjectLines)) {
+            foreach ($child->childrenDocuments() as $grandChild) {
+                static::deepCheckProjectStock($stockData, $childProjectLines, $child->modelClassName(), $grandChild);
             }
         }
     }
