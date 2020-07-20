@@ -57,7 +57,7 @@ class ProjectStockManager
             new DataBaseWhere('referencia', $line->referencia)
         ];
         if (!empty($fromIdproyecto) && $fromStock->loadFromCode('', $where)) {
-            static::applyProjectStockChanges($linePrevData['actualizastock'], $linePrevData['cantidad'] * -1, $fromStock);
+            static::applyProjectStockChanges($fromStock, $linePrevData['actualizastock'], $linePrevData['cantidad'] * -1, $linePrevData['servido'] * -1);
             $fromStock->save();
         }
 
@@ -76,7 +76,7 @@ class ProjectStockManager
             $toStock->referencia = $line->referencia;
         }
 
-        static::applyProjectStockChanges($line->actualizastock, $line->cantidad, $toStock);
+        static::applyProjectStockChanges($toStock, $line->actualizastock, $line->cantidad, $line->servido);
         $toStock->save();
     }
 
@@ -158,19 +158,24 @@ class ProjectStockManager
             $stock->referencia = $line->referencia;
         }
 
-        static::applyProjectStockChanges($linePrevData['actualizastock'], $linePrevData['cantidad'] * -1, $stock);
-        static::applyProjectStockChanges($line->actualizastock, $line->cantidad, $stock);
+        static::applyProjectStockChanges($stock, $linePrevData['actualizastock'], $linePrevData['cantidad'] * -1, $linePrevData['servido'] * -1);
+        static::applyProjectStockChanges($stock, $line->actualizastock, $line->cantidad, $line->servido);
         return $stock->save();
     }
 
     /**
      * 
+     * @param StockProyecto $stock
      * @param int           $mode
      * @param float         $quantity
-     * @param StockProyecto $stock
+     * @param float         $served
      */
-    protected static function applyProjectStockChanges($mode, $quantity, $stock)
+    protected static function applyProjectStockChanges($stock, int $mode, float $quantity, float $served)
     {
+        if ($quantity < 0 && $served < $quantity) {
+            $served = $quantity;
+        }
+
         switch ($mode) {
             case 1:
             case -1:
@@ -178,11 +183,11 @@ class ProjectStockManager
                 break;
 
             case 2:
-                $stock->pterecibir += $quantity;
+                $stock->pterecibir += $quantity - $served;
                 break;
 
             case -2:
-                $stock->reservada += $quantity;
+                $stock->reservada += $quantity - $served;
                 break;
         }
     }
