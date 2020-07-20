@@ -12,6 +12,8 @@
     "status-project": "Estado proyecto",
     "pending": "Pendiente",
     "complete": "Completado",
+    "project-stock-rebuild-error": "Error al regenerar el stock",
+    "project-stock-rebuild-ok": "Stock regenerado correctamente",
     "rebuild-stock": "Regenerar stock",
     "rejection": "Rechazado",
     "processing": "Procesando"

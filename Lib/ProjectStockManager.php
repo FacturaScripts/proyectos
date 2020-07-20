@@ -20,7 +20,15 @@ namespace FacturaScripts\Plugins\Proyectos\Lib;
 
 use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
 use FacturaScripts\Core\Model\Base\BusinessDocumentLine;
+use FacturaScripts\Dinamic\Model\AlbaranCliente;
+use FacturaScripts\Dinamic\Model\AlbaranProveedor;
 use FacturaScripts\Dinamic\Model\DocTransformation;
+use FacturaScripts\Dinamic\Model\FacturaCliente;
+use FacturaScripts\Dinamic\Model\FacturaProveedor;
+use FacturaScripts\Dinamic\Model\PedidoCliente;
+use FacturaScripts\Dinamic\Model\PedidoProveedor;
+use FacturaScripts\Dinamic\Model\PresupuestoCliente;
+use FacturaScripts\Dinamic\Model\PresupuestoProveedor;
 use FacturaScripts\Plugins\Proyectos\Model\StockProyecto;
 
 /**
@@ -32,6 +40,7 @@ class ProjectStockManager
 {
 
     /**
+     * Transfer stock from one proyect to another (or none)
      * 
      * @param BusinessDocumentLine $line
      * @param array                $linePrevData
@@ -71,6 +80,7 @@ class ProjectStockManager
     }
 
     /**
+     * Recalculate the project stock.
      * 
      * @param int $idproyecto
      *
@@ -78,12 +88,14 @@ class ProjectStockManager
      */
     public static function rebuild($idproyecto): bool
     {
+        /// we initialice stock from every project document
         $stockData = [];
-
-        $modelClasses = ['PedidoProveedor', 'AlbaranProveedor', 'FacturaProveedor'];
-        foreach ($modelClasses as $modelClass) {
-            $class = '\\FacturaScripts\\Dinamic\\Model\\' . $modelClass;
-            $model = new $class();
+        $models = [
+            new PresupuestoProveedor(), new PedidoProveedor(), new AlbaranProveedor(),
+            new FacturaProveedor(), new PresupuestoCliente(), new PedidoCliente(),
+            new AlbaranCliente(), new FacturaCliente()
+        ];
+        foreach ($models as $model) {
             $where = [new DataBaseWhere('idproyecto', $idproyecto)];
             foreach ($model->all($where, [], 0, 0) as $item) {
                 $lines = $item->getLines();
@@ -93,14 +105,16 @@ class ProjectStockManager
 
                 $childLines = [];
                 foreach ($item->childrenDocuments() as $child) {
+                    /// when we group documents from different projects, the new document has idproyecto = null
+                    /// so we need to check this new document to calculate stock
                     if (null === $child->idproyecto) {
-                        $childLines = $child->getLines();
-                        static::deepCheckProjectStock($stockData, $lines, $childLines, $modelClass);
+                        static::deepCheckProjectStock($stockData, $lines, $child->getLines(), $model->modelClassName());
                     }
                 }
             }
         }
 
+        /// new we save this data
         foreach ($stockData as $referencia => $data) {
             $stock = new StockProyecto();
             $where = [
@@ -119,6 +133,7 @@ class ProjectStockManager
     }
 
     /**
+     * Updates the project stock from this line data.
      * 
      * @param BusinessDocumentLine $line
      * @param array                $linePrevData
@@ -206,6 +221,7 @@ class ProjectStockManager
     }
 
     /**
+     * Find all related lines to calculate the stock.
      * 
      * @param array                  $stockData
      * @param BusinessDocumentLine[] $lines
