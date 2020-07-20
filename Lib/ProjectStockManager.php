@@ -217,11 +217,11 @@ class ProjectStockManager
                 break;
 
             case 2:
-                $stockData[$line->referencia]['pterecibir'] += $line->cantidad;
+                $stockData[$line->referencia]['pterecibir'] += $line->cantidad - $line->servido;
                 break;
 
             case -2:
-                $stockData[$line->referencia]['reservada'] += $line->cantidad;
+                $stockData[$line->referencia]['reservada'] += $line->cantidad - $line->servido;
                 break;
         }
     }

@@ -21,7 +21,7 @@ namespace FacturaScripts\Plugins\Proyectos\Controller;
 use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
 use FacturaScripts\Core\Lib\ExtendedController\EditController;
 use FacturaScripts\Core\Lib\ExtendedController\EditView;
-use FacturaScripts\Plugins\Proyectos\Lib\ProjectStockManager;
+use FacturaScripts\Dinamic\Lib\ProjectStockManager;
 
 /**
  * Description of EditProyecto
