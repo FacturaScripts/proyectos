@@ -101,11 +101,11 @@ class ProjectStockManager
             foreach ($model->all($where, [], 0, 0) as $item) {
                 $lines = $item->getLines();
                 foreach ($lines as $line) {
-                    static::checkProjectStock($stockData, $line);
+                    static::setProjectStock($stockData, $line);
                 }
 
                 foreach ($item->childrenDocuments() as $child) {
-                    static::deepCheckProjectStock($stockData, $lines, $model->modelClassName(), $child);
+                    static::setDeepProjectStock($stockData, $lines, $model->modelClassName(), $child);
                 }
             }
         }
@@ -193,11 +193,58 @@ class ProjectStockManager
     }
 
     /**
+     * Find all related lines to calculate the stock.
+     * 
+     * @param array                  $stockData
+     * @param BusinessDocumentLine[] $lines
+     * @param string                 $model1
+     * @param TransformerDocument    $child
+     */
+    protected static function setDeepProjectStock(&$stockData, $lines, $model1, $child)
+    {
+        /// when we group documents from different projects, the new document has idproyecto = null
+        /// so we need to check this new document to calculate stock
+        if (null !== $child->idproyecto) {
+            return;
+        }
+
+        $childLines = $child->getLines();
+        $childProjectLines = [];
+
+        foreach ($lines as $line) {
+            if (empty($line->referencia)) {
+                continue;
+            }
+
+            $docTransformation = new DocTransformation();
+            $where = [
+                new DataBaseWhere('idlinea1', $line->primaryColumnValue()),
+                new DataBaseWhere('model1', $model1)
+            ];
+            foreach ($docTransformation->all($where, [], 0, 0) as $dtl) {
+                foreach ($childLines as $chLine) {
+                    if ($chLine->primaryColumnValue() == $dtl->idlinea2) {
+                        static::setProjectStock($stockData, $chLine);
+                        $childProjectLines[] = $chLine;
+                    }
+                }
+            }
+        }
+
+        /// we continue checking children
+        if (!empty($childProjectLines)) {
+            foreach ($child->childrenDocuments() as $grandChild) {
+                static::setDeepProjectStock($stockData, $childProjectLines, $child->modelClassName(), $grandChild);
+            }
+        }
+    }
+
+    /**
      * 
      * @param array                $stockData
      * @param BusinessDocumentLine $line
      */
-    protected static function checkProjectStock(&$stockData, $line)
+    protected static function setProjectStock(&$stockData, $line)
     {
         if (empty($line->referencia)) {
             return;
@@ -223,53 +270,6 @@ class ProjectStockManager
             case -2:
                 $stockData[$line->referencia]['reservada'] += $line->cantidad - $line->servido;
                 break;
-        }
-    }
-
-    /**
-     * Find all related lines to calculate the stock.
-     * 
-     * @param array                  $stockData
-     * @param BusinessDocumentLine[] $lines
-     * @param string                 $model1
-     * @param TransformerDocument    $child
-     */
-    protected static function deepCheckProjectStock(&$stockData, $lines, $model1, $child)
-    {
-        /// when we group documents from different projects, the new document has idproyecto = null
-        /// so we need to check this new document to calculate stock
-        if (null !== $child->idproyecto) {
-            return;
-        }
-
-        $childLines = $child->getLines();
-        $childProjectLines = [];
-
-        foreach ($lines as $line) {
-            if (empty($line->referencia)) {
-                continue;
-            }
-
-            $docTransformation = new DocTransformation();
-            $where = [
-                new DataBaseWhere('idlinea1', $line->primaryColumnValue()),
-                new DataBaseWhere('model1', $model1)
-            ];
-            foreach ($docTransformation->all($where, [], 0, 0) as $dtl) {
-                foreach ($childLines as $chLine) {
-                    if ($chLine->primaryColumnValue() == $dtl->idlinea2) {
-                        static::checkProjectStock($stockData, $chLine);
-                        $childProjectLines[] = $chLine;
-                    }
-                }
-            }
-        }
-
-        /// we continue checking children
-        if (!empty($childProjectLines)) {
-            foreach ($child->childrenDocuments() as $grandChild) {
-                static::deepCheckProjectStock($stockData, $childProjectLines, $child->modelClassName(), $grandChild);
-            }
         }
     }
 }
