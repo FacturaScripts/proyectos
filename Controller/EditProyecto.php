@@ -193,12 +193,17 @@ class EditProyecto extends EditController
                 }
                 break;
 
+            case 'EditUserProyecto':
+            case 'ListAlbaranCliente':
+            case 'ListAlbaranProveedor':
+            case 'ListFacturaCliente':
+            case 'ListFacturaProveedor':
+            case 'ListPedidoCliente':
+            case 'ListPedidoProveedor':
+            case 'ListPresupuestoCliente':
+            case 'ListPresupuestoProveedor':
             case 'ListTarea':
-                $where = [new DataBaseWhere('idproyecto', $idproyecto)];
-                $view->loadData('', $where);
-                break;
-
-            default:
+            case 'ListStockProyecto':
                 $where = [new DataBaseWhere('idproyecto', $idproyecto)];
                 $view->loadData('', $where);
                 break;
