@@ -101,12 +101,16 @@ class EditProyecto extends EditController
         /// disable buttons
         $this->setSettings($viewName, 'btnNew', false);
 
-        $this->addButton($viewName, [
-            'action' => 'rebuild-stock',
-            'confirm' => true,
-            'icon' => 'fas fa-magic',
-            'label' => 'rebuild-stock'
-        ]);
+        if ($this->user->admin) {
+            $this->addButton($viewName, [
+                'action' => 'rebuild-stock',
+                'confirm' => true,
+                'icon' => 'fas fa-magic',
+                'label' => 'rebuild-stock'
+            ]);
+        } else {
+            $this->setSettings($viewName, 'btnDelete', false);
+        }
     }
 
     /**

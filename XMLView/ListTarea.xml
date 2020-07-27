@@ -11,7 +11,7 @@
         </column>
         <column name="project" order="120">
             <widget type="select" fieldname="idproyecto" onclick="EditProyecto">
-                <values source="proyectos" fieldcode="idproyecto" fieldtitle="nombre"></values>
+                <values source="proyectos" fieldcode="idproyecto" fieldtitle="nombre" />
             </widget>
         </column>
         <column name="task" order="130">
@@ -29,7 +29,7 @@
         <column name="end-date" display="left" order="170">
             <widget type="date" fieldname="fechafin" />
         </column>
-        <column name="status" display="right" order="180">
+        <column name="phase" display="right" order="180">
             <widget type="select" fieldname="idfase">
                 <values source="tareas_fases" fieldcode="idfase" fieldtitle="nombre" />
             </widget>

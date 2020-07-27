@@ -41,7 +41,7 @@ class ProjectStockManager
 {
 
     /**
-     * Transfer stock from one proyect to another (or none)
+     * Transfer stock from one project to another (or none)
      * 
      * @param BusinessDocumentLine $line
      * @param array                $linePrevData
@@ -137,24 +137,24 @@ class ProjectStockManager
      * 
      * @param BusinessDocumentLine $line
      * @param array                $linePrevData
+     * @param TransformerDocument  $doc
      */
-    public static function updateLineStock($line, $linePrevData)
+    public static function updateLineStock($line, $linePrevData, $doc)
     {
-        $idproyecto = $line->getDocument()->idproyecto;
-        if (empty($idproyecto)) {
+        if (empty($doc->idproyecto)) {
             return;
         }
 
         /// find the project stock
         $stock = new StockProyecto();
         $where = [
-            new DataBaseWhere('idproyecto', $idproyecto),
+            new DataBaseWhere('idproyecto', $doc->idproyecto),
             new DataBaseWhere('referencia', $line->referencia)
         ];
         if (false === $stock->loadFromCode('', $where)) {
             /// stock not found, then create one
             $stock->idproducto = $line->idproducto;
-            $stock->idproyecto = $idproyecto;
+            $stock->idproyecto = $doc->idproyecto;
             $stock->referencia = $line->referencia;
         }
 

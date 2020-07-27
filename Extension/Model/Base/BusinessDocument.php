@@ -26,21 +26,6 @@ namespace FacturaScripts\Plugins\Proyectos\Extension\Model\Base;
 class BusinessDocument
 {
 
-    protected function deleteBefore()
-    {
-        return function() {
-            if (empty($this->idproyecto)) {
-                return true;
-            }
-
-            foreach ($this->getLines() as $line) {
-                $line->projectTransfer($this->idproyecto, null);
-            }
-
-            return true;
-        };
-    }
-
     protected function onChange()
     {
         return function($field) {

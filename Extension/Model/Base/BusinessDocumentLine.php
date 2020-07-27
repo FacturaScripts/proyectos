@@ -37,8 +37,8 @@ class BusinessDocumentLine
 
     protected function updateStock()
     {
-        return function() {
-            ProjectStockManager::updateLineStock($this, $this->previousData);
+        return function($doc) {
+            ProjectStockManager::updateLineStock($this, $this->previousData, $doc);
         };
     }
 }

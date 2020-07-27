@@ -6,7 +6,7 @@
         </column>
         <column name="project" order="110">
             <widget type="autocomplete" fieldname="idproyecto" readonly="dinamic" required="true" onclick="EditProyecto">
-                <values source="proyectos" fieldcode="idproyecto" fieldtitle="nombre"></values>
+                <values source="proyectos" fieldcode="idproyecto" fieldtitle="nombre" />
             </widget>
         </column>
         <column name="name" order="120">
@@ -18,8 +18,8 @@
         <column name="date" display="right" order="140">
             <widget type="date" fieldname="fecha" readonly="true" required="true" />
         </column>
-        <column name="status" display="right" order="150">
-            <widget type="select" fieldname="idfase" required="">
+        <column name="phase" titleurl="ListTarea" display="right" order="150">
+            <widget type="select" fieldname="idfase" required="true" >
                 <values source="tareas_fases" fieldcode="idfase" fieldtitle="nombre" />
             </widget>
         </column>
