@@ -14,7 +14,7 @@
                 <values source="proyectos" fieldcode="idproyecto" fieldtitle="nombre" />
             </widget>
         </column>
-        <column name="task" order="130">
+        <column name="title" order="130">
             <widget type="text" fieldname="nombre" />
         </column>
         <column name="description" order="140">

@@ -104,6 +104,7 @@ class EditProyecto extends EditController
         if ($this->user->admin) {
             $this->addButton($viewName, [
                 'action' => 'rebuild-stock',
+                'color' => 'warning',
                 'confirm' => true,
                 'icon' => 'fas fa-magic',
                 'label' => 'rebuild-stock'
@@ -130,6 +131,10 @@ class EditProyecto extends EditController
     protected function createViewsTasks(string $viewName = 'ListTarea')
     {
         $this->addListView($viewName, 'Tarea', 'tasks', 'fas fa-project-diagram');
+        $this->views[$viewName]->addOrderBy(['fecha'], 'date', 2);
+        $this->views[$viewName]->addOrderBy(['fechainicio'], 'start-date');
+        $this->views[$viewName]->addOrderBy(['fechafin'], 'end-date');
+        $this->views[$viewName]->addSearchFields(['descripcion', 'nombre']);
         $this->views[$viewName]->disableColumn('project');
     }
 

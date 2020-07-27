@@ -86,7 +86,7 @@ class ListTarea extends ListController
         $this->addOrderBy($viewName, ['fecha'], 'date', 2);
         $this->addOrderBy($viewName, ['fechainicio'], 'start-date');
         $this->addOrderBy($viewName, ['fechafin'], 'end-date');
-        $this->addOrderBy($viewName, ['nombre'], 'name');
+        $this->addOrderBy($viewName, ['nombre'], 'title');
         $this->addSearchFields($viewName, ['nombre', 'descripcion']);
 
         /// filters
