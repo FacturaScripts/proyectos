@@ -99,7 +99,9 @@ class EditProyecto extends EditController
         $this->views[$viewName]->addOrderBy(['pterecibir'], 'pending-reception');
 
         /// disable buttons
+        $this->setSettings($viewName, 'btnDelete', false);
         $this->setSettings($viewName, 'btnNew', false);
+        $this->setSettings($viewName, 'checkBoxes', false);
 
         if ($this->user->admin) {
             $this->addButton($viewName, [
@@ -109,8 +111,6 @@ class EditProyecto extends EditController
                 'icon' => 'fas fa-magic',
                 'label' => 'rebuild-stock'
             ]);
-        } else {
-            $this->setSettings($viewName, 'btnDelete', false);
         }
     }
 

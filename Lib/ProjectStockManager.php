@@ -89,6 +89,10 @@ class ProjectStockManager
      */
     public static function rebuild($idproyecto): bool
     {
+        /// remove previous stock
+        $projectStock = new StockProyecto();
+        $projectStock->deleteFromProject($idproyecto);
+        
         /// we initialice stock from every project document
         $stockData = [];
         $models = [

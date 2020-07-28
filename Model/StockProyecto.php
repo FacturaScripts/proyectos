@@ -94,6 +94,18 @@ class StockProyecto extends Base\ModelClass
 
     /**
      * 
+     * @param int $idproyecto
+     *
+     * @return bool
+     */
+    public function deleteFromProject($idproyecto)
+    {
+        $sql = 'DELETE FROM ' . static::tableName() . ' WHERE idproyecto = ' . self::$dataBase->var2str($idproyecto) . ';';
+        return self::$dataBase->exec($sql);
+    }
+
+    /**
+     * 
      * @return Variante
      */
     public function getVariant()
