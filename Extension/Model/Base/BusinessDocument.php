@@ -18,6 +18,8 @@
  */
 namespace FacturaScripts\Plugins\Proyectos\Extension\Model\Base;
 
+use FacturaScripts\Dinamic\Lib\ProjectStockManager;
+
 /**
  * Description of BusinessDocument
  *
@@ -26,18 +28,24 @@ namespace FacturaScripts\Plugins\Proyectos\Extension\Model\Base;
 class BusinessDocument
 {
 
-    protected function onChange()
+    public function delete()
     {
-        return function($field) {
-            if ($field != 'idproyecto') {
-                return true;
+        return function() {
+            if ($this->idproyecto) {
+                ProjectStockManager::rebuild($this->idproyecto);
             }
+        };
+    }
 
-            foreach ($this->getLines() as $line) {
-                $line->projectTransfer($this->previousData['idproyecto'], $this->idproyecto);
+    public function saveUpdate()
+    {
+        return function() {
+            if ($this->idproyecto) {
+                ProjectStockManager::rebuild($this->idproyecto);
             }
-
-            return true;
+            if ($this->previousData['idproyecto'] && $this->previousData['idproyecto'] != $this->idproyecto) {
+                ProjectStockManager::rebuild($this->previousData['idproyecto']);
+            }
         };
     }
 

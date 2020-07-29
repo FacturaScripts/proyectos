@@ -41,46 +41,6 @@ class ProjectStockManager
 {
 
     /**
-     * Transfer stock from one project to another (or none)
-     * 
-     * @param BusinessDocumentLine $line
-     * @param array                $linePrevData
-     * @param int                  $fromIdproyecto
-     * @param int                  $toIdproyecto
-     */
-    public static function lineTransfer($line, $linePrevData, $fromIdproyecto, $toIdproyecto)
-    {
-        /// find the project stock
-        $fromStock = new StockProyecto();
-        $where = [
-            new DataBaseWhere('idproyecto', $fromIdproyecto),
-            new DataBaseWhere('referencia', $line->referencia)
-        ];
-        if (!empty($fromIdproyecto) && $fromStock->loadFromCode('', $where)) {
-            static::applyProjectStockChanges($fromStock, $linePrevData['actualizastock'], $linePrevData['cantidad'] * -1, $linePrevData['servido'] * -1);
-            $fromStock->save();
-        }
-
-        /// find new project stock
-        $toStock = new StockProyecto();
-        $where2 = [
-            new DataBaseWhere('idproyecto', $toIdproyecto),
-            new DataBaseWhere('referencia', $line->referencia)
-        ];
-        if (empty($toIdproyecto)) {
-            return;
-        } elseif (false === $toStock->loadFromCode('', $where2)) {
-            /// stock not found, then create one
-            $toStock->idproducto = $line->idproducto;
-            $toStock->idproyecto = $toIdproyecto;
-            $toStock->referencia = $line->referencia;
-        }
-
-        static::applyProjectStockChanges($toStock, $line->actualizastock, $line->cantidad, $line->servido);
-        $toStock->save();
-    }
-
-    /**
      * Recalculate the project stock.
      * 
      * @param int $idproyecto
@@ -92,7 +52,7 @@ class ProjectStockManager
         /// remove previous stock
         $projectStock = new StockProyecto();
         $projectStock->deleteFromProject($idproyecto);
-        
+
         /// we initialice stock from every project document
         $stockData = [];
         $models = [
@@ -134,66 +94,6 @@ class ProjectStockManager
         }
 
         return true;
-    }
-
-    /**
-     * Updates the project stock from this line data.
-     * 
-     * @param BusinessDocumentLine $line
-     * @param array                $linePrevData
-     * @param TransformerDocument  $doc
-     */
-    public static function updateLineStock($line, $linePrevData, $doc)
-    {
-        if (empty($doc->idproyecto)) {
-            return;
-        }
-
-        /// find the project stock
-        $stock = new StockProyecto();
-        $where = [
-            new DataBaseWhere('idproyecto', $doc->idproyecto),
-            new DataBaseWhere('referencia', $line->referencia)
-        ];
-        if (false === $stock->loadFromCode('', $where)) {
-            /// stock not found, then create one
-            $stock->idproducto = $line->idproducto;
-            $stock->idproyecto = $doc->idproyecto;
-            $stock->referencia = $line->referencia;
-        }
-
-        static::applyProjectStockChanges($stock, $linePrevData['actualizastock'], $linePrevData['cantidad'] * -1, $linePrevData['servido'] * -1);
-        static::applyProjectStockChanges($stock, $line->actualizastock, $line->cantidad, $line->servido);
-        return $stock->save();
-    }
-
-    /**
-     * 
-     * @param StockProyecto $stock
-     * @param int           $mode
-     * @param float         $quantity
-     * @param float         $served
-     */
-    protected static function applyProjectStockChanges($stock, int $mode, float $quantity, float $served)
-    {
-        if ($quantity < 0 && $served < $quantity) {
-            $served = $quantity;
-        }
-
-        switch ($mode) {
-            case 1:
-            case -1:
-                $stock->cantidad += $mode * $quantity;
-                break;
-
-            case 2:
-                $stock->pterecibir += $quantity - $served;
-                break;
-
-            case -2:
-                $stock->reservada += $quantity - $served;
-                break;
-        }
     }
 
     /**
