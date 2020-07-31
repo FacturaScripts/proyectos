@@ -41,7 +41,7 @@
     <rows>
         <row type="status">
             <option color="danger" fieldname="idfase" title="canceled">4</option>
-            <option color="success" fieldname="idfase" title="completed">3</option>
+            <option color="success" fieldname="idfase" title="complete">3</option>
             <option color="warning" fieldname="idfase" title="processing">2</option>
         </row>
     </rows>

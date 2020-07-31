@@ -11,5 +11,6 @@
     "pending": "Pendiente",
     "complete": "Completado",
     "rejection": "Rechazado",
-    "processing": "Procesando"
+    "processing": "Procesando",
+    "canceled": "Cancelado"
 }
