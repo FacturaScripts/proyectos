@@ -40,9 +40,9 @@
     </columns>
     <rows>
         <row type="status">
-            <option color="danger" fieldname="idestado" title="canceled">4</option>
-            <option color="warning" fieldname="idestado" title="processing">2</option>
-            <option color="success" fieldname="idestado" title="completed">3</option>
+            <option color="danger" fieldname="idestado" title="canceled">3</option>
+            <option color="warning" fieldname="idestado" title="processing">4</option>
+            <option color="success" fieldname="idestado" title="completed">2</option>
             <option color="secondary" fieldname="privado" title="private">1</option>
         </row>
     </rows>
