@@ -19,8 +19,8 @@
 namespace FacturaScripts\Plugins\Proyectos;
 
 use FacturaScripts\Core\Base\CronClass;
-use FacturaScripts\Plugins\Proyectos\Lib\ProjectStockManager;
-use FacturaScripts\Plugins\Proyectos\Model\Proyecto;
+use FacturaScripts\Dinamic\Lib\ProjectStockManager;
+use FacturaScripts\Dinamic\Model\Proyecto;
 
 /**
  * Description of Cron
