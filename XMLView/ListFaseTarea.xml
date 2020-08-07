@@ -14,7 +14,7 @@
         </column>
         <column name="tipo" title="type" order="130">
             <widget type="select" fieldname="tipo" translate="true">
-                <values title="complete">0</values>
+                <values title="completed">0</values>
                 <values title="canceled">1</values>
                 <values title="processing">2</values>
             </widget>
