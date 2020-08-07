@@ -16,43 +16,29 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-namespace FacturaScripts\Plugins\Proyectos\Extension\Model\Base;
+namespace FacturaScripts\Plugins\Proyectos;
 
+use FacturaScripts\Core\Base\CronClass;
 use FacturaScripts\Dinamic\Lib\ProjectStockManager;
+use FacturaScripts\Dinamic\Model\Proyecto;
 
 /**
- * Description of BusinessDocument
+ * Description of Cron
  *
  * @author Carlos Garcia Gomez <carlos@facturascripts.com>
  */
-class BusinessDocument
+class Cron extends CronClass
 {
 
-    public function delete()
+    public function run()
     {
-        return function() {
-            if ($this->idproyecto) {
-                ProjectStockManager::rebuild($this->idproyecto);
+        if ($this->isTimeForJob('project-stock-update', '6 hours')) {
+            $projectModel = new Proyecto();
+            foreach ($projectModel->all([], [], 0, 0) as $project) {
+                ProjectStockManager::rebuild($project->idproyecto);
             }
-        };
-    }
 
-    public function saveUpdate()
-    {
-        return function() {
-            if ($this->idproyecto) {
-                ProjectStockManager::rebuild($this->idproyecto);
-            }
-            if ($this->previousData['idproyecto'] && $this->previousData['idproyecto'] != $this->idproyecto) {
-                ProjectStockManager::rebuild($this->previousData['idproyecto']);
-            }
-        };
-    }
-
-    protected function setPreviousDataMore()
-    {
-        return function() {
-            return ['idproyecto'];
-        };
+            $this->jobDone('project-stock-update');
+        }
     }
 }

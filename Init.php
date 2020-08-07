@@ -41,7 +41,6 @@ class Init extends InitClass
         $this->loadExtension(new Extension\Controller\DocumentStitcher());
         $this->loadExtension(new Extension\Controller\EditCliente());
         $this->loadExtension(new Extension\Model\Base\BusinessDocument());
-        $this->loadExtension(new Extension\Model\Base\BusinessDocumentLine());
     }
 
     public function update()

@@ -31,12 +31,16 @@ class EditCliente
     public function createViews()
     {
         return function() {
-            $this->addListView('ListProyecto', 'Proyecto', 'projects', 'fas fa-folder-open');
-            $this->views['ListProyecto']->addOrderBy(['fecha'], 'date', 2);
-            $this->views['ListProyecto']->addOrderBy(['fechainicio'], 'start-date');
-            $this->views['ListProyecto']->addOrderBy(['fechafin'], 'end-date');
-            $this->views['ListProyecto']->addOrderBy(['nombre'], 'name');
-            $this->views['ListProyecto']->disableColumn('customer');
+            $viewName = 'ListProyecto';
+            $this->addListView($viewName, 'Proyecto', 'projects', 'fas fa-folder-open');
+            $this->views[$viewName]->addOrderBy(['fecha'], 'date', 2);
+            $this->views[$viewName]->addOrderBy(['fechainicio'], 'start-date');
+            $this->views[$viewName]->addOrderBy(['fechafin'], 'end-date');
+            $this->views[$viewName]->addOrderBy(['nombre'], 'name');
+            $this->views[$viewName]->searchFields = ['nombre', 'descripcion'];
+
+            /// disable customer column
+            $this->views[$viewName]->disableColumn('customer');
         };
     }
 

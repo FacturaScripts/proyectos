@@ -18,6 +18,7 @@
  */
 namespace FacturaScripts\Plugins\Proyectos\Model;
 
+use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
 use FacturaScripts\Core\Model\Base;
 use FacturaScripts\Dinamic\Model\Producto;
 use FacturaScripts\Dinamic\Model\Variante;
@@ -93,13 +94,47 @@ class StockProyecto extends Base\ModelClass
 
     /**
      * 
+     * @param int $idproyecto
+     *
+     * @return bool
+     */
+    public function deleteFromProject($idproyecto)
+    {
+        $sql = 'DELETE FROM ' . static::tableName() . ' WHERE idproyecto = ' . self::$dataBase->var2str($idproyecto) . ';';
+        return self::$dataBase->exec($sql);
+    }
+
+    /**
+     * 
+     * @return Variante
+     */
+    public function getVariant()
+    {
+        $variant = new Variante();
+        $where = [new DataBaseWhere('referencia', $this->referencia)];
+        $variant->loadFromCode('', $where);
+        return $variant;
+    }
+
+    /**
+     * 
+     * @return Producto
+     */
+    public function getProduct()
+    {
+        $product = new Producto();
+        $product->loadFromCode($this->idproducto);
+        return $product;
+    }
+
+    /**
+     * 
      * @return string
      */
     public function install()
     {
         /// needed dependecies
         new Proyecto();
-        new Producto();
         new Variante();
 
         return parent::install();
@@ -145,5 +180,17 @@ class StockProyecto extends Base\ModelClass
 
         $this->disponible = $this->cantidad - $this->reservada;
         return parent::test();
+    }
+
+    /**
+     * 
+     * @param string $type
+     * @param string $list
+     *
+     * @return string
+     */
+    public function url(string $type = 'auto', string $list = 'List'): string
+    {
+        return empty($this->primaryColumnValue()) ? parent::url($type, $list) : $this->getProduct()->url();
     }
 }

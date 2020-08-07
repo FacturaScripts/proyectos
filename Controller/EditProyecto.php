@@ -21,6 +21,7 @@ namespace FacturaScripts\Plugins\Proyectos\Controller;
 use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
 use FacturaScripts\Core\Lib\ExtendedController\EditController;
 use FacturaScripts\Core\Lib\ExtendedController\EditView;
+use FacturaScripts\Dinamic\Lib\ProjectStockManager;
 
 /**
  * Description of EditProyecto
@@ -101,6 +102,16 @@ class EditProyecto extends EditController
         $this->setSettings($viewName, 'btnDelete', false);
         $this->setSettings($viewName, 'btnNew', false);
         $this->setSettings($viewName, 'checkBoxes', false);
+
+        if ($this->user->admin) {
+            $this->addButton($viewName, [
+                'action' => 'rebuild-stock',
+                'color' => 'warning',
+                'confirm' => true,
+                'icon' => 'fas fa-magic',
+                'label' => 'rebuild-stock'
+            ]);
+        }
     }
 
     /**
@@ -120,7 +131,49 @@ class EditProyecto extends EditController
     protected function createViewsTasks(string $viewName = 'ListTarea')
     {
         $this->addListView($viewName, 'Tarea', 'tasks', 'fas fa-project-diagram');
+        $this->views[$viewName]->addOrderBy(['fecha'], 'date', 2);
+        $this->views[$viewName]->addOrderBy(['fechainicio'], 'start-date');
+        $this->views[$viewName]->addOrderBy(['fechafin'], 'end-date');
+        $this->views[$viewName]->addSearchFields(['descripcion', 'nombre']);
         $this->views[$viewName]->disableColumn('project');
+    }
+
+    /**
+     * 
+     * @param EditView $view
+     */
+    protected function disableProjectColumns(&$view)
+    {
+        foreach ($view->getColumns() as $group) {
+            foreach ($group->columns as $col) {
+                if ($col->name !== 'status') {
+                    $view->disableColumn($col->name, false, 'true');
+                }
+            }
+        }
+    }
+
+    /**
+     * 
+     * @param string $action
+     *
+     * @return bool
+     */
+    protected function execPreviousAction($action)
+    {
+        switch ($action) {
+            case 'rebuild-stock':
+                $idproyecto = (int) $this->request->query->get('code');
+                if (ProjectStockManager::rebuild($idproyecto)) {
+                    $this->toolBox()->i18nLog()->notice('project-stock-rebuild-ok');
+                    return true;
+                }
+                $this->toolBox()->i18nLog()->warning('project-stock-rebuild-error');
+                return true;
+
+            default:
+                return parent::execPreviousAction($action);
+        }
     }
 
     /**
@@ -141,17 +194,25 @@ class EditProyecto extends EditController
                     $view->model->nick = $this->user->nick;
                 } elseif (false === $view->model->userCanSee($this->user)) {
                     $this->setTemplate('Error/AccessDenied');
+                } elseif (false === $view->model->editable) {
+                    $this->disableProjectColumns($view);
+                    $this->setSettings('EditUserProyecto', 'active', false);
                 } elseif (false === $view->model->privado) {
                     $this->setSettings('EditUserProyecto', 'active', false);
                 }
                 break;
 
+            case 'EditUserProyecto':
+            case 'ListAlbaranCliente':
+            case 'ListAlbaranProveedor':
+            case 'ListFacturaCliente':
+            case 'ListFacturaProveedor':
+            case 'ListPedidoCliente':
+            case 'ListPedidoProveedor':
+            case 'ListPresupuestoCliente':
+            case 'ListPresupuestoProveedor':
             case 'ListTarea':
-                $where = [new DataBaseWhere('idproyecto', $idproyecto)];
-                $view->loadData('', $where);
-                break;
-
-            default:
+            case 'ListStockProyecto':
                 $where = [new DataBaseWhere('idproyecto', $idproyecto)];
                 $view->loadData('', $where);
                 break;
