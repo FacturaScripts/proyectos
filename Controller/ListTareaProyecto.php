@@ -27,7 +27,7 @@ use FacturaScripts\Core\Lib\ExtendedController\ListView;
  *
  * @author Daniel Fernández Giménez <hola@danielfg.es>
  */
-class ListTarea extends ListController
+class ListTareaProyecto extends ListController
 {
 
     /**
@@ -60,7 +60,7 @@ class ListTarea extends ListController
      */
     protected function createViewsPrivateTasks(string $viewName = 'ListTarea-private')
     {
-        $this->addView($viewName, 'ModelView\Tarea', 'private', 'fas fa-unlock-alt');
+        $this->addView($viewName, 'ModelView\TareaProyecto', 'private', 'fas fa-unlock-alt');
         $this->addOrderBy($viewName, ['fecha'], 'date', 2);
         $this->addOrderBy($viewName, ['fechainicio'], 'start-date');
         $this->addOrderBy($viewName, ['fechafin'], 'end-date');
@@ -82,7 +82,7 @@ class ListTarea extends ListController
      */
     protected function createViewsTasks(string $viewName = 'ListTarea')
     {
-        $this->addView($viewName, 'ModelView\Tarea', 'tasks', 'fas fa-project-diagram');
+        $this->addView($viewName, 'ModelView\TareaProyecto', 'tasks', 'fas fa-project-diagram');
         $this->addOrderBy($viewName, ['fecha'], 'date', 2);
         $this->addOrderBy($viewName, ['fechainicio'], 'start-date');
         $this->addOrderBy($viewName, ['fechafin'], 'end-date');

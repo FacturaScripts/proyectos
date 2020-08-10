@@ -18,16 +18,15 @@
  */
 namespace FacturaScripts\Plugins\Proyectos\Controller;
 
-use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
 use FacturaScripts\Core\Lib\ExtendedController\EditController;
-use FacturaScripts\Plugins\Proyectos\Model\Proyecto;
+use FacturaScripts\Plugins\Proyectos\Model\NotaProyecto;
 
 /**
- * Description of EditTarea
+ * Description of EditNotaProyecto
  *
  * @author Daniel Fernández Giménez <hola@danielfg.es>
  */
-class EditTarea extends EditController
+class EditNotaProyecto extends EditController
 {
 
     /**
@@ -36,7 +35,7 @@ class EditTarea extends EditController
      */
     public function getModelClassName()
     {
-        return 'Tarea';
+        return 'NotaProyecto';
     }
 
     /**
@@ -48,37 +47,27 @@ class EditTarea extends EditController
     {
         $data = parent::getPageData();
         $data['menu'] = 'projects';
-        $data['title'] = 'task';
-        $data['icon'] = 'fas fa-project-diagram';
+        $data['title'] = 'note';
+        $data['icon'] = 'fas fa-sticky-note';
         $data['showonmenu'] = false;
         return $data;
     }
-
-    protected function createViews($viewName = 'EditTarea')
-    {
-        parent::createViews();
-        $this->addEditView($viewName, 'Tarea', 'task', 'fas fa-project-diagram');
-    }
-
+    
     /**
-     * 
+     * Load view data.
+     *
      * @param string   $viewName
-     * @param EditView $view
+     * @param BaseView $view
      */
     protected function loadData($viewName, $view)
     {
         $mainViewName = $this->getMainViewName();
-
         switch ($viewName) {
+
             case $mainViewName:
                 parent::loadData($viewName, $view);
-
-                $project = new Proyecto();
-                $where = [new DataBaseWhere('idproyecto', $view->model->idproyecto)];
-                $project->loadFromCode('', $where);
-
-                if (false === $project->userCanSee($this->user)) {
-                    $this->setTemplate('Error/AccessDenied');
+                if (false === $view->model->exists()) {
+                    $view->model->nick = $this->user->nick;
                 }
                 break;
         }
