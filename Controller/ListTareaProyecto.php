@@ -58,7 +58,7 @@ class ListTareaProyecto extends ListController
      * 
      * @param string $viewName
      */
-    protected function createViewsPrivateTasks(string $viewName = 'ListTarea-private')
+    protected function createViewsPrivateTasks(string $viewName = 'ListTareaProyecto-private')
     {
         $this->addView($viewName, 'ModelView\TareaProyecto', 'private', 'fas fa-unlock-alt');
         $this->addOrderBy($viewName, ['fecha'], 'date', 2);
@@ -80,7 +80,7 @@ class ListTareaProyecto extends ListController
      * 
      * @param string $viewName
      */
-    protected function createViewsTasks(string $viewName = 'ListTarea')
+    protected function createViewsTasks(string $viewName = 'ListTareaProyecto')
     {
         $this->addView($viewName, 'ModelView\TareaProyecto', 'tasks', 'fas fa-project-diagram');
         $this->addOrderBy($viewName, ['fecha'], 'date', 2);
@@ -115,7 +115,7 @@ class ListTareaProyecto extends ListController
     protected function loadData($viewName, $view)
     {
         switch ($viewName) {
-            case 'ListTarea':
+            case 'ListTareaProyecto':
                 if ($this->user->admin) {
                     $view->loadData();
                     break;
@@ -127,7 +127,7 @@ class ListTareaProyecto extends ListController
                 $view->loadData('', $where);
                 break;
 
-            case 'ListTarea-private':
+            case 'ListTareaProyecto-private':
                 $sql = 'SELECT idproyecto FROM proyectos WHERE nick = ' . $this->dataBase->var2str($this->user->nick)
                     . ' UNION SELECT idproyecto FROM proyectos_users WHERE nick = ' . $this->dataBase->var2str($this->user->nick);
                 $where = [

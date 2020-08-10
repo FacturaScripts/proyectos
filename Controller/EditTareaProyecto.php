@@ -54,7 +54,7 @@ class EditTareaProyecto extends EditController
         return $data;
     }
 
-    protected function createViews($viewName = 'EditTarea')
+    protected function createViews($viewName = 'EditTareaProyecto')
     {
         parent::createViews();
         $this->addEditView($viewName, 'TareaProyecto', 'task', 'fas fa-project-diagram');
