@@ -13,8 +13,8 @@
             <column name="title" numcolumns="6" order="120">
                 <widget type="text" fieldname="nombre" maxlength="100" required="true" />
             </column>
-            <column name="phase" titleurl="ListTarea" order="130">
-                <widget type="select" fieldname="idfase" required="true" >
+            <column name="phase" titleurl="ListTareaProyecto" order="130">
+                <widget type="select" fieldname="idfase" onclick="EditFaseTarea" required="true" >
                     <values source="tareas_fases" fieldcode="idfase" fieldtitle="nombre" />
                 </widget>
             </column>
