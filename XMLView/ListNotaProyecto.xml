@@ -12,14 +12,13 @@
                 <widget type="datetime" fieldname="fecha" readonly="true" />
             </column>
             <column name="task" order="130">
-                <widget type="select" fieldname="idtarea">
+                <widget type="autocomplete" fieldname="idtarea" onclick="EditTareaProyecto">
                     <values source="tareas" fieldcode="idtarea" fieldtitle="nombre" />
                 </widget>
             </column>
             <column name="user" order="140">
                 <widget type="text" fieldname="nick" />
             </column>
-            
         </group>
     </columns>
 </view>

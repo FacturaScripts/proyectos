@@ -66,6 +66,8 @@ class EditNotaProyecto extends EditController
                 parent::loadData($viewName, $view);
                 if (false === $view->model->exists()) {
                     $view->model->nick = $this->user->nick;
+                } elseif (false === $view->model->getProject()->userCanSee($this->user)) {
+                    $this->setTemplate('Error/AccessDenied');
                 }
                 break;
         }

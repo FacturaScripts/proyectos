@@ -18,7 +18,9 @@
  */
 namespace FacturaScripts\Plugins\Proyectos\Controller;
 
+use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
 use FacturaScripts\Core\Lib\ExtendedController\EditController;
+use FacturaScripts\Core\Lib\ExtendedController\EditView;
 
 /**
  * Description of EditTarea
@@ -53,6 +55,26 @@ class EditTareaProyecto extends EditController
         return $data;
     }
 
+    protected function createViews()
+    {
+        parent::createViews();
+        $this->setTabsPosition('bottom');
+        $this->createViewsNotes();
+    }
+
+    /**
+     * 
+     * @param string $viewName
+     */
+    protected function createViewsNotes(string $viewName = 'EditNotaProyecto')
+    {
+        $this->addEditListView($viewName, 'NotaProyecto', 'notes', 'fas fa-sticky-note');
+
+        /// hide project and task columns
+        $this->views[$viewName]->disableColumn('project');
+        $this->views[$viewName]->disableColumn('task');
+    }
+
     /**
      * 
      * @param string   $viewName
@@ -60,11 +82,21 @@ class EditTareaProyecto extends EditController
      */
     protected function loadData($viewName, $view)
     {
+        $mainViewName = $this->getMainViewName();
         switch ($viewName) {
-            case $this->getMainViewName():
+            case $mainViewName:
                 parent::loadData($viewName, $view);
                 if (false === $view->model->getProject()->userCanSee($this->user)) {
                     $this->setTemplate('Error/AccessDenied');
+                }
+                break;
+
+            case 'EditNotaProyecto':
+                $where = [new DataBaseWhere('idtarea', $this->getViewModelValue($mainViewName, 'idtarea'))];
+                $view->loadData('', $where, ['fecha' => 'DESC']);
+                if (false === $view->model->exists()) {
+                    $view->model->idproyecto = $this->getViewModelValue($mainViewName, 'idproyecto');
+                    $view->model->nick = $this->user->nick;
                 }
                 break;
         }
