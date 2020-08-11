@@ -24,7 +24,6 @@
     <column>
         <name>idtarea</name>
         <type>integer</type>
-        <null>YES</null>
     </column>
     <column>
         <name>idnota</name>

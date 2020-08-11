@@ -18,8 +18,8 @@
  */
 namespace FacturaScripts\Plugins\Proyectos\Controller;
 
+use FacturaScripts\Core\Lib\ExtendedController\BaseView;
 use FacturaScripts\Core\Lib\ExtendedController\EditController;
-use FacturaScripts\Plugins\Proyectos\Model\NotaProyecto;
 
 /**
  * Description of EditNotaProyecto
@@ -52,7 +52,7 @@ class EditNotaProyecto extends EditController
         $data['showonmenu'] = false;
         return $data;
     }
-    
+
     /**
      * Load view data.
      *
@@ -61,10 +61,8 @@ class EditNotaProyecto extends EditController
      */
     protected function loadData($viewName, $view)
     {
-        $mainViewName = $this->getMainViewName();
         switch ($viewName) {
-
-            case $mainViewName:
+            case $this->getMainViewName():
                 parent::loadData($viewName, $view);
                 if (false === $view->model->exists()) {
                     $view->model->nick = $this->user->nick;

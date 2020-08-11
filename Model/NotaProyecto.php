@@ -24,6 +24,7 @@ use FacturaScripts\Core\Model\Base;
  * Description of FaseTarea
  *
  * @author Daniel Fernández Giménez <hola@danielfg.es>
+ * @author Carlos Garcia Gomez      <carlos@facturascripts.com>
  */
 class NotaProyecto extends Base\ModelClass
 {
@@ -32,10 +33,22 @@ class NotaProyecto extends Base\ModelClass
 
     /**
      *
+     * @var string
+     */
+    public $descripcion;
+
+    /**
+     *
+     * @var string
+     */
+    public $fecha;
+
+    /**
+     *
      * @var integer
      */
     public $idnota;
-    
+
     /**
      *
      * @var integer
@@ -48,18 +61,6 @@ class NotaProyecto extends Base\ModelClass
      */
     public $idtarea;
 
-    /**
-     *
-     * @var string
-     */
-    public $descripcion;
-
-    /**
-     *
-     * @var datetime
-     */
-    public $fecha;
-    
     /**
      * User id
      * @var string
@@ -74,6 +75,29 @@ class NotaProyecto extends Base\ModelClass
 
     /**
      * 
+     * @return Proyecto
+     */
+    public function getProject()
+    {
+        $project = new Proyecto();
+        $project->loadFromCode($this->idproyecto);
+        return $project;
+    }
+
+    /**
+     * 
+     * @return string
+     */
+    public function install()
+    {
+        /// needed dependencies
+        new TareaProyecto();
+
+        return parent::install();
+    }
+
+    /**
+     * 
      * @return string
      */
     public static function primaryColumn(): string
@@ -81,10 +105,34 @@ class NotaProyecto extends Base\ModelClass
         return 'idnota';
     }
 
-    public static function tableName(): string {
+    /**
+     * 
+     * @return string
+     */
+    public function primaryDescriptionColumn(): string
+    {
+        return 'idnota';
+    }
+
+    /**
+     * 
+     * @return string
+     */
+    public static function tableName(): string
+    {
         return 'proyectos_notas';
     }
-    
+
+    /**
+     * 
+     * @return bool
+     */
+    public function test()
+    {
+        $this->descripcion = $this->toolBox()->utils()->noHtml($this->descripcion);
+        return parent::test();
+    }
+
     /**
      * 
      * @param string $type
@@ -94,16 +142,6 @@ class NotaProyecto extends Base\ModelClass
      */
     public function url(string $type = 'auto', string $list = 'List'): string
     {
-        $model = $this->modelClassName();
-        switch ($type) {
-            case 'list':
-                return ($this->idproyecto)?'EditProyecto?code='.$this->idproyecto.'&activetab=ListNotaProyecto':'ListProyecto';
-
-            case 'new':
-                return 'Edit' . $model;
-        }
-
-        /// default
-        return 'Edit' . $model . '?code=' . $this->idnota;
+        return $type === 'list' && $this->idproyecto ? $this->getProject()->url() . '&activetab=ListNotaProyecto' : parent::url($type, $list);
     }
 }

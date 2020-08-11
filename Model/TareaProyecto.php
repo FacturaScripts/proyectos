@@ -50,19 +50,19 @@ class TareaProyecto extends Base\ModelOnChangeClass
 
     /**
      *
-     * @var date
+     * @var string
      */
     public $fecha;
 
     /**
      *
-     * @var date
+     * @var string
      */
     public $fechafin;
 
     /**
      *
-     * @var date
+     * @var string
      */
     public $fechainicio;
 

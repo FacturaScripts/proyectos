@@ -59,9 +59,8 @@ class EditProyecto extends EditController
     {
         parent::createViews();
         $this->createViewsTasks();
-        $this->createViewsUsers();
-        $this->createViewsStock();
         $this->createViewsNotes();
+        $this->createViewsStock();
         $this->createViewsBusinessDocument('PresupuestoProveedor', 'supplier-estimations');
         $this->createViewsBusinessDocument('PedidoProveedor', 'supplier-orders');
         $this->createViewsBusinessDocument('AlbaranProveedor', 'supplier-delivery-notes');
@@ -70,6 +69,7 @@ class EditProyecto extends EditController
         $this->createViewsBusinessDocument('PedidoCliente', 'customer-orders');
         $this->createViewsBusinessDocument('AlbaranCliente', 'customer-delivery-notes');
         $this->createViewsBusinessDocument('FacturaCliente', 'customer-invoices');
+        $this->createViewsUsers();
     }
 
     /**
@@ -83,6 +83,17 @@ class EditProyecto extends EditController
         $this->addListView($viewName, $modelName, $title, 'fas fa-copy');
         $this->views[$viewName]->addOrderBy(['fecha', 'hora'], 'date', 2);
         $this->views[$viewName]->addOrderBy(['total'], 'total');
+    }
+
+    /**
+     * 
+     * @param string $viewName
+     */
+    protected function createViewsNotes(string $viewName = 'ListNotaProyecto')
+    {
+        $this->addListView($viewName, 'NotaProyecto', 'notes', 'fas fa-sticky-note');
+        $this->views[$viewName]->addOrderBy(['fecha'], 'date', 2);
+        $this->views[$viewName]->addSearchFields(['descripcion']);
     }
 
     /**
@@ -137,16 +148,6 @@ class EditProyecto extends EditController
         $this->views[$viewName]->addOrderBy(['fechafin'], 'end-date');
         $this->views[$viewName]->addSearchFields(['descripcion', 'nombre']);
         $this->views[$viewName]->disableColumn('project');
-    }
-    
-    /**
-     * 
-     * @param string $viewName
-     */
-    protected function createViewsNotes(string $viewName = 'ListNotaProyecto')
-    {
-        $this->addListView($viewName, 'NotaProyecto', 'notes', 'fas fa-sticky-note');
-        $this->views[$viewName]->addOrderBy(['fecha'], 'date', 2);
     }
 
     /**
@@ -218,13 +219,13 @@ class EditProyecto extends EditController
             case 'ListAlbaranProveedor':
             case 'ListFacturaCliente':
             case 'ListFacturaProveedor':
+            case 'ListNotaProyecto':
             case 'ListPedidoCliente':
             case 'ListPedidoProveedor':
             case 'ListPresupuestoCliente':
             case 'ListPresupuestoProveedor':
-            case 'ListTareaProyecto':
-            case 'ListNotaProyecto':
             case 'ListStockProyecto':
+            case 'ListTareaProyecto':
                 $where = [new DataBaseWhere('idproyecto', $idproyecto)];
                 $view->loadData('', $where);
                 break;

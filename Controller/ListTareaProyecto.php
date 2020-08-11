@@ -26,6 +26,7 @@ use FacturaScripts\Core\Lib\ExtendedController\ListView;
  * Description of ListTarea
  *
  * @author Daniel Fernández Giménez <hola@danielfg.es>
+ * @author Carlos Garcia Gomez      <carlos@facturascripts.com>
  */
 class ListTareaProyecto extends ListController
 {
@@ -48,7 +49,6 @@ class ListTareaProyecto extends ListController
     {
         $this->createViewsTasks();
         $this->createViewsPrivateTasks();
-
         if ($this->user->admin) {
             $this->createViewsTaskStatus();
         }

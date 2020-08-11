@@ -18,14 +18,13 @@
  */
 namespace FacturaScripts\Plugins\Proyectos\Controller;
 
-use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
 use FacturaScripts\Core\Lib\ExtendedController\EditController;
-use FacturaScripts\Plugins\Proyectos\Model\Proyecto;
 
 /**
  * Description of EditTarea
  *
  * @author Daniel Fernández Giménez <hola@danielfg.es>
+ * @author Carlos Garcia Gomez      <carlos@facturascripts.com>
  */
 class EditTareaProyecto extends EditController
 {
@@ -54,12 +53,6 @@ class EditTareaProyecto extends EditController
         return $data;
     }
 
-    protected function createViews($viewName = 'EditTareaProyecto')
-    {
-        parent::createViews();
-        $this->addEditView($viewName, 'TareaProyecto', 'task', 'fas fa-project-diagram');
-    }
-
     /**
      * 
      * @param string   $viewName
@@ -67,17 +60,10 @@ class EditTareaProyecto extends EditController
      */
     protected function loadData($viewName, $view)
     {
-        $mainViewName = $this->getMainViewName();
-
         switch ($viewName) {
-            case $mainViewName:
+            case $this->getMainViewName():
                 parent::loadData($viewName, $view);
-
-                $project = new Proyecto();
-                $where = [new DataBaseWhere('idproyecto', $view->model->idproyecto)];
-                $project->loadFromCode('', $where);
-
-                if (false === $project->userCanSee($this->user)) {
+                if (false === $view->model->getProject()->userCanSee($this->user)) {
                     $this->setTemplate('Error/AccessDenied');
                 }
                 break;

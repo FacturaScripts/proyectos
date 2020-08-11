@@ -28,12 +28,15 @@ use FacturaScripts\Plugins\Proyectos\Model\TareaProyecto as parentTareaProyecto;
  */
 class TareaProyecto extends ModelView
 {
-    public function __construct($data = array()) {
+
+    public function __construct($data = array())
+    {
         parent::__construct($data);
         $this->setMasterModel(new parentTareaProyecto());
     }
-   
-    protected function getFields(): array {
+
+    protected function getFields(): array
+    {
         return [
             'cantidad' => 'tareas.cantidad',
             'idproyecto' => 'tareas.idproyecto',
@@ -51,14 +54,16 @@ class TareaProyecto extends ModelView
         ];
     }
 
-    protected function getSQLFrom(): string {
+    protected function getSQLFrom(): string
+    {
         return 'tareas'
             . ' INNER JOIN tareas_fases ON tareas_fases.idfase = tareas.idfase'
             . ' INNER JOIN proyectos ON proyectos.idproyecto = tareas.idproyecto'
             . ' INNER JOIN proyectos_estados ON proyectos_estados.idestado = proyectos.idestado';
     }
 
-    protected function getTables(): array {
+    protected function getTables(): array
+    {
         return [
             'proyectos',
             'proyectos_estados',
