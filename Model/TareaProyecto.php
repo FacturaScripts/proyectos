@@ -22,12 +22,12 @@ use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
 use FacturaScripts\Core\Model\Base;
 
 /**
- * Description of Tarea
+ * Description of TareaProyecto
  *
  * @author Daniel Fernández Giménez <hola@danielfg.es>
  * @author Carlos Garcia Gomez      <carlos@facturascripts.com>
  */
-class Tarea extends Base\ModelOnChangeClass
+class TareaProyecto extends Base\ModelOnChangeClass
 {
 
     use Base\ModelTrait;

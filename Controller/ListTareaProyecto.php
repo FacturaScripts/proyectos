@@ -27,7 +27,7 @@ use FacturaScripts\Core\Lib\ExtendedController\ListView;
  *
  * @author Daniel Fernández Giménez <hola@danielfg.es>
  */
-class ListTarea extends ListController
+class ListTareaProyecto extends ListController
 {
 
     /**
@@ -58,9 +58,9 @@ class ListTarea extends ListController
      * 
      * @param string $viewName
      */
-    protected function createViewsPrivateTasks(string $viewName = 'ListTarea-private')
+    protected function createViewsPrivateTasks(string $viewName = 'ListTareaProyecto-private')
     {
-        $this->addView($viewName, 'ModelView\Tarea', 'private', 'fas fa-unlock-alt');
+        $this->addView($viewName, 'ModelView\TareaProyecto', 'private', 'fas fa-unlock-alt');
         $this->addOrderBy($viewName, ['fecha'], 'date', 2);
         $this->addOrderBy($viewName, ['fechainicio'], 'start-date');
         $this->addOrderBy($viewName, ['fechafin'], 'end-date');
@@ -80,9 +80,9 @@ class ListTarea extends ListController
      * 
      * @param string $viewName
      */
-    protected function createViewsTasks(string $viewName = 'ListTarea')
+    protected function createViewsTasks(string $viewName = 'ListTareaProyecto')
     {
-        $this->addView($viewName, 'ModelView\Tarea', 'tasks', 'fas fa-project-diagram');
+        $this->addView($viewName, 'ModelView\TareaProyecto', 'tasks', 'fas fa-project-diagram');
         $this->addOrderBy($viewName, ['fecha'], 'date', 2);
         $this->addOrderBy($viewName, ['fechainicio'], 'start-date');
         $this->addOrderBy($viewName, ['fechafin'], 'end-date');
@@ -115,7 +115,7 @@ class ListTarea extends ListController
     protected function loadData($viewName, $view)
     {
         switch ($viewName) {
-            case 'ListTarea':
+            case 'ListTareaProyecto':
                 if ($this->user->admin) {
                     $view->loadData();
                     break;
@@ -127,7 +127,7 @@ class ListTarea extends ListController
                 $view->loadData('', $where);
                 break;
 
-            case 'ListTarea-private':
+            case 'ListTareaProyecto-private':
                 $sql = 'SELECT idproyecto FROM proyectos WHERE nick = ' . $this->dataBase->var2str($this->user->nick)
                     . ' UNION SELECT idproyecto FROM proyectos_users WHERE nick = ' . $this->dataBase->var2str($this->user->nick);
                 $where = [

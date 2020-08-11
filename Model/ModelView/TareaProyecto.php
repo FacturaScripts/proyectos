@@ -19,18 +19,18 @@
 namespace FacturaScripts\Plugins\Proyectos\Model\ModelView;
 
 use FacturaScripts\Core\Model\Base\ModelView;
-use FacturaScripts\Plugins\Proyectos\Model\Tarea as parentTarea;
+use FacturaScripts\Plugins\Proyectos\Model\TareaProyecto as parentTareaProyecto;
 
 /**
  * Description of Tarea
  *
  * @author Daniel Fernández Giménez <hola@danielfg.es>
  */
-class Tarea extends ModelView
+class TareaProyecto extends ModelView
 {
     public function __construct($data = array()) {
         parent::__construct($data);
-        $this->setMasterModel(new parentTarea());
+        $this->setMasterModel(new parentTareaProyecto());
     }
    
     protected function getFields(): array {

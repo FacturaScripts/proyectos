@@ -61,6 +61,7 @@ class EditProyecto extends EditController
         $this->createViewsTasks();
         $this->createViewsUsers();
         $this->createViewsStock();
+        $this->createViewsNotes();
         $this->createViewsBusinessDocument('PresupuestoProveedor', 'supplier-estimations');
         $this->createViewsBusinessDocument('PedidoProveedor', 'supplier-orders');
         $this->createViewsBusinessDocument('AlbaranProveedor', 'supplier-delivery-notes');
@@ -128,14 +129,24 @@ class EditProyecto extends EditController
      * 
      * @param string $viewName
      */
-    protected function createViewsTasks(string $viewName = 'ListTarea')
+    protected function createViewsTasks(string $viewName = 'ListTareaProyecto')
     {
-        $this->addListView($viewName, 'Tarea', 'tasks', 'fas fa-project-diagram');
+        $this->addListView($viewName, 'TareaProyecto', 'tasks', 'fas fa-project-diagram');
         $this->views[$viewName]->addOrderBy(['fecha'], 'date', 2);
         $this->views[$viewName]->addOrderBy(['fechainicio'], 'start-date');
         $this->views[$viewName]->addOrderBy(['fechafin'], 'end-date');
         $this->views[$viewName]->addSearchFields(['descripcion', 'nombre']);
         $this->views[$viewName]->disableColumn('project');
+    }
+    
+    /**
+     * 
+     * @param string $viewName
+     */
+    protected function createViewsNotes(string $viewName = 'ListNotaProyecto')
+    {
+        $this->addListView($viewName, 'NotaProyecto', 'notes', 'fas fa-sticky-note');
+        $this->views[$viewName]->addOrderBy(['fecha'], 'date', 2);
     }
 
     /**
@@ -211,7 +222,8 @@ class EditProyecto extends EditController
             case 'ListPedidoProveedor':
             case 'ListPresupuestoCliente':
             case 'ListPresupuestoProveedor':
-            case 'ListTarea':
+            case 'ListTareaProyecto':
+            case 'ListNotaProyecto':
             case 'ListStockProyecto':
                 $where = [new DataBaseWhere('idproyecto', $idproyecto)];
                 $view->loadData('', $where);

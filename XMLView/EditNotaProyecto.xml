@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view>
+    <columns>
+        <group name="main">
+            <column name="code" display="none" order="100">
+                <widget type="text" fieldname="idnota" />
+            </column>
+            <column name="project" order="110">
+                <widget type="autocomplete" readonly="dinamic" fieldname="idproyecto" required="true" onclick="EditProyecto">
+                    <values source="proyectos" fieldcode="idproyecto" fieldtitle="nombre" />
+                </widget>
+            </column>
+            <column name="task" order="120">
+                <widget type="select" fieldname="idtarea" fieldfilter="project" onclick="EditTareaProyecto">
+                    <values source="tareas" fieldcode="idtarea" fieldtitle="nombre" />
+                </widget>
+            </column>
+            <column name="date" order="130">
+                <widget type="date" fieldname="fecha" readonly="true" required="true" />
+            </column>
+            <column name="user" order="140">
+                <widget type="text" fieldname="nick" readonly="true" required="true" />
+            </column>
+            <column name="description" numcolumns="12" order="150">
+                <widget type="textarea" fieldname="descripcion" required="true" />
+            </column>
+        </group>
+    </columns>
+</view>
