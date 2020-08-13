@@ -21,6 +21,7 @@ namespace FacturaScripts\Plugins\Proyectos\Model;
 use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
 use FacturaScripts\Core\Model\Base;
 use FacturaScripts\Dinamic\Model\Cliente;
+use FacturaScripts\Plugins\Proyectos\Model\TareaProyecto;
 
 /**
  * Description of Proyecto
@@ -153,7 +154,7 @@ class Proyecto extends Base\ModelOnChangeClass
      */
     public function getTasks()
     {
-        $task = new Tarea();
+        $task = new TareaProyecto();
         $where = [new DataBaseWhere('idproyecto', $this->idproyecto)];
         return $task->all($where, [], 0, 0);
     }

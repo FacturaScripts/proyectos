@@ -130,7 +130,7 @@ class FaseTarea extends Base\ModelClass
      *
      * @return string
      */
-    public function url(string $type = 'auto', string $list = 'ListTarea?activetab=List'): string
+    public function url(string $type = 'auto', string $list = 'ListTareaProyecto?activetab=List'): string
     {
         return parent::url($type, $list);
     }
