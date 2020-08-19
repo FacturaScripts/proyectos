@@ -148,6 +148,7 @@ class EditProyecto extends EditController
         $this->views[$viewName]->addOrderBy(['fechafin'], 'end-date');
         $this->views[$viewName]->addSearchFields(['descripcion', 'nombre']);
         $this->views[$viewName]->disableColumn('project');
+        $this->views[$viewName]->disableColumn('company');
     }
 
     /**
