@@ -69,6 +69,7 @@ class EditNotaProyecto extends EditController
                 } elseif (false === $view->model->getProject()->userCanSee($this->user)) {
                     $this->setTemplate('Error/AccessDenied');
                 }
+                $this->views[$viewName]->disableColumn('task');
                 break;
         }
     }
