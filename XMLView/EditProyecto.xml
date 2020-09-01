@@ -6,7 +6,7 @@
                 <widget type="text" fieldname="idproyecto" />
             </column>
             <column name="name" order="110">
-                <widget type="text" fieldname="nombre" required="true" />
+                <widget type="text" fieldname="nombre" />
             </column>
             <column name="date" display="right" order="120">
                 <widget type="date" fieldname="fecha" readonly="true" required="true" />

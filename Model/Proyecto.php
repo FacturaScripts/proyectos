@@ -22,6 +22,7 @@ use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
 use FacturaScripts\Core\Model\Base;
 use FacturaScripts\Dinamic\Model\Cliente;
 use FacturaScripts\Plugins\Proyectos\Model\TareaProyecto;
+use FacturaScripts\Plugins\Proyectos\Lib\ProjectCodeGenerator;
 
 /**
  * Description of Proyecto
@@ -104,7 +105,15 @@ class Proyecto extends Base\ModelOnChangeClass
      * @var bool
      */
     public $privado;
-
+    
+    public function saveInsert(array $values = array()) {
+        if (empty($this->nombre)) {
+            ProjectCodeGenerator::new($this);
+        }
+        
+        return parent::saveInsert($values);
+    }
+    
     public function clear()
     {
         parent::clear();
