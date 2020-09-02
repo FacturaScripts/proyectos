@@ -147,6 +147,10 @@ class EditProyecto extends EditController
         $this->views[$viewName]->addOrderBy(['fechainicio'], 'start-date');
         $this->views[$viewName]->addOrderBy(['fechafin'], 'end-date');
         $this->views[$viewName]->addSearchFields(['descripcion', 'nombre']);
+        $this->views[$viewName]->addFilterPeriod('fecha', 'date', 'fecha');
+        $status = $this->codeModel->all('tareas_fases', 'idfase', 'nombre');
+        $this->views[$viewName]->addFilterSelect('idfase', 'phase', 'idfase', $status);
+        
         $this->views[$viewName]->disableColumn('project');
         $this->views[$viewName]->disableColumn('company');
     }
