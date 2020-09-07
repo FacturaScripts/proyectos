@@ -22,7 +22,7 @@
                 <widget type="text" fieldname="nick" readonly="true" required="true" />
             </column>
             <column name="description" numcolumns="12" order="150">
-                <widget type="textarea" fieldname="descripcion" required="true" />
+                <widget type="textarea" fieldname="descripcion" rows="8" required="true" />
             </column>
         </group>
     </columns>

@@ -20,48 +20,38 @@ namespace FacturaScripts\Plugins\Proyectos\Lib;
 
 use FacturaScripts\Core\Base\ToolBox;
 use FacturaScripts\Plugins\Proyectos\Model\Proyecto;
-use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
 
 /**
  * Description of ProjectCodeGenerator
  *
- * @author Carlos Garcia Gomez <carlos@facturascripts.com>
+ * @author Carlos Garcia Gomez      <carlos@facturascripts.com>
  * @author Daniel Fernández Giménez <daniel.fernandez@athosonline.com>
  */
 class ProjectCodeGenerator
 {
+
     /**
      * 
-     * @param type $project
+     * @param Proyecto $project
      */
     public static function new(&$project)
     {
-        $proyectopatron = static::toolBox()->appSettings()->get('proyectos', 'proyectopatron');
-        $proyectolongnumero = static::toolBox()->appSettings()->get('proyectos', 'proyectolongnumero');
-        
-        $patron = \strtr($proyectopatron, [
-            '{ANYO}' => date('Y'),
-            '{ANYO2}' => date('y'),
-            '{MES}' => date('m'),
-            '{DIA}' => date('d'),
-        ]);
-        
+        $patron = static::toolBox()->appSettings()->get('proyectos', 'patron', 'PR-{ANYO}-{NUM}');
+        $longnumero = static::toolBox()->appSettings()->get('proyectos', 'longnumero', 6);
+
         $proyecto = new Proyecto();
-        $nombre = \strtr($patron, [
-            '{NUM}' => '',
-            '{0NUM}' => '',
+        $numero = 1 + $proyecto->count();
+
+        $project->nombre = \strtr($patron, [
+            '{ANYO}' => \date('Y'),
+            '{ANYO2}' => \date('y'),
+            '{MES}' => \date('m'),
+            '{DIA}' => \date('d'),
+            '{NUM}' => (string) $numero,
+            '{0NUM}' => \str_pad((string) $numero, $longnumero, '0', \STR_PAD_LEFT)
         ]);
-        $where = [new DataBaseWhere('nombre', $nombre, 'LIKE')];
-        $numero = $proyecto->count($where) + 1;
-        
-        $patron = \strtr($patron, [
-            '{NUM}' => $numero,
-            '{0NUM}' => \str_pad($numero, $proyectolongnumero, '0', \STR_PAD_LEFT)
-        ]);
-        
-        $project->nombre = $patron;
     }
-    
+
     /**
      * 
      * @return ToolBox

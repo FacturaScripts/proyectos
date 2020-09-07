@@ -133,6 +133,8 @@ class EditProyecto extends EditController
     protected function createViewsUsers(string $viewName = 'EditUserProyecto')
     {
         $this->addEditListView($viewName, 'UserProyecto', 'users', 'fas fa-users');
+
+        /// disable column
         $this->views[$viewName]->disableColumn('project');
     }
 
@@ -147,10 +149,13 @@ class EditProyecto extends EditController
         $this->views[$viewName]->addOrderBy(['fechainicio'], 'start-date');
         $this->views[$viewName]->addOrderBy(['fechafin'], 'end-date');
         $this->views[$viewName]->addSearchFields(['descripcion', 'nombre']);
+
+        /// filters
         $this->views[$viewName]->addFilterPeriod('fecha', 'date', 'fecha');
         $status = $this->codeModel->all('tareas_fases', 'idfase', 'nombre');
         $this->views[$viewName]->addFilterSelect('idfase', 'phase', 'idfase', $status);
-        
+
+        /// disable columns
         $this->views[$viewName]->disableColumn('project');
         $this->views[$viewName]->disableColumn('company');
     }

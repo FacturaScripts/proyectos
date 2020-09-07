@@ -19,7 +19,7 @@
                 </widget>
             </column>
             <column name="description" numcolumns="12" order="140">
-                <widget type="textarea" fieldname="descripcion" />
+                <widget type="textarea" fieldname="descripcion" rows="8" />
             </column>
         </group>
         <group name="advanced" numcolumns="12">

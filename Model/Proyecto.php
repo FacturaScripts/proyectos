@@ -21,7 +21,6 @@ namespace FacturaScripts\Plugins\Proyectos\Model;
 use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
 use FacturaScripts\Core\Model\Base;
 use FacturaScripts\Dinamic\Model\Cliente;
-use FacturaScripts\Plugins\Proyectos\Model\TareaProyecto;
 use FacturaScripts\Plugins\Proyectos\Lib\ProjectCodeGenerator;
 
 /**
@@ -105,15 +104,7 @@ class Proyecto extends Base\ModelOnChangeClass
      * @var bool
      */
     public $privado;
-    
-    public function saveInsert(array $values = array()) {
-        if (empty($this->nombre)) {
-            ProjectCodeGenerator::new($this);
-        }
-        
-        return parent::saveInsert($values);
-    }
-    
+
     public function clear()
     {
         parent::clear();
@@ -214,9 +205,12 @@ class Proyecto extends Base\ModelOnChangeClass
      */
     public function test()
     {
+        if (empty($this->nombre)) {
+            ProjectCodeGenerator::new($this);
+        }
+
         $this->descripcion = $this->toolBox()->utils()->noHtml($this->descripcion);
         $this->nombre = $this->toolBox()->utils()->noHtml($this->nombre);
-
         return parent::test();
     }
 
@@ -239,15 +233,6 @@ class Proyecto extends Base\ModelOnChangeClass
 
     /**
      * 
-     * @param array $fields
-     */
-    protected function setPreviousData(array $fields = [])
-    {
-        parent::setPreviousData(\array_merge(['idestado'], $fields));
-    }
-
-    /**
-     * 
      * @param User $user
      *
      * @return bool
@@ -264,5 +249,14 @@ class Proyecto extends Base\ModelOnChangeClass
             new DataBaseWhere('nick', $user->nick)
         ];
         return $userProject->loadFromCode('', $where);
+    }
+
+    /**
+     * 
+     * @param array $fields
+     */
+    protected function setPreviousData(array $fields = [])
+    {
+        parent::setPreviousData(\array_merge(['idestado'], $fields));
     }
 }

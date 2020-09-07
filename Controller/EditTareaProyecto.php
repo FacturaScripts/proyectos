@@ -69,13 +69,12 @@ class EditTareaProyecto extends EditController
     protected function createViewsNotes(string $viewName = 'EditNotaProyecto')
     {
         $this->addEditListView($viewName, 'NotaProyecto', 'notes', 'fas fa-sticky-note');
-        $this->setTabsPosition('left');
 
         /// hide project and task columns
         $this->views[$viewName]->disableColumn('project');
         $this->views[$viewName]->disableColumn('task');
     }
-    
+
     /**
      * 
      * @param EditView $view

@@ -53,8 +53,8 @@
         <type>PRIMARY KEY (idtarea)</type>
     </constraint>
     <constraint>
-        <name>ca_tareas_proyectos</name>
-        <type>FOREIGN KEY (idproyecto) REFERENCES proyectos (idproyecto) ON DELETE RESTRICT ON UPDATE CASCADE</type>
+        <name>ca_tareas_proyectos2</name>
+        <type>FOREIGN KEY (idproyecto) REFERENCES proyectos (idproyecto) ON DELETE CASCADE ON UPDATE CASCADE</type>
     </constraint>
     <constraint>
         <name>ca_tareas_tareas_fases</name>

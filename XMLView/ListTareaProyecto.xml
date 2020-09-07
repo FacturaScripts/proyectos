@@ -18,7 +18,7 @@
             <widget type="text" fieldname="nombre" />
         </column>
         <column name="description" order="140">
-            <widget type="text" fieldname="descripcion" />
+            <widget type="textarea" fieldname="descripcion" />
         </column>
         <column name="quantity" order="150">
             <widget type="integer" fieldname="cantidad" />

@@ -61,7 +61,7 @@ class ListProyecto extends ListController
     protected function createViewsPrivateProyects(string $viewName = 'ListProyecto-private')
     {
         $this->addView($viewName, 'Proyecto', 'private', 'fas fa-unlock-alt');
-        $this->addOrderBy($viewName, ['fecha'], 'date', 2);
+        $this->addOrderBy($viewName, ['fecha', 'idproyecto'], 'date', 2);
         $this->addOrderBy($viewName, ['fechainicio'], 'start-date');
         $this->addOrderBy($viewName, ['fechafin'], 'end-date');
         $this->addOrderBy($viewName, ['nombre'], 'name');
@@ -69,7 +69,6 @@ class ListProyecto extends ListController
 
         /// filters
         $this->addFilterPeriod($viewName, 'fecha', 'date', 'fecha');
-
         $this->addFilterAutocomplete($viewName, 'codcliente', 'customer', 'codcliente', 'clientes', 'codcliente', 'nombre');
 
         $status = $this->codeModel->all('proyectos_estados', 'idestado', 'nombre');
@@ -83,7 +82,7 @@ class ListProyecto extends ListController
     protected function createViewsProyects(string $viewName = 'ListProyecto')
     {
         $this->addView($viewName, 'Proyecto', 'projects', 'fas fa-folder-open');
-        $this->addOrderBy($viewName, ['fecha'], 'date', 2);
+        $this->addOrderBy($viewName, ['fecha', 'idproyecto'], 'date', 2);
         $this->addOrderBy($viewName, ['fechainicio'], 'start-date');
         $this->addOrderBy($viewName, ['fechafin'], 'end-date');
         $this->addOrderBy($viewName, ['nombre'], 'name');

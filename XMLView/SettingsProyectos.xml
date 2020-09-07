@@ -5,11 +5,11 @@
             <column name="name" display="none" order="0">
                 <widget type="text" fieldname="name" readonly="true" required="true" />
             </column>
-            <column name="pattern" numcolumns="2" order="100">
-                <widget type="text" fieldname="proyectopatron"/>
+            <column name="pattern" numcolumns="3" order="100">
+                <widget type="text" fieldname="patron" required="true" />
             </column>
-            <column name="number-length" numcolumns="2" order="110">
-                <widget type="number" fieldname="proyectolongnumero" decimal="0" min="1" />
+            <column name="number-length" numcolumns="3" order="110">
+                <widget type="number" fieldname="longnumero" decimal="0" min="1" required="true" />
             </column>
         </group>
     </columns>

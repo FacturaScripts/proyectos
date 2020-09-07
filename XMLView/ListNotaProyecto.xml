@@ -8,16 +8,16 @@
             <column name="description" numcolumns="12" order="110">
                 <widget type="textarea" fieldname="descripcion" />
             </column>
-            <column name="date" order="120">
-                <widget type="datetime" fieldname="fecha" readonly="true" />
-            </column>
-            <column name="task" order="130">
+            <column name="task" order="120">
                 <widget type="autocomplete" fieldname="idtarea" onclick="EditTareaProyecto">
                     <values source="tareas" fieldcode="idtarea" fieldtitle="nombre" />
                 </widget>
             </column>
-            <column name="user" order="140">
+            <column name="user" order="130">
                 <widget type="text" fieldname="nick" />
+            </column>
+            <column name="date" display="right" order="140">
+                <widget type="datetime" fieldname="fecha" readonly="true" />
             </column>
         </group>
     </columns>

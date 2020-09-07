@@ -49,6 +49,7 @@ class ListTareaProyecto extends ListController
     {
         $this->createViewsTasks();
         $this->createViewsPrivateTasks();
+
         if ($this->user->admin) {
             $this->createViewsTaskStatus();
         }
@@ -69,7 +70,6 @@ class ListTareaProyecto extends ListController
 
         /// filters
         $this->addFilterPeriod($viewName, 'fecha', 'date', 'tareas.fecha');
-
         $this->addFilterAutocomplete($viewName, 'idproyecto', 'project', 'tareas.idproyecto', 'proyectos', 'idproyecto', 'nombre');
 
         $status = $this->codeModel->all('tareas_fases', 'idfase', 'nombre');
@@ -91,7 +91,6 @@ class ListTareaProyecto extends ListController
 
         /// filters
         $this->addFilterPeriod($viewName, 'fecha', 'date', 'tareas.fecha');
-
         $this->addFilterAutocomplete($viewName, 'idproyecto', 'project', 'tareas.idproyecto', 'proyectos', 'idproyecto', 'nombre');
 
         $status = $this->codeModel->all('tareas_fases', 'idfase', 'nombre');

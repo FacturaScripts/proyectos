@@ -23,7 +23,7 @@
                 <widget type="date" fieldname="fechafin" />
             </column>
             <column name="description" numcolumns="12" order="160">
-                <widget type="textarea" fieldname="descripcion" />
+                <widget type="textarea" fieldname="descripcion" rows="8" />
             </column>
         </group>
         <group name="advanced" numcolumns="12" valign="bottom">
