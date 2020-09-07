@@ -69,10 +69,26 @@ class EditTareaProyecto extends EditController
     protected function createViewsNotes(string $viewName = 'EditNotaProyecto')
     {
         $this->addEditListView($viewName, 'NotaProyecto', 'notes', 'fas fa-sticky-note');
+        $this->setTabsPosition('left');
 
         /// hide project and task columns
         $this->views[$viewName]->disableColumn('project');
         $this->views[$viewName]->disableColumn('task');
+    }
+    
+    /**
+     * 
+     * @param EditView $view
+     */
+    protected function disableTaskColumns(&$view)
+    {
+        foreach ($view->getColumns() as $group) {
+            foreach ($group->columns as $col) {
+                if ($col->name !== 'phase') {
+                    $view->disableColumn($col->name, false, 'true');
+                }
+            }
+        }
     }
 
     /**
@@ -88,6 +104,9 @@ class EditTareaProyecto extends EditController
                 parent::loadData($viewName, $view);
                 if (false === $view->model->getProject()->userCanSee($this->user)) {
                     $this->setTemplate('Error/AccessDenied');
+                } elseif (false === $view->model->getProject()->editable) {
+                    $this->disableTaskColumns($view);
+                    $this->views['EditTareaProyecto']->disableColumn('code');
                 }
                 break;
 

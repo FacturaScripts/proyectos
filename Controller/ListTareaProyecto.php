@@ -65,15 +65,15 @@ class ListTareaProyecto extends ListController
         $this->addOrderBy($viewName, ['fechainicio'], 'start-date');
         $this->addOrderBy($viewName, ['fechafin'], 'end-date');
         $this->addOrderBy($viewName, ['nombre'], 'name');
-        $this->addSearchFields($viewName, ['nombre', 'descripcion']);
+        $this->addSearchFields($viewName, ['tareas.nombre', 'tareas.descripcion']);
 
         /// filters
-        $this->addFilterPeriod($viewName, 'fecha', 'date', 'fecha');
+        $this->addFilterPeriod($viewName, 'fecha', 'date', 'tareas.fecha');
 
-        $this->addFilterAutocomplete($viewName, 'idproyecto', 'project', 'idproyecto', 'proyectos', 'idproyecto', 'nombre');
+        $this->addFilterAutocomplete($viewName, 'idproyecto', 'project', 'tareas.idproyecto', 'proyectos', 'idproyecto', 'nombre');
 
         $status = $this->codeModel->all('tareas_fases', 'idfase', 'nombre');
-        $this->addFilterSelect($viewName, 'idfase', 'phase', 'idfase', $status);
+        $this->addFilterSelect($viewName, 'idfase', 'phase', 'tareas.idfase', $status);
     }
 
     /**
@@ -87,15 +87,15 @@ class ListTareaProyecto extends ListController
         $this->addOrderBy($viewName, ['fechainicio'], 'start-date');
         $this->addOrderBy($viewName, ['fechafin'], 'end-date');
         $this->addOrderBy($viewName, ['nombre'], 'title');
-        $this->addSearchFields($viewName, ['nombre', 'descripcion']);
+        $this->addSearchFields($viewName, ['tareas.nombre', 'tareas.descripcion']);
 
         /// filters
-        $this->addFilterPeriod($viewName, 'fecha', 'date', 'fecha');
+        $this->addFilterPeriod($viewName, 'fecha', 'date', 'tareas.fecha');
 
-        $this->addFilterAutocomplete($viewName, 'idproyecto', 'project', 'idproyecto', 'proyectos', 'idproyecto', 'nombre');
+        $this->addFilterAutocomplete($viewName, 'idproyecto', 'project', 'tareas.idproyecto', 'proyectos', 'idproyecto', 'nombre');
 
         $status = $this->codeModel->all('tareas_fases', 'idfase', 'nombre');
-        $this->addFilterSelect($viewName, 'idfase', 'phase', 'idfase', $status);
+        $this->addFilterSelect($viewName, 'idfase', 'phase', 'tareas.idfase', $status);
     }
 
     /**
