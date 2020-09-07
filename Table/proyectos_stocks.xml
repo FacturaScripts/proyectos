@@ -59,10 +59,6 @@
         <type>FOREIGN KEY (idproyecto) REFERENCES proyectos (idproyecto) ON DELETE CASCADE ON UPDATE CASCADE</type>
     </constraint>
     <constraint>
-        <name>ca_proyectos_stocks_variantes</name>
-        <type>FOREIGN KEY (referencia) REFERENCES variantes (referencia) ON DELETE CASCADE ON UPDATE CASCADE</type>
-    </constraint>
-    <constraint>
         <name>uniq_proyectos_stocks_referencia</name>
         <type>UNIQUE (idproyecto, referencia)</type>
     </constraint>

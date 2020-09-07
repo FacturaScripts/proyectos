@@ -116,7 +116,7 @@ class ProjectStockManager
         $childProjectLines = [];
 
         foreach ($lines as $line) {
-            if (empty($line->referencia) || $line->getProducto()->nostock) {
+            if (empty($line->referencia) || $line->getProducto()->nostock || false === $line->getProducto()->exists()) {
                 continue;
             }
 
@@ -150,7 +150,7 @@ class ProjectStockManager
      */
     protected static function setProjectStock(&$stockData, $line)
     {
-        if (empty($line->referencia) || $line->getProducto()->nostock) {
+        if (empty($line->referencia) || $line->getProducto()->nostock || false === $line->getProducto()->exists()) {
             return;
         } elseif (!isset($stockData[$line->referencia])) {
             $stockData[$line->referencia] = [
