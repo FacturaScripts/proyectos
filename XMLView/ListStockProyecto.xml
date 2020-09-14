@@ -7,16 +7,21 @@
         <column name="reference" order="100">
             <widget type="text" fieldname="referencia" />
         </column>
-        <column name="quantity" display="right" order="110">
+        <column name="description" order="110">
+            <widget type="select" fieldname="idproducto">
+                <values source="productos" fieldcode="idproducto" fieldtitle="descripcion" />
+            </widget>
+        </column>
+        <column name="quantity" display="right" order="120">
             <widget type="number" fieldname="cantidad" />
         </column>
-        <column name="reserved" display="right" order="120">
+        <column name="reserved" display="right" order="130">
             <widget type="number" fieldname="reservada" />
         </column>
-        <column name="pending-reception" display="right" order="130">
+        <column name="pending-reception" display="right" order="140">
             <widget type="number" fieldname="pterecibir" />
         </column>
-        <column name="available" display="right" order="140">
+        <column name="available" display="right" order="150">
             <widget type="number" fieldname="disponible" />
         </column>
     </columns>
