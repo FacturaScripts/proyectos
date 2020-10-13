@@ -52,6 +52,8 @@ class ListProyecto extends ListController
         if ($this->user->admin) {
             $this->createViewsProyectStatus();
         }
+        
+        $this->createViewsStocks();
     }
 
     /**
@@ -90,6 +92,7 @@ class ListProyecto extends ListController
 
         /// filters
         $this->addFilterPeriod($viewName, 'fecha', 'date', 'fecha');
+        $this->addFilterPeriod($viewName, 'fechafin', 'end-date', 'fechafin');
 
         $users = $this->codeModel->all('users', 'nick', 'nick');
         $this->addFilterSelect($viewName, 'nick', 'admin', 'nick', $users);
@@ -98,6 +101,29 @@ class ListProyecto extends ListController
 
         $status = $this->codeModel->all('proyectos_estados', 'idestado', 'nombre');
         $this->addFilterSelect($viewName, 'idestado', 'status', 'idestado', $status);
+    }
+    
+    /**
+     * 
+     * @param string $viewName
+     */
+    protected function createViewsStocks(string $viewName = 'ListStockProyecto')
+    {
+        $this->addView($viewName, 'StockProyecto', 'stock', 'fas fa-dolly');
+        $this->addSearchFields($viewName, ['referencia']);
+        $this->addOrderBy($viewName, ['referencia'], 'reference');
+        $this->addOrderBy($viewName, ['cantidad'], 'quantity');
+        $this->addOrderBy($viewName, ['disponible'], 'available');
+        $this->addOrderBy($viewName, ['reservada'], 'reserved');
+        $this->addOrderBy($viewName, ['pterecibir'], 'pending-reception');
+        
+        /// disable buttons
+        $this->setSettings($viewName, 'btnDelete', false);
+        $this->setSettings($viewName, 'btnNew', false);
+        $this->setSettings($viewName, 'checkBoxes', false);
+
+        /// filters
+        $this->addFilterAutocomplete($viewName, 'idproyecto', 'project', 'idproyecto', 'proyectos', 'idproyecto', 'nombre');
     }
 
     /**

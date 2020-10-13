@@ -110,6 +110,9 @@ class EditProyecto extends EditController
         $this->views[$viewName]->addOrderBy(['reservada'], 'reserved');
         $this->views[$viewName]->addOrderBy(['pterecibir'], 'pending-reception');
 
+        /// disable column
+        $this->views[$viewName]->disableColumn('project');
+        
         /// disable buttons
         $this->setSettings($viewName, 'btnDelete', false);
         $this->setSettings($viewName, 'btnNew', false);
