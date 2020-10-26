@@ -50,10 +50,9 @@ class ListProyecto extends ListController
         $this->createViewsPrivateProyects();
 
         if ($this->user->admin) {
+            $this->createViewsStocks();
             $this->createViewsProyectStatus();
         }
-        
-        $this->createViewsStocks();
     }
 
     /**
@@ -102,7 +101,7 @@ class ListProyecto extends ListController
         $status = $this->codeModel->all('proyectos_estados', 'idestado', 'nombre');
         $this->addFilterSelect($viewName, 'idestado', 'status', 'idestado', $status);
     }
-    
+
     /**
      * 
      * @param string $viewName
@@ -116,7 +115,7 @@ class ListProyecto extends ListController
         $this->addOrderBy($viewName, ['disponible'], 'available');
         $this->addOrderBy($viewName, ['reservada'], 'reserved');
         $this->addOrderBy($viewName, ['pterecibir'], 'pending-reception');
-        
+
         /// disable buttons
         $this->setSettings($viewName, 'btnDelete', false);
         $this->setSettings($viewName, 'btnNew', false);

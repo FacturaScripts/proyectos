@@ -112,7 +112,7 @@ class EditProyecto extends EditController
 
         /// disable column
         $this->views[$viewName]->disableColumn('project');
-        
+
         /// disable buttons
         $this->setSettings($viewName, 'btnDelete', false);
         $this->setSettings($viewName, 'btnNew', false);
