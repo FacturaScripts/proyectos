@@ -61,7 +61,7 @@ class ListTareaProyecto extends ListController
      */
     protected function createViewsPrivateTasks(string $viewName = 'ListTareaProyecto-private')
     {
-        $this->addView($viewName, 'ModelView\TareaProyecto', 'private', 'fas fa-unlock-alt');
+        $this->addView($viewName, 'Join\TareaProyecto', 'private', 'fas fa-unlock-alt');
         $this->addOrderBy($viewName, ['fecha'], 'date', 2);
         $this->addOrderBy($viewName, ['fechainicio'], 'start-date');
         $this->addOrderBy($viewName, ['fechafin'], 'end-date');
@@ -82,7 +82,7 @@ class ListTareaProyecto extends ListController
      */
     protected function createViewsTasks(string $viewName = 'ListTareaProyecto')
     {
-        $this->addView($viewName, 'ModelView\TareaProyecto', 'tasks', 'fas fa-project-diagram');
+        $this->addView($viewName, 'Join\TareaProyecto', 'tasks', 'fas fa-project-diagram');
         $this->addOrderBy($viewName, ['fecha'], 'date', 2);
         $this->addOrderBy($viewName, ['fechainicio'], 'start-date');
         $this->addOrderBy($viewName, ['fechafin'], 'end-date');

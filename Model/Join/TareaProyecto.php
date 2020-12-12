@@ -16,9 +16,9 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-namespace FacturaScripts\Plugins\Proyectos\Model\ModelView;
+namespace FacturaScripts\Plugins\Proyectos\Model\Join;
 
-use FacturaScripts\Core\Model\Base\ModelView;
+use FacturaScripts\Core\Model\Base\JoinModel;
 use FacturaScripts\Plugins\Proyectos\Model\TareaProyecto as parentTareaProyecto;
 
 /**
@@ -26,15 +26,23 @@ use FacturaScripts\Plugins\Proyectos\Model\TareaProyecto as parentTareaProyecto;
  *
  * @author Daniel Fernández Giménez <hola@danielfg.es>
  */
-class TareaProyecto extends ModelView
+class TareaProyecto extends JoinModel
 {
 
-    public function __construct($data = array())
+    /**
+     * 
+     * @param array $data
+     */
+    public function __construct($data = [])
     {
         parent::__construct($data);
         $this->setMasterModel(new parentTareaProyecto());
     }
 
+    /**
+     * 
+     * @return array
+     */
     protected function getFields(): array
     {
         return [
@@ -54,6 +62,10 @@ class TareaProyecto extends ModelView
         ];
     }
 
+    /**
+     * 
+     * @return string
+     */
     protected function getSQLFrom(): string
     {
         return 'tareas'
@@ -62,6 +74,10 @@ class TareaProyecto extends ModelView
             . ' INNER JOIN proyectos_estados ON proyectos_estados.idestado = proyectos.idestado';
     }
 
+    /**
+     * 
+     * @return array
+     */
     protected function getTables(): array
     {
         return [
