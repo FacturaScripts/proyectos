@@ -1,7 +1,7 @@
 <?php
 /**
  * This file is part of Proyectos plugin for FacturaScripts
- * Copyright (C) 2020 Carlos Garcia Gomez <carlos@facturascripts.com>
+ * Copyright (C) 2020-2021 Carlos Garcia Gomez <carlos@facturascripts.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -50,7 +50,6 @@ class ListProyecto extends ListController
         $this->createViewsPrivateProyects();
 
         if ($this->user->admin) {
-            $this->createViewsStocks();
             $this->createViewsProyectStatus();
         }
     }
@@ -100,29 +99,6 @@ class ListProyecto extends ListController
 
         $status = $this->codeModel->all('proyectos_estados', 'idestado', 'nombre');
         $this->addFilterSelect($viewName, 'idestado', 'status', 'idestado', $status);
-    }
-
-    /**
-     * 
-     * @param string $viewName
-     */
-    protected function createViewsStocks(string $viewName = 'ListStockProyecto')
-    {
-        $this->addView($viewName, 'StockProyecto', 'stock', 'fas fa-dolly');
-        $this->addSearchFields($viewName, ['referencia']);
-        $this->addOrderBy($viewName, ['referencia'], 'reference');
-        $this->addOrderBy($viewName, ['cantidad'], 'quantity');
-        $this->addOrderBy($viewName, ['disponible'], 'available');
-        $this->addOrderBy($viewName, ['reservada'], 'reserved');
-        $this->addOrderBy($viewName, ['pterecibir'], 'pending-reception');
-
-        /// disable buttons
-        $this->setSettings($viewName, 'btnDelete', false);
-        $this->setSettings($viewName, 'btnNew', false);
-        $this->setSettings($viewName, 'checkBoxes', false);
-
-        /// filters
-        $this->addFilterAutocomplete($viewName, 'idproyecto', 'project', 'idproyecto', 'proyectos', 'idproyecto', 'nombre');
     }
 
     /**

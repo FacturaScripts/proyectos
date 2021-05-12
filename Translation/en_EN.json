@@ -1,0 +1,15 @@
+{
+    "calendar": "Calendar",
+    "canceled": "Canceled",
+    "completed": "Completed",
+    "phase": "Phase",
+    "phases": "Phases",
+    "private": "Private",
+    "processing": "Processing",
+    "project": "Project",
+    "project-stock-rebuild-error": "Error rebuilding project stock",
+    "project-stock-rebuild-ok": "Project stock rebuilt successfully",
+    "projects": "Projects",
+    "task": "Task",
+    "tasks": "Tasks"
+}
