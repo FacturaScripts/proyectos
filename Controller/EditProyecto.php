@@ -1,7 +1,7 @@
 <?php
 /**
  * This file is part of Proyectos plugin for FacturaScripts
- * Copyright (C) 2020 Carlos Garcia Gomez <carlos@facturascripts.com>
+ * Copyright (C) 2020-2021 Carlos Garcia Gomez <carlos@facturascripts.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -109,6 +109,12 @@ class EditProyecto extends EditController
         $this->views[$viewName]->addOrderBy(['disponible'], 'available');
         $this->views[$viewName]->addOrderBy(['reservada'], 'reserved');
         $this->views[$viewName]->addOrderBy(['pterecibir'], 'pending-reception');
+
+        /// filters
+        $this->views[$viewName]->addFilterNumber('cantidad', 'quantity', 'cantidad');
+        $this->views[$viewName]->addFilterNumber('reservada', 'reserved', 'reservada');
+        $this->views[$viewName]->addFilterNumber('pterecibir', 'pending-reception', 'pterecibir');
+        $this->views[$viewName]->addFilterNumber('disponible', 'available', 'disponible');
 
         /// disable column
         $this->views[$viewName]->disableColumn('project');

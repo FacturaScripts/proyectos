@@ -12,7 +12,7 @@
                 <widget type="date" fieldname="fecha" readonly="true" required="true" />
             </column>
             <column name="status" display="right" order="130">
-                <widget type="select" fieldname="idestado" required="">
+                <widget type="select" fieldname="idestado" required="true">
                     <values source="proyectos_estados" fieldcode="idestado" fieldtitle="nombre" />
                 </widget>
             </column>

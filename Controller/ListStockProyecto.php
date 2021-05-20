@@ -65,5 +65,9 @@ class ListStockProyecto extends \FacturaScripts\Core\Lib\ExtendedController\List
 
         /// filters
         $this->addFilterAutocomplete($viewName, 'idproyecto', 'project', 'idproyecto', 'proyectos', 'idproyecto', 'nombre');
+        $this->addFilterNumber($viewName, 'cantidad', 'quantity', 'cantidad');
+        $this->addFilterNumber($viewName, 'reservada', 'reserved', 'reservada');
+        $this->addFilterNumber($viewName, 'pterecibir', 'pending-reception', 'pterecibir');
+        $this->addFilterNumber($viewName, 'disponible', 'available', 'disponible');
     }
 }
