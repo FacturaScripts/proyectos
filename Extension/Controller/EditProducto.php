@@ -42,6 +42,11 @@ class EditProducto
 
             /// disable description column
             $this->views[$viewName]->disableColumn('description');
+            
+            /// disable buttons
+            $this->setSettings($viewName, 'btnDelete', false);
+            $this->setSettings($viewName, 'btnNew', false);
+            $this->setSettings($viewName, 'checkBoxes', false);
         };
     }
 
