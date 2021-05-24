@@ -58,6 +58,12 @@ class EditProyecto extends EditController
     protected function createViews()
     {
         parent::createViews();
+
+        /// disable company column if there is only one company
+        if ($this->empresa->count() < 2) {
+            $this->views[$this->getMainViewName()]->disableColumn('company');
+        }
+
         $this->createViewsTasks();
         $this->createViewsNotes();
         $this->createViewsStock();

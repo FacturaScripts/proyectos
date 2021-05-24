@@ -28,7 +28,7 @@
         </group>
         <group name="advanced" numcolumns="12" valign="bottom">
             <column name="company" order="100">
-                <widget type="select" fieldname="idempresa" required="true">
+                <widget type="select" fieldname="idempresa" onclick="EditEmpresa" required="true">
                     <values source="empresas" fieldcode="idempresa" fieldtitle="nombrecorto" />
                 </widget>
             </column>
