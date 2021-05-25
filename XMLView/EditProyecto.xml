@@ -45,6 +45,12 @@
             <column name="private" order="130">
                 <widget type="checkbox" fieldname="privado" />
             </column>
+            <column name="total-purchases" order="140">
+                <widget type="money" fieldname="totalcompras" readonly="true" />
+            </column>
+            <column name="total-sales" order="150">
+                <widget type="money" fieldname="totalventas" readonly="true" />
+            </column>
         </group>
     </columns>
 </view>

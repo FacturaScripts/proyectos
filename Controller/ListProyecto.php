@@ -65,6 +65,8 @@ class ListProyecto extends ListController
         $this->addOrderBy($viewName, ['fechainicio'], 'start-date');
         $this->addOrderBy($viewName, ['fechafin'], 'end-date');
         $this->addOrderBy($viewName, ['nombre'], 'name');
+        $this->addOrderBy($viewName, ['totalcompras'], 'total-purchases');
+        $this->addOrderBy($viewName, ['totalventas'], 'total-sales');
         $this->addSearchFields($viewName, ['nombre', 'descripcion']);
 
         /// filters
@@ -78,9 +80,12 @@ class ListProyecto extends ListController
         }
         $this->addFilterSelectWhere($viewName, 'status', $where);
 
-        $this->addFilterAutocomplete($viewName, 'codcliente', 'customer', 'codcliente', 'clientes', 'codcliente', 'nombre');
         $this->addFilterPeriod($viewName, 'fecha', 'date', 'fecha');
-        $this->addFilterPeriod($viewName, 'fechafin', 'end-date', 'fechafin');
+        $this->addFilterNumber($viewName, 'totalcompras-gt', 'total-purchases', 'totalcompras', '>=');
+        $this->addFilterNumber($viewName, 'totalcompras-lt', 'total-purchases', 'totalcompras', '<=');
+        $this->addFilterNumber($viewName, 'totalventas-gt', 'total-sales', 'totalventas', '>=');
+        $this->addFilterNumber($viewName, 'totalventas-lt', 'total-sales', 'totalventas', '<=');
+        $this->addFilterAutocomplete($viewName, 'codcliente', 'customer', 'codcliente', 'clientes', 'codcliente', 'nombre');
     }
 
     /**
@@ -94,6 +99,8 @@ class ListProyecto extends ListController
         $this->addOrderBy($viewName, ['fechainicio'], 'start-date');
         $this->addOrderBy($viewName, ['fechafin'], 'end-date');
         $this->addOrderBy($viewName, ['nombre'], 'name');
+        $this->addOrderBy($viewName, ['totalcompras'], 'total-purchases');
+        $this->addOrderBy($viewName, ['totalventas'], 'total-sales');
         $this->addSearchFields($viewName, ['nombre', 'descripcion']);
 
         /// filters
@@ -107,13 +114,16 @@ class ListProyecto extends ListController
         }
         $this->addFilterSelectWhere($viewName, 'status', $where);
 
+        $this->addFilterPeriod($viewName, 'fecha', 'date', 'fecha');
+        $this->addFilterAutocomplete($viewName, 'codcliente', 'customer', 'codcliente', 'clientes', 'codcliente', 'nombre');
+
         $users = $this->codeModel->all('users', 'nick', 'nick');
         $this->addFilterSelect($viewName, 'nick', 'admin', 'nick', $users);
 
-        $this->addFilterAutocomplete($viewName, 'codcliente', 'customer', 'codcliente', 'clientes', 'codcliente', 'nombre');
-
-        $this->addFilterPeriod($viewName, 'fecha', 'date', 'fecha');
-        $this->addFilterPeriod($viewName, 'fechafin', 'end-date', 'fechafin');
+        $this->addFilterNumber($viewName, 'totalcompras-gt', 'total-purchases', 'totalcompras', '>=');
+        $this->addFilterNumber($viewName, 'totalcompras-lt', 'total-purchases', 'totalcompras', '<=');
+        $this->addFilterNumber($viewName, 'totalventas-gt', 'total-sales', 'totalventas', '>=');
+        $this->addFilterNumber($viewName, 'totalventas-lt', 'total-sales', 'totalventas', '<=');
     }
 
     /**

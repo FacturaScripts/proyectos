@@ -1,7 +1,7 @@
 <?php
 /**
  * This file is part of Proyectos plugin for FacturaScripts
- * Copyright (C) 2020 Carlos Garcia Gomez <carlos@facturascripts.com>
+ * Copyright (C) 2020-2021 Carlos Garcia Gomez <carlos@facturascripts.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -105,12 +105,26 @@ class Proyecto extends Base\ModelOnChangeClass
      */
     public $privado;
 
+    /**
+     * 
+     * @var float
+     */
+    public $totalcompras;
+
+    /**
+     * 
+     * @var float
+     */
+    public $totalventas;
+
     public function clear()
     {
         parent::clear();
         $this->editable = true;
         $this->fecha = \date(self::DATE_STYLE);
         $this->privado = false;
+        $this->totalcompras = 0.0;
+        $this->totalventas = 0.0;
 
         /// select default status
         foreach ($this->getAvaliableStatus() as $status) {

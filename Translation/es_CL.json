@@ -11,5 +11,7 @@
     "project-stock-rebuild-ok": "Stock regenerado correctamente",
     "projects": "Proyectos",
     "task": "Tarea",
-    "tasks": "Tareas"
+    "tasks": "Tareas",
+    "total-purchases": "Total compras",
+    "total-sales": "Total ventas"
 }

@@ -11,5 +11,7 @@
     "project-stock-rebuild-ok": "project-stock-rebuild-ok",
     "projects": "projects",
     "task": "task",
-    "tasks": "tasks"
+    "tasks": "tasks",
+    "total-purchases": "total-purchases",
+    "total-sales": "total-sales"
 }

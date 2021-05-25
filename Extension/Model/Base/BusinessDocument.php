@@ -1,7 +1,7 @@
 <?php
 /**
  * This file is part of Proyectos plugin for FacturaScripts
- * Copyright (C) 2020 Carlos Garcia Gomez <carlos@facturascripts.com>
+ * Copyright (C) 2020-2021 Carlos Garcia Gomez <carlos@facturascripts.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -19,6 +19,7 @@
 namespace FacturaScripts\Plugins\Proyectos\Extension\Model\Base;
 
 use FacturaScripts\Dinamic\Lib\ProjectStockManager;
+use FacturaScripts\Dinamic\Lib\ProjectTotalManager;
 
 /**
  * Description of BusinessDocument
@@ -33,6 +34,7 @@ class BusinessDocument
         return function() {
             if ($this->idproyecto) {
                 ProjectStockManager::rebuild($this->idproyecto);
+                ProjectTotalManager::recalculate($this->idproyecto);
             }
         };
     }
@@ -42,9 +44,11 @@ class BusinessDocument
         return function() {
             if ($this->idproyecto) {
                 ProjectStockManager::rebuild($this->idproyecto);
+                ProjectTotalManager::recalculate($this->idproyecto);
             }
             if ($this->previousData['idproyecto'] && $this->previousData['idproyecto'] != $this->idproyecto) {
                 ProjectStockManager::rebuild($this->previousData['idproyecto']);
+                ProjectTotalManager::recalculate($this->previousData['idproyecto']);
             }
         };
     }
