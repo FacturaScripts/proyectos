@@ -1,7 +1,7 @@
 <?php
 /**
  * This file is part of Proyectos plugin for FacturaScripts
- * Copyright (C) 2020 Carlos Garcia Gomez <carlos@facturascripts.com>
+ * Copyright (C) 2020-2021 Carlos Garcia Gomez <carlos@facturascripts.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -20,6 +20,7 @@ namespace FacturaScripts\Plugins\Proyectos;
 
 use FacturaScripts\Core\Base\CronClass;
 use FacturaScripts\Dinamic\Lib\ProjectStockManager;
+use FacturaScripts\Dinamic\Lib\ProjectTotalManager;
 use FacturaScripts\Dinamic\Model\Proyecto;
 
 /**
@@ -32,10 +33,11 @@ class Cron extends CronClass
 
     public function run()
     {
-        if ($this->isTimeForJob('project-stock-update', '6 hours')) {
+        if ($this->isTimeForJob('project-stock-update', '1 day')) {
             $projectModel = new Proyecto();
             foreach ($projectModel->all([], [], 0, 0) as $project) {
                 ProjectStockManager::rebuild($project->idproyecto);
+                ProjectTotalManager::recalculate($project->idproyecto);
             }
 
             $this->jobDone('project-stock-update');
