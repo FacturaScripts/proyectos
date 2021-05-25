@@ -68,11 +68,19 @@ class ListProyecto extends ListController
         $this->addSearchFields($viewName, ['nombre', 'descripcion']);
 
         /// filters
-        $this->addFilterPeriod($viewName, 'fecha', 'date', 'fecha');
-        $this->addFilterAutocomplete($viewName, 'codcliente', 'customer', 'codcliente', 'clientes', 'codcliente', 'nombre');
+        $where = [
+            ['label' => $this->toolBox()->i18n()->trans('only-active'), 'where' => [new DataBaseWhere('editable', true)]],
+            ['label' => $this->toolBox()->i18n()->trans('only-closed'), 'where' => [new DataBaseWhere('editable', false)]],
+            ['label' => $this->toolBox()->i18n()->trans('all'), 'where' => []]
+        ];
+        foreach ($this->codeModel->all('proyectos_estados', 'idestado', 'nombre') as $status) {
+            $where[] = ['label' => $status->description, 'where' => [new DataBaseWhere('idestado', $status->code)]];
+        }
+        $this->addFilterSelectWhere($viewName, 'status', $where);
 
-        $status = $this->codeModel->all('proyectos_estados', 'idestado', 'nombre');
-        $this->addFilterSelect($viewName, 'idestado', 'status', 'idestado', $status);
+        $this->addFilterAutocomplete($viewName, 'codcliente', 'customer', 'codcliente', 'clientes', 'codcliente', 'nombre');
+        $this->addFilterPeriod($viewName, 'fecha', 'date', 'fecha');
+        $this->addFilterPeriod($viewName, 'fechafin', 'end-date', 'fechafin');
     }
 
     /**
@@ -99,13 +107,13 @@ class ListProyecto extends ListController
         }
         $this->addFilterSelectWhere($viewName, 'status', $where);
 
-        $this->addFilterPeriod($viewName, 'fecha', 'date', 'fecha');
-        $this->addFilterPeriod($viewName, 'fechafin', 'end-date', 'fechafin');
-
         $users = $this->codeModel->all('users', 'nick', 'nick');
         $this->addFilterSelect($viewName, 'nick', 'admin', 'nick', $users);
 
         $this->addFilterAutocomplete($viewName, 'codcliente', 'customer', 'codcliente', 'clientes', 'codcliente', 'nombre');
+
+        $this->addFilterPeriod($viewName, 'fecha', 'date', 'fecha');
+        $this->addFilterPeriod($viewName, 'fechafin', 'end-date', 'fechafin');
     }
 
     /**
