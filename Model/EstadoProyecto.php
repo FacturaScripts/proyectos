@@ -1,7 +1,7 @@
 <?php
 /**
  * This file is part of Proyectos plugin for FacturaScripts
- * Copyright (C) 2020 Carlos Garcia Gomez <carlos@facturascripts.com>
+ * Copyright (C) 2021 Carlos Garcia Gomez <carlos@facturascripts.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -63,7 +63,7 @@ class EstadoProyecto extends Base\ModelClass
     }
 
     /**
-     * 
+     *
      * @return string
      */
     public static function primaryColumn(): string
@@ -72,7 +72,7 @@ class EstadoProyecto extends Base\ModelClass
     }
 
     /**
-     * 
+     *
      * @return string
      */
     public function primaryDescriptionColumn(): string
@@ -81,7 +81,7 @@ class EstadoProyecto extends Base\ModelClass
     }
 
     /**
-     * 
+     *
      * @return bool
      */
     public function save()
@@ -94,7 +94,7 @@ class EstadoProyecto extends Base\ModelClass
     }
 
     /**
-     * 
+     *
      * @return string
      */
     public static function tableName(): string
@@ -103,13 +103,13 @@ class EstadoProyecto extends Base\ModelClass
     }
 
     /**
-     * 
+     *
      * @param string $type
      * @param string $list
      *
      * @return string
      */
-    public function url(string $type = 'auto', string $list = 'ListProyecto?activetab=List'): string
+    public function url(string $type = 'auto', string $list = 'AdminProyectos?activetab=List'): string
     {
         return parent::url($type, $list);
     }
