@@ -1,7 +1,7 @@
 <?php
 /**
  * This file is part of Proyectos plugin for FacturaScripts
- * Copyright (C) 2020 Carlos Garcia Gomez <carlos@facturascripts.com>
+ * Copyright (C) 2021 Carlos Garcia Gomez <carlos@facturascripts.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -49,14 +49,10 @@ class ListTareaProyecto extends ListController
     {
         $this->createViewsTasks();
         $this->createViewsPrivateTasks();
-
-        if ($this->user->admin) {
-            $this->createViewsTaskStatus();
-        }
     }
 
     /**
-     * 
+     *
      * @param string $viewName
      */
     protected function createViewsPrivateTasks(string $viewName = 'ListTareaProyecto-private')
@@ -77,7 +73,7 @@ class ListTareaProyecto extends ListController
     }
 
     /**
-     * 
+     *
      * @param string $viewName
      */
     protected function createViewsTasks(string $viewName = 'ListTareaProyecto')
@@ -98,16 +94,7 @@ class ListTareaProyecto extends ListController
     }
 
     /**
-     * 
-     * @param string $viewName
-     */
-    protected function createViewsTaskStatus(string $viewName = 'ListFaseTarea')
-    {
-        $this->addView($viewName, 'FaseTarea', 'phases', 'fas fa-tags');
-    }
-
-    /**
-     * 
+     *
      * @param string   $viewName
      * @param ListView $view
      */

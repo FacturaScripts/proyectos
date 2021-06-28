@@ -40,7 +40,7 @@ class ListProyecto extends ListController
         $data = parent::getPageData();
         $data['menu'] = 'projects';
         $data['title'] = 'projects';
-        $data['icon'] = 'fas fa-folder-open';
+        $data['icon'] = 'fab fa-stack-overflow';
         return $data;
     }
 
@@ -48,14 +48,10 @@ class ListProyecto extends ListController
     {
         $this->createViewsProyects();
         $this->createViewsPrivateProyects();
-
-        if ($this->user->admin) {
-            $this->createViewsProyectStatus();
-        }
     }
 
     /**
-     * 
+     *
      * @param string $viewName
      */
     protected function createViewsPrivateProyects(string $viewName = 'ListProyecto-private')
@@ -89,7 +85,7 @@ class ListProyecto extends ListController
     }
 
     /**
-     * 
+     *
      * @param string $viewName
      */
     protected function createViewsProyects(string $viewName = 'ListProyecto')
@@ -127,16 +123,7 @@ class ListProyecto extends ListController
     }
 
     /**
-     * 
-     * @param string $viewName
-     */
-    protected function createViewsProyectStatus(string $viewName = 'ListEstadoProyecto')
-    {
-        $this->addView($viewName, 'EstadoProyecto', 'states', 'fas fa-tags');
-    }
-
-    /**
-     * 
+     *
      * @param string   $viewName
      * @param ListView $view
      */
