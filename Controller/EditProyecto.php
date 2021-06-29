@@ -50,7 +50,7 @@ class EditProyecto extends EditController
         $data = parent::getPageData();
         $data['menu'] = 'projects';
         $data['title'] = 'project';
-        $data['icon'] = 'fas fa-folder-open';
+        $data['icon'] = 'fab fa-stack-overflow';
         $data['showonmenu'] = false;
         return $data;
     }

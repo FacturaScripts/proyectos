@@ -90,7 +90,7 @@ class ListProyecto extends ListController
      */
     protected function createViewsProyects(string $viewName = 'ListProyecto')
     {
-        $this->addView($viewName, 'Proyecto', 'projects', 'fas fa-folder-open');
+        $this->addView($viewName, 'Proyecto', 'projects', 'fab fa-stack-overflow');
         $this->addOrderBy($viewName, ['fecha', 'idproyecto'], 'date', 2);
         $this->addOrderBy($viewName, ['fechainicio'], 'start-date');
         $this->addOrderBy($viewName, ['fechafin'], 'end-date');
