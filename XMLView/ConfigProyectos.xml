@@ -11,6 +11,12 @@
             <column name="number-length" numcolumns="3" order="110">
                 <widget type="number" fieldname="longnumero" decimal="0" min="1" required="true" />
             </column>
+            <column name="stock" title="stock" numcolumns="3" order="120">
+                <widget type="select" fieldname="burnstock" translate="true" required="true">
+                    <values title="no-burn">0</values>
+                    <values title="burn-stock">1</values>
+                </widget>
+            </column>
         </group>
     </columns>
 </view>

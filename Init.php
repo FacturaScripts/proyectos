@@ -46,6 +46,7 @@ class Init extends InitClass
         $this->loadExtension(new Extension\Controller\EditCliente());
         $this->loadExtension(new Extension\Controller\EditProducto());
         $this->loadExtension(new Extension\Model\Base\BusinessDocument());
+        $this->loadExtension(new Extension\Model\Stock());
     }
 
     public function update()
