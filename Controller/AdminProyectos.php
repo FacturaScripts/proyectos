@@ -18,20 +18,21 @@
  */
 namespace FacturaScripts\Plugins\Proyectos\Controller;
 
+use FacturaScripts\Dinamic\Lib\ExtendedController\BaseView;
 use FacturaScripts\Dinamic\Lib\ExtendedController\PanelController;
 
 /**
  * Description of AdminProyectos
  *
- * @author Carlos Garcia Gomez <carlos@facturascripts.com>
- * @author Jose Antonio Cuello Principal <yopli2000@gmail.com>
+ * @author Carlos Garcia Gomez              <carlos@facturascripts.com>
+ * @author Jose Antonio Cuello Principal    <yopli2000@gmail.com>
  */
 class AdminProyectos extends PanelController
 {
 
     private const VIEW_CONFIG_PROJECTS = 'ConfigProyectos';
-    private const VIEW_LIST_STATUS = 'ListEstadoProyecto';
-    private const VIEW_LIST_PHASES = 'ListFaseTarea';
+    private const VIEW_LIST_STATUS = 'EditEstadoProyecto';
+    private const VIEW_LIST_PHASES = 'EditFaseTarea';
 
     /**
      * Return the basic data for this page.
@@ -59,27 +60,6 @@ class AdminProyectos extends PanelController
     }
 
     /**
-     * Loads the data to display.
-     *
-     * @param string   $viewName
-     * @param BaseView $view
-     */
-    protected function loadData($viewName, $view)
-    {
-        switch ($viewName) {
-            case self::VIEW_CONFIG_PROJECTS:
-                $view->loadData('proyectos');
-                $view->model->name = 'proyectos';
-                break;
-
-            case self::VIEW_LIST_PHASES:
-            case self::VIEW_LIST_STATUS:
-                $view->loadData();
-                break;
-        }
-    }
-
-    /**
      *
      * @param string $viewName
      */
@@ -98,9 +78,7 @@ class AdminProyectos extends PanelController
      */
     private function createViewPhases(string $viewName = self::VIEW_LIST_PHASES)
     {
-        $this->addListView($viewName, 'FaseTarea', 'phases', 'fas fa-tags');
-        $this->views[$viewName]->searchFields = ['nombre'];
-        $this->views[$viewName]->addOrderBy(['nombre'], 'name');
+        $this->addEditListView($viewName, 'FaseTarea', 'phases', 'fas fa-hourglass-half');
     }
 
     /**
@@ -109,8 +87,27 @@ class AdminProyectos extends PanelController
      */
     private function createViewStatus(string $viewName = self::VIEW_LIST_STATUS)
     {
-        $this->addListView($viewName, 'EstadoProyecto', 'states', 'fas fa-tags');
-        $this->views[$viewName]->searchFields = ['nombre'];
-        $this->views[$viewName]->addOrderBy(['nombre'], 'name');
+        $this->addEditListView($viewName, 'EstadoProyecto', 'states', 'fas fa-tags');
+    }
+
+    /**
+     * Loads the data to display.
+     *
+     * @param string   $viewName
+     * @param BaseView $view
+     */
+    protected function loadData($viewName, $view)
+    {
+        switch ($viewName) {
+            case self::VIEW_CONFIG_PROJECTS:
+                $view->loadData('proyectos');
+                $view->model->name = 'proyectos';
+                break;
+
+            case self::VIEW_LIST_PHASES:
+            case self::VIEW_LIST_STATUS:
+                $view->loadData();
+                break;
+        }
     }
 }

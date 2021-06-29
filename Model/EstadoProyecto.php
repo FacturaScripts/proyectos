@@ -111,7 +111,7 @@ class EstadoProyecto extends Base\ModelClass
      */
     public function url(string $type = 'auto', string $list = 'AdminProyectos?activetab=List'): string
     {
-        return parent::url($type, $list);
+        return parent::url('list', $list);
     }
 
     /**
