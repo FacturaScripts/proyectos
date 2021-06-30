@@ -79,6 +79,7 @@ class AdminProyectos extends PanelController
     private function createViewPhases(string $viewName = self::VIEW_LIST_PHASES)
     {
         $this->addEditListView($viewName, 'FaseTarea', 'phases', 'fas fa-hourglass-half');
+        $this->views[$viewName]->setInLine(true);
     }
 
     /**
@@ -88,6 +89,7 @@ class AdminProyectos extends PanelController
     private function createViewStatus(string $viewName = self::VIEW_LIST_STATUS)
     {
         $this->addEditListView($viewName, 'EstadoProyecto', 'states', 'fas fa-tags');
+        $this->views[$viewName]->setInLine(true);
     }
 
     /**

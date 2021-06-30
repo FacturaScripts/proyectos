@@ -7,7 +7,7 @@
         <column name="name" order="110">
             <widget type="text" fieldname="nombre" required="true" />
         </column>
-        <column name="status-project" order="120">
+        <column name="status" order="120">
             <widget type="select" fieldname="idestado">
                 <values source="proyectos_estados" fieldcode="idestado" fieldtitle="nombre" />
             </widget>
