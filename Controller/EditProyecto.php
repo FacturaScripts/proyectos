@@ -108,6 +108,10 @@ class EditProyecto extends EditController
      */
     protected function createViewsStock(string $viewName = 'ListStockProyecto')
     {
+        if (false === (bool) $this->toolBox()->appSettings()->get('proyectos', 'stock', false)) {
+            return;
+        }
+
         $this->addListView($viewName, 'StockProyecto', 'stock', 'fas fa-dolly');
         $this->views[$viewName]->addSearchFields(['referencia']);
         $this->views[$viewName]->addOrderBy(['referencia'], 'reference');
