@@ -54,7 +54,6 @@ class Stock
                     new DataBaseWhere('disponible', 0, '>'),
                 ];
                 foreach ($stockProjectModel->all($where) as $stock) {
-                    $this->reservada += $stock->disponible;
                     $this->disponible -= $stock->disponible;
                 }
             }
