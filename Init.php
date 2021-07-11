@@ -47,6 +47,10 @@ class Init extends InitClass
         $this->loadExtension(new Extension\Controller\EditProducto());
         $this->loadExtension(new Extension\Model\Base\BusinessDocument());
         $this->loadExtension(new Extension\Model\Stock());
+
+        if (\class_exists('FacturaScripts\\Dinamic\\Controller\\Randomizer')) {
+            $this->loadExtension(new Extension\Controller\Randomizer());
+        }
     }
 
     public function update()
