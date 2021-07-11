@@ -18,8 +18,6 @@
  */
 namespace FacturaScripts\Plugins\Proyectos;
 
-use Exception;
-use FacturaScripts\Core\Base\DataBase;
 use FacturaScripts\Core\Base\InitClass;
 use FacturaScripts\Dinamic\Model\AlbaranCliente;
 use FacturaScripts\Dinamic\Model\AlbaranProveedor;
@@ -29,8 +27,6 @@ use FacturaScripts\Dinamic\Model\PedidoCliente;
 use FacturaScripts\Dinamic\Model\PedidoProveedor;
 use FacturaScripts\Dinamic\Model\PresupuestoCliente;
 use FacturaScripts\Dinamic\Model\PresupuestoProveedor;
-use FacturaScripts\Dinamic\Model\Role;
-use FacturaScripts\Dinamic\Model\RoleAccess;
 
 /**
  * Description of Init
@@ -67,47 +63,6 @@ class Init extends InitClass
         new PresupuestoProveedor();
 
         $this->setupSettings();
-        $this->createProjectRole();
-    }
-
-    private function createProjectRole()
-    {
-        $role = new Role();
-        if ($role->loadFromCode('proyectos')) {
-            return;
-        }
-        $role->codrole = 'proyectos';
-        $role->descripcion = 'Proyectos';
-
-        $dataBase = new DataBase();
-        $dataBase->beginTransaction();
-        try {
-            if ($role->save()) {
-                $access = new RoleAccess();
-
-                $listAccess = [
-                    'EditNotaProyecto',
-                    'EditTareaProyecto',
-                    'ListTareaProyecto',
-                    'EditFaseTarea',
-                    'EditEstadoProyecto',
-                    'ListProyecto',
-                    'EditProyecto'
-                ];
-
-                foreach ($listAccess as $list) {
-                    $access->clear();
-                    $access->allowdelete = 1;
-                    $access->allowupdate = 1;
-                    $access->codrole = $role->codrole;
-                    $access->pagename = $list;
-                    $access->save();
-                }
-            }
-            $dataBase->commit();
-        } catch (Exception $e) {
-            $dataBase->rollback();
-        }
     }
 
     private function setupSettings()

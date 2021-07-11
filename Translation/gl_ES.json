@@ -10,8 +10,9 @@
     "project-stock-rebuild-error": "Erro ao rexenerar o stock",
     "project-stock-rebuild-ok": "Stock rexenerado correctamente",
     "projects": "Proxectos",
+    "show-project-stock": "show-project-stock",
     "task": "Tarefa",
     "tasks": "Tarefas",
-    "total-purchases": "total-purchases",
-    "total-sales": "total-sales"
+    "total-purchases": "Total compras",
+    "total-sales": "Total vendas"
 }

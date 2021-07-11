@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <view>
     <columns>
-        <group name="projects" title="projects" icon="fas fa-folder-open" numcolumns="12">
+        <group name="projects" title="code" icon="fas fa-hashtag" numcolumns="12">
             <column name="name" display="none" order="0">
                 <widget type="text" fieldname="name" readonly="true" required="true" />
             </column>
@@ -16,6 +16,14 @@
                     <values title="no-burn">0</values>
                     <values title="burn-stock">1</values>
                 </widget>
+            </column>
+        </group>
+        <group name="stock" title="stock" icon="fas fa-dolly" numcolumns="12">
+            <column name="show-project-stock" order="100">
+                <widget type="checkbox" fieldname="stock" />
+            </column>
+            <column name="burn-project-stock" order="100">
+                <widget type="checkbox" fieldname="burnstock" />
             </column>
         </group>
     </columns>

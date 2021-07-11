@@ -10,6 +10,7 @@
     "project-stock-rebuild-error": "Error al regenerar el stock",
     "project-stock-rebuild-ok": "Stock regenerado correctamente",
     "projects": "Proyectos",
+    "show-project-stock": "Mostrar stock del proyecto",
     "task": "Tarea",
     "tasks": "Tareas",
     "total-purchases": "Total compras",

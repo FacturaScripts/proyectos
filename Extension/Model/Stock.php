@@ -18,15 +18,13 @@
  */
 namespace FacturaScripts\Plugins\Proyectos\Extension\Model;
 
-use FacturaScripts\Core\App\AppSettings;
 use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
-use FacturaScripts\Dinamic\Model\TotalModel;
+use FacturaScripts\Plugins\Proyectos\Model\StockProyecto;
 
 /**
- * Description of BusinessDocument
+ * Description of Stock
  *
  * @author Carlos Garcia Gomez <carlos@facturascripts.com>
- * @author Jose Antonio Cuello Principal <yopli2000@gmail.com>
  */
 class Stock
 {
@@ -34,36 +32,34 @@ class Stock
     public function saveUpdateBefore()
     {
         return function() {
-            if (!empty($this->referencia)) {
-                $this->setAvailableStock();
-            }
-            return true;
+            return $this->setAvailableStock();
         };
     }
 
     public function saveInsertBefore()
     {
         return function() {
-            if (!empty($this->referencia)) {
-                $this->setAvailableStock();
-            }
-            return true;
+            return $this->setAvailableStock();
         };
     }
 
     protected function setAvailableStock()
     {
         return function() {
-            $burnStock = AppSettings::get('projects', 'burnstock', 0);
-            if ($burnStock == 1) {
+            $burnStock = (bool) $this->toolBox()->appSettings()->get('proyectos', 'burnstock', 0);
+            if ($burnStock) {
+                $stockProjectModel = new StockProyecto();
                 $where = [
                     new DataBaseWhere('referencia', $this->referencia),
                     new DataBaseWhere('disponible', 0, '>'),
                 ];
-                $total = TotalModel::sum('proyectos_stocks', 'disponible' , $where);
-                $this->reservado += $total;
-                $this->disponible -= $total;
+                foreach ($stockProjectModel->all($where) as $stock) {
+                    $this->reservada += $stock->disponible;
+                    $this->disponible -= $stock->disponible;
+                }
             }
+
+            return true;
         };
     }
 }

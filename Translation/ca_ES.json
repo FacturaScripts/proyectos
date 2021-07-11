@@ -10,8 +10,9 @@
     "project-stock-rebuild-error": "Error al regenerar l'estoc",
     "project-stock-rebuild-ok": "Estoc regenerat correctament",
     "projects": "Projectes",
+    "show-project-stock": "Mostrar l'estoc del projecte",
     "task": "Tasca",
     "tasks": "Tasques",
-    "total-purchases": "total-purchases",
-    "total-sales": "total-sales"
+    "total-purchases": "Total compres",
+    "total-sales": "Total vendes"
 }

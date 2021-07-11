@@ -50,7 +50,7 @@ class EditProyecto extends EditController
         $data = parent::getPageData();
         $data['menu'] = 'projects';
         $data['title'] = 'project';
-        $data['icon'] = 'fas fa-folder-open';
+        $data['icon'] = 'fab fa-stack-overflow';
         $data['showonmenu'] = false;
         return $data;
     }
@@ -108,6 +108,10 @@ class EditProyecto extends EditController
      */
     protected function createViewsStock(string $viewName = 'ListStockProyecto')
     {
+        if (false === (bool) $this->toolBox()->appSettings()->get('proyectos', 'stock', false)) {
+            return;
+        }
+
         $this->addListView($viewName, 'StockProyecto', 'stock', 'fas fa-dolly');
         $this->views[$viewName]->addSearchFields(['referencia']);
         $this->views[$viewName]->addOrderBy(['referencia'], 'reference');
