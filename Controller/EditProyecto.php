@@ -89,6 +89,7 @@ class EditProyecto extends EditController
         $this->addListView($viewName, $modelName, $title, 'fas fa-copy');
         $this->views[$viewName]->addOrderBy(['fecha', 'hora'], 'date', 2);
         $this->views[$viewName]->addOrderBy(['total'], 'total');
+        $this->views[$viewName]->addSearchFields(['observaciones']);
     }
 
     /**
