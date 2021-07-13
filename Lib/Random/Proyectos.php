@@ -19,12 +19,16 @@
 namespace FacturaScripts\Plugins\Proyectos\Lib\Random;
 
 use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
+use FacturaScripts\Core\Model\Base\BusinessDocument;
+use FacturaScripts\Dinamic\Model\AlbaranCliente;
 use FacturaScripts\Dinamic\Model\AlbaranProveedor;
+use FacturaScripts\Dinamic\Model\FacturaCliente;
 use FacturaScripts\Dinamic\Model\FacturaProveedor;
+use FacturaScripts\Dinamic\Model\PedidoCliente;
 use FacturaScripts\Dinamic\Model\PedidoProveedor;
+use FacturaScripts\Dinamic\Model\PresupuestoCliente;
 use FacturaScripts\Dinamic\Model\PresupuestoProveedor;
 use FacturaScripts\Plugins\Randomizer\Lib\Random\NewItems;
-use FacturaScripts\Plugins\Proyectos\Model\EstadoProyecto;
 use FacturaScripts\Plugins\Proyectos\Model\FaseTarea;
 use FacturaScripts\Plugins\Proyectos\Model\Proyecto;
 use FacturaScripts\Plugins\Proyectos\Model\TareaProyecto;
@@ -35,71 +39,39 @@ use Faker;
  * Description of Proyectos
  *
  * @author Carlos Garcia Gomez <carlos@facturascripts.com>
- * @author Jose Antonio Cuello  <yopli2000@gmail.com>
+ * @author Jose Antonio Cuello <yopli2000@gmail.com>
  */
 class Proyectos extends NewItems
 {
 
     /**
      *
-     * @var AlbaranProveedor[]
-     */
-    protected static $deliveryNotes = null;
-
-    /**
-     *
-     * @var PresupuestoProveedor[];
-     */
-    protected static $estimations = null;
-
-    /**
-     *
-     * @var FacturaProveedor[]
-     */
-    protected static $invoices = null;
-
-    /**
-     *
-     * @var PedidoProveedor[]
-     */
-    protected static $orders = null;
-
-    /**
-     *
      * @var FaseTarea[]
      */
-    protected static $phases = null;
-
-    /**
-     *
-     * @var EstadoProyecto[]
-     */
-    protected static $status = null;
+    private static $phases = null;
 
     /**
      *
      * @param int $number
+     *
      * @return int
      */
-    public static function create(int $number = 50): int
+    public static function create(int $number = 25): int
     {
         $faker = Faker\Factory::create('es_ES');
 
+        static::dataBase()->beginTransaction();
         for ($generated = 0; $generated < $number; $generated++) {
             $project = new Proyecto();
             $project->codcliente = static::codcliente();
-            $project->idempresa = static::empresa();
-            $project->nick = static::nick();
             $project->descripcion = $faker->optional()->text;
-            $project->nombre = $faker->name();
             $project->fecha = $faker->date();
-            $project->fechainicio = $faker->optional(0.1)->date();
             $project->fechafin = $faker->optional(0.1)->date();
+            $project->fechainicio = $faker->optional(0.1)->date();
+            $project->idempresa = static::idempresa();
+            $project->nick = static::nick();
+            $project->nombre = $faker->name();
             $project->privado = $faker->optional()->boolean();
-
-            $estado = static::projectStatus();
-            $project->idestado = $estado->idestado;
-            $project->editable = $estado->editable;
 
             if ($project->exists()) {
                 continue;
@@ -110,50 +82,68 @@ class Proyectos extends NewItems
             }
 
             if ($project->privado) {
-                static::createUserProject($faker, $project->idproyecto);
+                static::createProjectUsers($faker, $project);
             }
 
-            static::createTask($faker, $project->idproyecto);
-            static::assignToPurchases($faker, $project->idproyecto);
+            static::assignDocuments(new PresupuestoProveedor(), $project->idproyecto);
+            static::assignDocuments(new PedidoProveedor(), $project->idproyecto);
+            static::assignDocuments(new AlbaranProveedor(), $project->idproyecto);
+            static::assignDocuments(new FacturaProveedor(), $project->idproyecto);
+
+            static::assignDocuments(new PresupuestoCliente(), $project->idproyecto);
+            static::assignDocuments(new PedidoCliente(), $project->idproyecto);
+            static::assignDocuments(new AlbaranCliente(), $project->idproyecto);
+            static::assignDocuments(new FacturaCliente(), $project->idproyecto);
+
+            static::createTasks($faker, $project->idproyecto);
         }
 
+        static::dataBase()->commit();
         return $generated;
     }
 
     /**
-     * Assign the project to a random number of purchase documents.
-     *
-     * @param Faker $faker
-     * @param int $code
+     * Assign the project to a random number of documents.
+     * 
+     * @param BusinessDocument $model
+     * @param int              $code
      */
-    protected static function assignToPurchases(&$faker, $code)
+    protected static function assignDocuments($model, $code)
     {
-        static::loadPurchasesDocs();
-        static::setProjectToDocument($code, static::$estimations, $faker->numberBetween(1, 10));
-        static::setProjectToDocument($code, static::$orders, $faker->numberBetween(1, 10));
-        static::setProjectToDocument($code, static::$deliveryNotes, $faker->numberBetween(1, 10));
-        static::setProjectToDocument($code, static::$invoices, $faker->numberBetween(1, 10));
+        $limit = \mt_rand(-19, 59);
+        if ($limit <= 0) {
+            return;
+        }
+
+        $where = [
+            new DataBaseWhere('editable', true),
+            new DataBaseWhere('idproyecto', null, 'IS')
+        ];
+        foreach ($model->all($where, [], 0, $limit) as $doc) {
+            $doc->idproyecto = $code;
+            $doc->save();
+        }
     }
 
     /**
      * Create tasks for the project.
      *
-     * @param Faker $faker
-     * @param int $code
+     * @param Faker\Generator $faker
+     * @param int             $code
      */
-    protected static function createTask(&$faker, $code)
+    protected static function createTasks(&$faker, $code)
     {
-        $max = $faker->numberBetween(1, 10);
+        $max = $faker->numberBetween(-1, 10);
         for ($index = 1; $index <= $max; $index++) {
             $task = new TareaProyecto();
-            $task->idproyecto = $code;
-            $task->nombre = $faker->name();
-            $task->fecha = $faker->date();
-            $task->fechainicio = $faker->optional(0.1)->date();
-            $task->fechafin = $faker->optional(0.1)->date();
             $task->cantidad = $faker->numberBetween(1, 99);
             $task->descripcion = $faker->text;
-            $task->idfase = static::taskPhase();
+            $task->fecha = $faker->date();
+            $task->fechafin = $faker->optional(0.1)->date();
+            $task->fechainicio = $faker->optional(0.1)->date();
+            $task->idfase = static::idfase();
+            $task->idproyecto = $code;
+            $task->nombre = $faker->name();
             if (false === $task->save()) {
                 break;
             }
@@ -163,28 +153,30 @@ class Proyectos extends NewItems
     /**
      * Create user access to private projects.
      *
-     * @param Faker $faker
-     * @param int $code
+     * @param Faker\Generator $faker
+     * @param Proyecto        $project
      */
-    protected static function createUserProject(&$faker, $code)
+    protected static function createProjectUsers(&$faker, &$project)
     {
-        $max = $faker->numberBetween(1, 3);
+        $max = $faker->numberBetween(-1, 4);
         for ($index = 1; $index <= $max; $index++) {
             $nick = static::nick();
-            $where = [
-                new DataBaseWhere('idproyecto', $code),
-                new DataBaseWhere('nick', $nick),
-            ];
+            if ($nick === $project->nick) {
+                continue;
+            }
 
             $user = new UserProyecto();
+            $where = [
+                new DataBaseWhere('idproyecto', $project->idproyecto),
+                new DataBaseWhere('nick', $nick)
+            ];
             if ($user->loadFromCode('', $where)) {
                 break;
             }
 
-            $user->idproyecto = $code;
-            $user->nick = $nick;
             $user->fecha = $faker->date();
-
+            $user->idproyecto = $project->idproyecto;
+            $user->nick = $nick;
             if (false === $user->save()) {
                 break;
             }
@@ -192,54 +184,11 @@ class Proyectos extends NewItems
     }
 
     /**
-     * Upload the list of purchase documents without assigning to any project.
-     */
-    protected static function loadPurchasesDocs()
-    {
-        $where = [ new DataBaseWhere('idproyecto', NULL, 'IS') ];
-        if (null === static::$estimations) {
-            $estimation = new PresupuestoProveedor();
-            static::$estimations = $estimation->all($where);
-        }
-
-        if (null === static::$orders) {
-            $order = new PedidoProveedor();
-            static::$orders = $order->all($where);
-        }
-
-        if (null === static::$deliveryNotes) {
-            $deliveryNote = new AlbaranProveedor();
-            static::$deliveryNotes = $deliveryNote->all($where);
-        }
-
-        if (null === static::$invoices) {
-            $invoice = new FacturaProveedor();
-            static::$invoices = $invoice->all($where);
-        }
-    }
-
-    /**
-     * Returns a random status for a project.
-     *
-     * @return EstadoProyecto
-     */
-    protected static function projectStatus()
-    {
-        if (null === static::$status) {
-            $projectStatus = new EstadoProyecto();
-            static::$status = $projectStatus->all();
-        }
-
-        \shuffle(static::$status);
-        return empty(static::$status) ? $projectStatus : static::$status[0];
-    }
-
-    /**
      * Returns a random phase for a task.
      *
      * @return int
      */
-    protected static function taskPhase()
+    protected static function idfase()
     {
         if (null === static::$phases) {
             $taskPhase = new FaseTarea();
@@ -248,30 +197,5 @@ class Proyectos extends NewItems
 
         \shuffle(static::$phases);
         return static::$phases[0]->idfase;
-    }
-
-    /**
-     * Assign a project to a document from the indicated document list.
-     * If you manage to assign the project, the assigned document is removed
-     * from the document list.
-     *
-     * @param int $code
-     * @param BusinessDocument $docList
-     * @param int $max
-     */
-    protected static function setProjectToDocument($code, &$docList, $max)
-    {
-        for ($index = 1; $index <= $max; $index++) {
-            if (empty($docList)) {
-                break;
-            }
-
-            \shuffle($docList);
-            $docList[0]->idproyecto = $code;
-            if (false === $docList[0]->save()) {
-                break;
-            }
-            \array_splice($docList, 0, 1);
-        }
     }
 }

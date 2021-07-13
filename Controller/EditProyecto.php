@@ -89,7 +89,12 @@ class EditProyecto extends EditController
         $this->addListView($viewName, $modelName, $title, 'fas fa-copy');
         $this->views[$viewName]->addOrderBy(['fecha', 'hora'], 'date', 2);
         $this->views[$viewName]->addOrderBy(['total'], 'total');
-        $this->views[$viewName]->addSearchFields(['observaciones']);
+
+        if (\substr($viewName, -7) === 'Cliente') {
+            $this->views[$viewName]->addSearchFields(['codigo', 'nombrecliente', 'numero2', 'observaciones']);
+        } elseif (\substr($viewName, -9) === 'Proveedor') {
+            $this->views[$viewName]->addSearchFields(['codigo', 'nombre', 'numproveedor', 'observaciones']);
+        }
     }
 
     /**
