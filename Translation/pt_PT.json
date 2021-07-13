@@ -1,4 +1,5 @@
 {
+    "burn-project-stock": "burn-project-stock",
     "calendar": "Calendário",
     "canceled": "Cancelado",
     "completed": "Completado",
@@ -10,7 +11,7 @@
     "project-stock-rebuild-error": "project-stock-rebuild-error",
     "project-stock-rebuild-ok": "Estoque reconstruído com sucesso",
     "projects": "Projetos",
-    "show-project-stock": "show-project-stock",
+    "show-project-stock": "Mostras estoque do Projeto",
     "task": "Tarefa",
     "tasks": "Tarefas",
     "total-purchases": "Total das Compras",

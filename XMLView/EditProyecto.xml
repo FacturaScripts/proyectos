@@ -8,19 +8,19 @@
             <column name="name" order="110">
                 <widget type="text" fieldname="nombre" />
             </column>
-            <column name="date" display="right" order="120">
+            <column name="date" order="120">
                 <widget type="date" fieldname="fecha" readonly="true" required="true" />
             </column>
-            <column name="status" display="right" order="130">
+            <column name="start-date" order="130">
+                <widget type="date" fieldname="fechainicio" />
+            </column>
+            <column name="end-date" order="140">
+                <widget type="date" fieldname="fechafin" />
+            </column>
+            <column name="status" order="150">
                 <widget type="select" fieldname="idestado" required="true">
                     <values source="proyectos_estados" fieldcode="idestado" fieldtitle="nombre" />
                 </widget>
-            </column>
-            <column name="start-date" display="right" order="140">
-                <widget type="date" fieldname="fechainicio" />
-            </column>
-            <column name="end-date" display="right" order="150">
-                <widget type="date" fieldname="fechafin" />
             </column>
             <column name="description" numcolumns="12" order="160">
                 <widget type="textarea" fieldname="descripcion" required="true" rows="8" />
