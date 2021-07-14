@@ -22,6 +22,7 @@ use FacturaScripts\Core\Base\CronClass;
 use FacturaScripts\Dinamic\Lib\ProjectStockManager;
 use FacturaScripts\Dinamic\Lib\ProjectTotalManager;
 use FacturaScripts\Dinamic\Model\Proyecto;
+use FacturaScripts\Dinamic\Model\Stock;
 
 /**
  * Description of Cron
@@ -40,7 +41,28 @@ class Cron extends CronClass
                 ProjectTotalManager::recalculate($project->idproyecto);
             }
 
+            $burnStock = (bool) $this->toolBox()->appSettings()->get('proyectos', 'burnstock', 0);
+            if ($burnStock) {
+                $this->updateStock();
+            }
+
             $this->jobDone('project-stock-update');
+        }
+    }
+
+    protected function updateStock()
+    {
+        $stockModel = new Stock();
+        $offset = 0;
+
+        $stocks = $stockModel->all([], ['idstock' => 'ASC'], $offset);
+        while (!empty($stocks)) {
+            foreach ($stocks as $stock) {
+                $stock->save();
+                $offset++;
+            }
+
+            $stocks = $stockModel->all([], ['idstock' => 'ASC'], $offset);
         }
     }
 }

@@ -110,7 +110,7 @@ class Proyectos extends NewItems
      */
     protected static function assignDocuments($model, $code)
     {
-        $limit = \mt_rand(-19, 59);
+        $limit = \mt_rand(0, 9) === 0 ? \mt_rand(1, 59) : \mt_rand(0, 2);
         if ($limit <= 0) {
             return;
         }

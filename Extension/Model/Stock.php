@@ -47,15 +47,17 @@ class Stock
     {
         return function() {
             $burnStock = (bool) $this->toolBox()->appSettings()->get('proyectos', 'burnstock', 0);
-            if ($burnStock) {
-                $stockProjectModel = new StockProyecto();
-                $where = [
-                    new DataBaseWhere('referencia', $this->referencia),
-                    new DataBaseWhere('disponible', 0, '>'),
-                ];
-                foreach ($stockProjectModel->all($where) as $stock) {
-                    $this->disponible -= $stock->disponible;
-                }
+            if (false === $burnStock) {
+                return true;
+            }
+
+            $stockProjectModel = new StockProyecto();
+            $where = [
+                new DataBaseWhere('referencia', $this->referencia),
+                new DataBaseWhere('disponible', 0, '>')
+            ];
+            foreach ($stockProjectModel->all($where) as $stock) {
+                $this->disponible -= $stock->disponible;
             }
 
             return true;
