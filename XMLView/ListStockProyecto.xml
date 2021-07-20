@@ -13,7 +13,7 @@
             <widget type="text" fieldname="referencia" />
         </column>
         <column name="description" order="110">
-            <widget type="select" fieldname="idproducto">
+            <widget type="autocomplete" fieldname="idproducto">
                 <values source="productos" fieldcode="idproducto" fieldtitle="descripcion" />
             </widget>
         </column>
