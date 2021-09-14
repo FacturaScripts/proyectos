@@ -70,7 +70,7 @@ class Proyectos extends NewItems
             $project->idempresa = static::idempresa();
             $project->nick = static::nick();
             $project->nombre = $faker->name();
-            $project->privado = $faker->optional()->boolean();
+            $project->privado = $faker->boolean();
 
             if ($project->exists()) {
                 continue;
