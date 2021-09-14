@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+
 namespace FacturaScripts\Plugins\Proyectos\Lib\Random;
 
 use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
@@ -28,11 +29,11 @@ use FacturaScripts\Dinamic\Model\PedidoCliente;
 use FacturaScripts\Dinamic\Model\PedidoProveedor;
 use FacturaScripts\Dinamic\Model\PresupuestoCliente;
 use FacturaScripts\Dinamic\Model\PresupuestoProveedor;
-use FacturaScripts\Plugins\Randomizer\Lib\Random\NewItems;
 use FacturaScripts\Plugins\Proyectos\Model\FaseTarea;
 use FacturaScripts\Plugins\Proyectos\Model\Proyecto;
 use FacturaScripts\Plugins\Proyectos\Model\TareaProyecto;
 use FacturaScripts\Plugins\Proyectos\Model\UserProyecto;
+use FacturaScripts\Plugins\Randomizer\Lib\Random\NewItems;
 use Faker;
 
 /**
@@ -45,13 +46,11 @@ class Proyectos extends NewItems
 {
 
     /**
-     *
      * @var FaseTarea[]
      */
     private static $phases = null;
 
     /**
-     *
      * @param int $number
      *
      * @return int
@@ -104,13 +103,13 @@ class Proyectos extends NewItems
 
     /**
      * Assign the project to a random number of documents.
-     * 
+     *
      * @param BusinessDocument $model
-     * @param int              $code
+     * @param int $code
      */
     protected static function assignDocuments($model, $code)
     {
-        $limit = \mt_rand(0, 9) === 0 ? \mt_rand(1, 59) : \mt_rand(0, 2);
+        $limit = mt_rand(0, 9) === 0 ? mt_rand(1, 59) : mt_rand(0, 2);
         if ($limit <= 0) {
             return;
         }
@@ -129,7 +128,7 @@ class Proyectos extends NewItems
      * Create tasks for the project.
      *
      * @param Faker\Generator $faker
-     * @param int             $code
+     * @param int $code
      */
     protected static function createTasks(&$faker, $code)
     {
@@ -154,7 +153,7 @@ class Proyectos extends NewItems
      * Create user access to private projects.
      *
      * @param Faker\Generator $faker
-     * @param Proyecto        $project
+     * @param Proyecto $project
      */
     protected static function createProjectUsers(&$faker, &$project)
     {
@@ -190,12 +189,12 @@ class Proyectos extends NewItems
      */
     protected static function idfase()
     {
-        if (null === static::$phases) {
+        if (null === self::$phases) {
             $taskPhase = new FaseTarea();
-            static::$phases = $taskPhase->all();
+            self::$phases = $taskPhase->all();
         }
 
-        \shuffle(static::$phases);
-        return static::$phases[0]->idfase;
+        shuffle(self::$phases);
+        return self::$phases[0]->idfase;
     }
 }
