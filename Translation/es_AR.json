@@ -1,0 +1,19 @@
+{
+    "burn-project-stock": "Quemar stock",
+    "calendar": "Calendario",
+    "canceled": "Cancelado",
+    "completed": "Completado",
+    "phase": "Fase",
+    "phases": "Fases",
+    "private": "Privado",
+    "processing": "Procesando",
+    "project": "Proyecto",
+    "project-stock-rebuild-error": "Error al regenerar el stock",
+    "project-stock-rebuild-ok": "Stock regenerado correctamente",
+    "projects": "Proyectos",
+    "show-project-stock": "Mostrar stock del proyecto",
+    "task": "Tarea",
+    "tasks": "Tareas",
+    "total-purchases": "Total compras",
+    "total-sales": "Total ventas"
+}
