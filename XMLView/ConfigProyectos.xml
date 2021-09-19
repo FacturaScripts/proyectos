@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <view>
     <columns>
-        <group name="projects" title="code" icon="fas fa-hashtag" numcolumns="12">
+        <group name="projects" title="name" icon="fas fa-hashtag" numcolumns="12">
             <column name="name" display="none" order="0">
                 <widget type="text" fieldname="name" readonly="true" required="true" />
             </column>

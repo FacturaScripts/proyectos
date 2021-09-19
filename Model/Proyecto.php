@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+
 namespace FacturaScripts\Plugins\Proyectos\Model;
 
 use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
@@ -34,85 +35,71 @@ class Proyecto extends Base\ModelOnChangeClass
     use Base\ModelTrait;
 
     /**
-     *
      * @var string
      */
     public $codcliente;
 
     /**
-     *
      * @var string
      */
     public $descripcion;
 
     /**
-     *
      * @var bool
      */
     public $editable;
 
     /**
-     *
      * @var string
      */
     public $fecha;
 
     /**
-     *
      * @var string
      */
     public $fechafin;
 
     /**
-     *
      * @var string
      */
     public $fechainicio;
 
     /**
-     *
      * @var integer
      */
     public $idempresa;
 
     /**
-     *
      * @var integer
      */
     public $idestado;
 
     /**
-     *
      * @var integer
      */
     public $idproyecto;
 
     /**
-     *
      * @var string
      */
     public $nick;
 
     /**
-     *
      * @var string
      */
     public $nombre;
 
     /**
-     *
      * @var bool
      */
     public $privado;
 
     /**
-     * 
      * @var float
      */
     public $totalcompras;
 
     /**
-     * 
      * @var float
      */
     public $totalventas;
@@ -121,7 +108,7 @@ class Proyecto extends Base\ModelOnChangeClass
     {
         parent::clear();
         $this->editable = true;
-        $this->fecha = \date(self::DATE_STYLE);
+        $this->fecha = date(self::DATE_STYLE);
         $this->privado = false;
         $this->totalcompras = 0.0;
         $this->totalventas = 0.0;
@@ -137,7 +124,6 @@ class Proyecto extends Base\ModelOnChangeClass
     }
 
     /**
-     * 
      * @return EstadoProyecto[]
      */
     public function getAvaliableStatus()
@@ -152,7 +138,6 @@ class Proyecto extends Base\ModelOnChangeClass
     }
 
     /**
-     * 
      * @return EstadoProyecto
      */
     public function getStatus()
@@ -163,8 +148,7 @@ class Proyecto extends Base\ModelOnChangeClass
     }
 
     /**
-     * 
-     * @return Tarea[]
+     * @return TareaProyecto[]
      */
     public function getTasks()
     {
@@ -174,7 +158,6 @@ class Proyecto extends Base\ModelOnChangeClass
     }
 
     /**
-     * 
      * @return string
      */
     public function install()
@@ -187,7 +170,6 @@ class Proyecto extends Base\ModelOnChangeClass
     }
 
     /**
-     * 
      * @return string
      */
     public static function primaryColumn(): string
@@ -196,7 +178,6 @@ class Proyecto extends Base\ModelOnChangeClass
     }
 
     /**
-     * 
      * @return string
      */
     public function primaryDescriptionColumn(): string
@@ -205,7 +186,6 @@ class Proyecto extends Base\ModelOnChangeClass
     }
 
     /**
-     * 
      * @return string
      */
     public static function tableName(): string
@@ -214,7 +194,6 @@ class Proyecto extends Base\ModelOnChangeClass
     }
 
     /**
-     * 
      * @return bool
      */
     public function test()
@@ -229,7 +208,6 @@ class Proyecto extends Base\ModelOnChangeClass
     }
 
     /**
-     * 
      * @param string $field
      *
      * @return bool
@@ -246,7 +224,6 @@ class Proyecto extends Base\ModelOnChangeClass
     }
 
     /**
-     * 
      * @param User $user
      *
      * @return bool
@@ -266,11 +243,10 @@ class Proyecto extends Base\ModelOnChangeClass
     }
 
     /**
-     * 
      * @param array $fields
      */
     protected function setPreviousData(array $fields = [])
     {
-        parent::setPreviousData(\array_merge(['idestado'], $fields));
+        parent::setPreviousData(array_merge(['idestado'], $fields));
     }
 }

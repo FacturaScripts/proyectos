@@ -1,7 +1,7 @@
 <?php
 /**
  * This file is part of Proyectos plugin for FacturaScripts
- * Copyright (C) 2020 Carlos Garcia Gomez <carlos@facturascripts.com>
+ * Copyright (C) 2020-2021 Carlos Garcia Gomez <carlos@facturascripts.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -16,9 +16,10 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+
 namespace FacturaScripts\Plugins\Proyectos\Lib;
 
-use FacturaScripts\Core\Base\ToolBox;
+use FacturaScripts\Core\App\AppSettings;
 use FacturaScripts\Plugins\Proyectos\Model\Proyecto;
 
 /**
@@ -31,33 +32,23 @@ class ProjectCodeGenerator
 {
 
     /**
-     * 
      * @param Proyecto $project
      */
     public static function new(&$project)
     {
-        $patron = static::toolBox()->appSettings()->get('proyectos', 'patron', 'PR-{ANYO}-{NUM}');
-        $longnumero = static::toolBox()->appSettings()->get('proyectos', 'longnumero', 6);
+        $patron = AppSettings::get('proyectos', 'patron', 'PR-{ANYO}-{NUM}');
+        $longnumero = AppSettings::get('proyectos', 'longnumero', 6);
 
         $proyecto = new Proyecto();
         $numero = 1 + $proyecto->count();
 
-        $project->nombre = \strtr($patron, [
-            '{ANYO}' => \date('Y'),
-            '{ANYO2}' => \date('y'),
-            '{MES}' => \date('m'),
-            '{DIA}' => \date('d'),
-            '{NUM}' => (string) $numero,
-            '{0NUM}' => \str_pad((string) $numero, $longnumero, '0', \STR_PAD_LEFT)
+        $project->nombre = strtr($patron, [
+            '{ANYO}' => date('Y'),
+            '{ANYO2}' => date('y'),
+            '{MES}' => date('m'),
+            '{DIA}' => date('d'),
+            '{NUM}' => (string)$numero,
+            '{0NUM}' => str_pad((string)$numero, $longnumero, '0', STR_PAD_LEFT)
         ]);
-    }
-
-    /**
-     * 
-     * @return ToolBox
-     */
-    protected static function toolBox()
-    {
-        return new ToolBox();
     }
 }
