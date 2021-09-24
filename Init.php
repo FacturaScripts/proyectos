@@ -70,7 +70,6 @@ class Init extends InitClass
 
     private function createRoleForPlugin()
     {
-        $createSomething = false;
         $dataBase = new DataBase();
         $dataBase->beginTransaction();
         
@@ -79,8 +78,7 @@ class Init extends InitClass
         
         // Check if exist the name of this plugin between roles
         if (false === $role->loadFromCode($nameOfRole)) 
-        {
-            // NO exist, then will be create
+        {   // NO exist, then will be create
             $role->codrole = $nameOfRole;
             $role->descripcion = 'Rol - plugin ' . $nameOfRole;
             
@@ -90,55 +88,44 @@ class Init extends InitClass
             {   // Can't create it
                 $dataBase->rollback();
             }
-            
-            $createSomething = true;
         }
         
-            // if the plugin is active and then we decide it will be deactive, 
-            // the permissions of the rule will be delete.
-            // Then always is necesary to check ir they exist
-            $nameControllers = ['AdminProyectos', 'EditNotaProyecto', 'EditProyecto', 'EditTareaProyecto', 'ListProyecto', 'ListTareaProyecto'];
-            foreach ($nameControllers as $nameController) 
+        // if the plugin is active and then we decide it will be deactive, 
+        // the permissions of the rule will be delete.
+        // Then always is necesary to check ir they exist
+        $nameControllers = ['AdminProyectos', 'EditNotaProyecto', 'EditProyecto', 'EditTareaProyecto', 'ListProyecto', 'ListTareaProyecto'];
+        foreach ($nameControllers as $nameController) 
+        {
+            $roleAccess = new RoleAccess();
+
+            // Check if exist the $nameController between permissions for 
+            // this role/plugin
+            $where = [
+                new DataBaseWhere('codrole', $nameOfRole),
+                new DataBaseWhere('pagename', $nameController)
+            ];
+
+            if (false === $roleAccess->loadFromCode('', $where)) 
             {
-                $roleAccess = new RoleAccess();
-                
-                // Check if exist the $nameController between permissions for 
-                // this role/plugin
-                $where = [
-                    new DataBaseWhere('codrole', $nameOfRole),
-                    new DataBaseWhere('pagename', $nameController)
-                ];
-                
-                if (false === $roleAccess->loadFromCode('', $where)) 
-                {
-                    // NO exist, then will be create
-                    $roleAccess->allowdelete = true;
-                    $roleAccess->allowupdate = true;
-                    $roleAccess->codrole = $nameOfRole; 
-                    $roleAccess->pagename = $nameController;
-                    $roleAccess->onlyownerdata = false;
+                // NO exist, then will be create
+                $roleAccess->allowdelete = true;
+                $roleAccess->allowupdate = true;
+                $roleAccess->codrole = $nameOfRole; 
+                $roleAccess->pagename = $nameController;
+                $roleAccess->onlyownerdata = false;
 
-                    // Try to save. If can't do it will be to do rollback for the 
-                    // Transaction and not will continue
-                    if (false === $roleAccess->save())
-                    {   // Can't create it
-                        $dataBase->rollback();
-                        return; // to not create permission for this role
-                    }
-
-                    $createSomething = true;
+                // Try to save. If can't do it will be to do rollback for the 
+                // Transaction and not will continue
+                if (false === $roleAccess->save())
+                {   // Can't create it
+                    $dataBase->rollback();
+                    return; // to not create permission for this role
                 }
             }
-            
-        // Was create something?
-        if ($createSomething === true)
-        {
-            $dataBase->commit();
-        } else 
-        {
-            $dataBase->rollback();
         }
-        
+
+        // without problems = Commit
+        $dataBase->commit();
         return;
     }
 
