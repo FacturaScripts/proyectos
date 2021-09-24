@@ -21,6 +21,8 @@ namespace FacturaScripts\Plugins\Proyectos;
 use FacturaScripts\Core\Base\DataBase;
 use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
 use FacturaScripts\Core\Base\InitClass;
+use FacturaScripts\Core\Model\Role;
+use FacturaScripts\Core\Model\RoleAccess;
 use FacturaScripts\Dinamic\Model\AlbaranCliente;
 use FacturaScripts\Dinamic\Model\AlbaranProveedor;
 use FacturaScripts\Dinamic\Model\FacturaCliente;
