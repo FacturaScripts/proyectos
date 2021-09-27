@@ -32,7 +32,7 @@ class EditCliente
     {
         return function() {
             $viewName = 'ListProyecto';
-            $this->addListView($viewName, 'Proyecto', 'projects', 'fas fa-folder-open');
+            $this->addListView($viewName, 'Proyecto', 'projects', 'fab fa-stack-overflow');
             $this->views[$viewName]->addOrderBy(['fecha'], 'date', 2);
             $this->views[$viewName]->addOrderBy(['fechainicio'], 'start-date');
             $this->views[$viewName]->addOrderBy(['fechafin'], 'end-date');

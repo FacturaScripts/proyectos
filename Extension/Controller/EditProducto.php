@@ -32,7 +32,7 @@ class EditProducto
     {
         return function() {
             $viewName = 'ListStockProyecto';
-            $this->addListView($viewName, 'StockProyecto', 'projects', 'fas fa-folder-open');
+            $this->addListView($viewName, 'StockProyecto', 'projects', 'fab fa-stack-overflow');
             $this->views[$viewName]->addSearchFields(['referencia']);
             $this->views[$viewName]->addOrderBy(['referencia'], 'reference');
             $this->views[$viewName]->addOrderBy(['cantidad'], 'quantity');

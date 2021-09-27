@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+
 namespace FacturaScripts\Plugins\Proyectos\Controller;
 
 use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
@@ -32,7 +33,6 @@ class EditProyecto extends EditController
 {
 
     /**
-     * 
      * @return string
      */
     public function getModelClassName()
@@ -59,7 +59,7 @@ class EditProyecto extends EditController
     {
         parent::createViews();
 
-        /// disable company column if there is only one company
+        // disable company column if there is only one company
         if ($this->empresa->count() < 2) {
             $this->views[$this->getMainViewName()]->disableColumn('company');
         }
@@ -79,7 +79,6 @@ class EditProyecto extends EditController
     }
 
     /**
-     * 
      * @param string $modelName
      * @param string $title
      */
@@ -90,15 +89,14 @@ class EditProyecto extends EditController
         $this->views[$viewName]->addOrderBy(['fecha', 'hora'], 'date', 2);
         $this->views[$viewName]->addOrderBy(['total'], 'total');
 
-        if (\substr($viewName, -7) === 'Cliente') {
+        if (substr($viewName, -7) === 'Cliente') {
             $this->views[$viewName]->addSearchFields(['codigo', 'nombrecliente', 'numero2', 'observaciones']);
-        } elseif (\substr($viewName, -9) === 'Proveedor') {
+        } elseif (substr($viewName, -9) === 'Proveedor') {
             $this->views[$viewName]->addSearchFields(['codigo', 'nombre', 'numproveedor', 'observaciones']);
         }
     }
 
     /**
-     * 
      * @param string $viewName
      */
     protected function createViewsNotes(string $viewName = 'ListNotaProyecto')
@@ -109,12 +107,11 @@ class EditProyecto extends EditController
     }
 
     /**
-     * 
      * @param string $viewName
      */
     protected function createViewsStock(string $viewName = 'ListStockProyecto')
     {
-        if (false === (bool) $this->toolBox()->appSettings()->get('proyectos', 'stock', false)) {
+        if (false === (bool)$this->toolBox()->appSettings()->get('proyectos', 'stock', false)) {
             return;
         }
 
@@ -152,7 +149,6 @@ class EditProyecto extends EditController
     }
 
     /**
-     * 
      * @param string $viewName
      */
     protected function createViewsUsers(string $viewName = 'EditUserProyecto')
@@ -164,7 +160,6 @@ class EditProyecto extends EditController
     }
 
     /**
-     * 
      * @param string $viewName
      */
     protected function createViewsTasks(string $viewName = 'ListTareaProyecto')
@@ -186,7 +181,6 @@ class EditProyecto extends EditController
     }
 
     /**
-     * 
      * @param EditView $view
      */
     protected function disableProjectColumns(&$view)
@@ -201,7 +195,6 @@ class EditProyecto extends EditController
     }
 
     /**
-     * 
      * @param string $action
      *
      * @return bool
@@ -210,7 +203,7 @@ class EditProyecto extends EditController
     {
         switch ($action) {
             case 'rebuild-stock':
-                $idproyecto = (int) $this->request->query->get('code');
+                $idproyecto = (int)$this->request->query->get('code');
                 if (ProjectStockManager::rebuild($idproyecto)) {
                     $this->toolBox()->i18nLog()->notice('project-stock-rebuild-ok');
                     return true;
@@ -224,8 +217,7 @@ class EditProyecto extends EditController
     }
 
     /**
-     * 
-     * @param string   $viewName
+     * @param string $viewName
      * @param EditView $view
      */
     protected function loadData($viewName, $view)

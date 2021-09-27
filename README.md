@@ -7,4 +7,4 @@ https://facturascripts.com/plugins/proyectos
 https://facturascripts.com/contacto
 
 ## Carpeta
-Como con cualquier plugin, el nombre de la carpeta se debe llamar igual que el plugin, en este caso Proyectos.
+La carpeta debe llamarse igual que el plugin: **Proyectos**.
