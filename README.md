@@ -6,7 +6,5 @@ https://facturascripts.com/plugins/proyectos
 ## Issues / Feedback
 https://facturascripts.com/contacto
 
-## No olvidar
-En la carpeta plugins donde tengamos instalado FacturaScripts tenemos que poner 
-este plugin, pero su carpeta raiz tiene que renombrarse a Proyectos (1ª letra en
-mayúscula)
+## Carpeta
+Como con cualquier plugin, el nombre de la carpeta se debe llamar igual que el plugin, en este caso Proyectos.
