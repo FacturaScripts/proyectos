@@ -23,6 +23,7 @@ use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
 use FacturaScripts\Core\Lib\ExtendedController\EditController;
 use FacturaScripts\Core\Lib\ExtendedController\EditView;
 use FacturaScripts\Dinamic\Lib\ProjectStockManager;
+use FacturaScripts\Dinamic\Lib\ProjectTotalManager;
 
 /**
  * Description of EditProyecto
@@ -123,16 +124,16 @@ class EditProyecto extends EditController
         $this->views[$viewName]->addOrderBy(['reservada'], 'reserved');
         $this->views[$viewName]->addOrderBy(['pterecibir'], 'pending-reception');
 
-        /// filters
+        // filters
         $this->views[$viewName]->addFilterNumber('cantidad', 'quantity', 'cantidad');
         $this->views[$viewName]->addFilterNumber('reservada', 'reserved', 'reservada');
         $this->views[$viewName]->addFilterNumber('pterecibir', 'pending-reception', 'pterecibir');
         $this->views[$viewName]->addFilterNumber('disponible', 'available', 'disponible');
 
-        /// disable column
+        // disable column
         $this->views[$viewName]->disableColumn('project');
 
-        /// disable buttons
+        // disable buttons
         $this->setSettings($viewName, 'btnDelete', false);
         $this->setSettings($viewName, 'btnNew', false);
         $this->setSettings($viewName, 'checkBoxes', false);
@@ -155,7 +156,7 @@ class EditProyecto extends EditController
     {
         $this->addEditListView($viewName, 'UserProyecto', 'users', 'fas fa-users');
 
-        /// disable column
+        // disable column
         $this->views[$viewName]->disableColumn('project');
     }
 
@@ -170,12 +171,12 @@ class EditProyecto extends EditController
         $this->views[$viewName]->addOrderBy(['fechafin'], 'end-date');
         $this->views[$viewName]->addSearchFields(['descripcion', 'nombre']);
 
-        /// filters
+        // filters
         $this->views[$viewName]->addFilterPeriod('fecha', 'date', 'fecha');
         $status = $this->codeModel->all('tareas_fases', 'idfase', 'nombre');
         $this->views[$viewName]->addFilterSelect('idfase', 'phase', 'idfase', $status);
 
-        /// disable columns
+        // disable columns
         $this->views[$viewName]->disableColumn('project');
         $this->views[$viewName]->disableColumn('company');
     }
@@ -206,6 +207,7 @@ class EditProyecto extends EditController
                 $idproyecto = (int)$this->request->query->get('code');
                 if (ProjectStockManager::rebuild($idproyecto)) {
                     $this->toolBox()->i18nLog()->notice('project-stock-rebuild-ok');
+                    ProjectTotalManager::recalculate($idproyecto);
                     return true;
                 }
                 $this->toolBox()->i18nLog()->warning('project-stock-rebuild-error');

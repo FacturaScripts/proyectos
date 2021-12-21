@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+
 namespace FacturaScripts\Plugins\Proyectos\Lib;
 
 use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
@@ -43,22 +44,22 @@ class ProjectStockManager
 
     /**
      * Recalculate the project stock.
-     * 
+     *
      * @param int $idproyecto
      *
      * @return bool
      */
     public static function rebuild($idproyecto): bool
     {
-        if (false === (bool) ToolBox::appSettings()->get('proyectos', 'stock', false)) {
+        if (false === (bool)ToolBox::appSettings()->get('proyectos', 'stock', false)) {
             return true;
         }
 
-        /// remove previous stock
+        // remove previous stock
         $projectStock = new StockProyecto();
         $projectStock->deleteFromProject($idproyecto);
 
-        /// we initialice stock from every project document
+        // we initialize stock from every project document
         $stockData = [];
         $models = [
             new PresupuestoProveedor(), new PedidoProveedor(), new AlbaranProveedor(),
@@ -79,7 +80,7 @@ class ProjectStockManager
             }
         }
 
-        /// now we save this data
+        // now we save this data
         foreach ($stockData as $referencia => $data) {
             $stock = new StockProyecto();
             $where = [
@@ -103,16 +104,16 @@ class ProjectStockManager
 
     /**
      * Find all related lines to calculate the stock.
-     * 
-     * @param array                  $stockData
+     *
+     * @param array $stockData
      * @param BusinessDocumentLine[] $lines
-     * @param string                 $model1
-     * @param TransformerDocument    $child
+     * @param string $model1
+     * @param TransformerDocument $child
      */
     protected static function setDeepProjectStock(&$stockData, $lines, $model1, $child)
     {
-        /// when we group documents from different projects, the new document has idproyecto = null
-        /// so we need to check this new document to calculate stock
+        // when we group documents from different projects, the new document has idproyecto = null
+        // so we need to check this new document to calculate stock
         if (null !== $child->idproyecto) {
             return;
         }
@@ -140,7 +141,7 @@ class ProjectStockManager
             }
         }
 
-        /// we continue checking children
+        // we continue checking children
         if (!empty($childProjectLines)) {
             foreach ($child->childrenDocuments() as $grandChild) {
                 static::setDeepProjectStock($stockData, $childProjectLines, $child->modelClassName(), $grandChild);
@@ -149,8 +150,7 @@ class ProjectStockManager
     }
 
     /**
-     * 
-     * @param array                $stockData
+     * @param array $stockData
      * @param BusinessDocumentLine $line
      */
     protected static function setProjectStock(&$stockData, $line)
