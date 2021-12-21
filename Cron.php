@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+
 namespace FacturaScripts\Plugins\Proyectos;
 
 use FacturaScripts\Core\Base\CronClass;
@@ -34,14 +35,16 @@ class Cron extends CronClass
 
     public function run()
     {
-        if ($this->isTimeForJob('project-stock-update', '1 day')) {
+        if ($this->isTimeForJob('project-stock-update', '30 minutes')) {
+            $limit = 10;
+            $offset = $limit * (int)date('H');
             $projectModel = new Proyecto();
-            foreach ($projectModel->all([], [], 0, 0) as $project) {
+            foreach ($projectModel->all([], ['idproyecto' => 'DESC'], $offset, $limit) as $project) {
                 ProjectStockManager::rebuild($project->idproyecto);
                 ProjectTotalManager::recalculate($project->idproyecto);
             }
 
-            $burnStock = (bool) $this->toolBox()->appSettings()->get('proyectos', 'burnstock', 0);
+            $burnStock = (bool)$this->toolBox()->appSettings()->get('proyectos', 'burnstock', 0);
             if ($burnStock) {
                 $this->updateStock();
             }
