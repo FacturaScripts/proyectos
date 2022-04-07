@@ -19,29 +19,22 @@
 
 namespace FacturaScripts\Plugins\Proyectos\Extension\Controller;
 
-/**
- * Description of DocumentStitcher
- *
- * @author Carlos Garcia Gomez <carlos@facturascripts.com>
- */
-class DocumentStitcher
+use FacturaScripts\Plugins\Proyectos\Lib\ProjectControllerSalesPurchases;
+
+class EditPresupuestoCliente
 {
 
-    protected function checkPrototype()
+    use ProjectControllerSalesPurchases;
+
+    public function execPreviousAction()
     {
-        return function ($prototype, $newLines) {
-            $values = [];
-            foreach ($this->documents as $doc) {
-                if (false === \in_array($doc->idproyecto, $values, true)) {
-                    $values[] = $doc->idproyecto;
-                }
+        return function ($action) {
+            if ($action === 'autocomplete-project') {
+                $this->setTemplate(false);
+                $query = (string)$this->request->get('term', '');
+                $this->response->setContent(\json_encode($this->autocompleteProjectAction($query)));
+                return false;
             }
-
-            if (\count($values) > 1) {
-                $prototype->idproyecto = null;
-            }
-
-            return true;
         };
     }
 }

@@ -17,31 +17,30 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace FacturaScripts\Plugins\Proyectos\Extension\Controller;
+namespace FacturaScripts\Plugins\Proyectos\Lib;
 
-/**
- * Description of DocumentStitcher
- *
- * @author Carlos Garcia Gomez <carlos@facturascripts.com>
- */
-class DocumentStitcher
+use FacturaScripts\Core\Base\ToolBox;
+use FacturaScripts\Dinamic\Model\Proyecto;
+
+trait ProjectControllerSalesPurchases
 {
-
-    protected function checkPrototype()
+    public function autocompleteProjectAction()
     {
-        return function ($prototype, $newLines) {
-            $values = [];
-            foreach ($this->documents as $doc) {
-                if (false === \in_array($doc->idproyecto, $values, true)) {
-                    $values[] = $doc->idproyecto;
-                }
+        return function ($query) {
+            $list = [];
+            $project = new Proyecto();
+            foreach ($project->codeModelSearch($query, 'idproyecto') as $value) {
+                $list[] = [
+                    'key' => ToolBox::utils()->fixHtml($value->code),
+                    'value' => ToolBox::utils()->fixHtml($value->description)
+                ];
             }
 
-            if (\count($values) > 1) {
-                $prototype->idproyecto = null;
+            if (empty($list)) {
+                $list[] = ['key' => null, 'value' => ToolBox::i18n()->trans('no-data')];
             }
 
-            return true;
+            return $list;
         };
     }
 }
