@@ -3,31 +3,31 @@
     <columns>
         <column name="project" order="80">
             <widget type="select" fieldname="idproyecto" onclick="EditProyecto">
-                <values source="proyectos" fieldcode="idproyecto" fieldtitle="nombre" />
+                <values source="proyectos" fieldcode="idproyecto" fieldtitle="nombre"/>
             </widget>
         </column>
         <column name="product" display="none" order="90">
-            <widget type="text" fieldname="idproducto" onclick="EditProducto" />
+            <widget type="text" fieldname="idproducto" onclick="EditProducto"/>
         </column>
         <column name="reference" order="100">
-            <widget type="text" fieldname="referencia" />
+            <widget type="text" fieldname="referencia"/>
         </column>
         <column name="description" order="110">
             <widget type="autocomplete" fieldname="idproducto">
-                <values source="productos" fieldcode="idproducto" fieldtitle="descripcion" />
+                <values source="productos" fieldcode="idproducto" fieldtitle="descripcion"/>
             </widget>
         </column>
         <column name="quantity" display="right" order="120">
-            <widget type="number" fieldname="cantidad" />
+            <widget type="number" fieldname="cantidad"/>
         </column>
         <column name="reserved" display="right" order="130">
-            <widget type="number" fieldname="reservada" />
+            <widget type="number" fieldname="reservada"/>
         </column>
         <column name="pending-reception" display="right" order="140">
-            <widget type="number" fieldname="pterecibir" />
+            <widget type="number" fieldname="pterecibir"/>
         </column>
         <column name="available" display="right" order="150">
-            <widget type="number" fieldname="disponible" />
+            <widget type="number" fieldname="disponible"/>
         </column>
     </columns>
     <rows>
