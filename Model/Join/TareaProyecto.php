@@ -1,7 +1,7 @@
 <?php
 /**
  * This file is part of Proyectos plugin for FacturaScripts
- * Copyright (C) 2020 Carlos Garcia Gomez <carlos@facturascripts.com>
+ * Copyright (C) 2022 Carlos Garcia Gomez <carlos@facturascripts.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+
 namespace FacturaScripts\Plugins\Proyectos\Model\Join;
 
 use FacturaScripts\Core\Model\Base\JoinModel;
@@ -30,7 +31,7 @@ class TareaProyecto extends JoinModel
 {
 
     /**
-     * 
+     *
      * @param array $data
      */
     public function __construct($data = [])
@@ -40,7 +41,7 @@ class TareaProyecto extends JoinModel
     }
 
     /**
-     * 
+     *
      * @return array
      */
     protected function getFields(): array
@@ -63,7 +64,7 @@ class TareaProyecto extends JoinModel
     }
 
     /**
-     * 
+     *
      * @return string
      */
     protected function getSQLFrom(): string
@@ -75,7 +76,7 @@ class TareaProyecto extends JoinModel
     }
 
     /**
-     * 
+     *
      * @return array
      */
     protected function getTables(): array

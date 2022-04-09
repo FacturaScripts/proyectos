@@ -1,7 +1,7 @@
 <?php
 /**
  * This file is part of Proyectos plugin for FacturaScripts
- * Copyright (C) 2020-2021 Carlos Garcia Gomez <carlos@facturascripts.com>
+ * Copyright (C) 2022 Carlos Garcia Gomez <carlos@facturascripts.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -19,6 +19,8 @@
 
 namespace FacturaScripts\Plugins\Proyectos;
 
+use FacturaScripts\Core\Base\AjaxForms\PurchasesHeaderHTML;
+use FacturaScripts\Core\Base\AjaxForms\SalesHeaderHTML;
 use FacturaScripts\Core\Base\DataBase;
 use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
 use FacturaScripts\Core\Base\InitClass;
@@ -45,10 +47,20 @@ class Init extends InitClass
     public function init()
     {
         $this->loadExtension(new Extension\Controller\DocumentStitcher());
+        $this->loadExtension(new Extension\Controller\EditAlbaranCliente());
+        $this->loadExtension(new Extension\Controller\EditAlbaranProveedor());
         $this->loadExtension(new Extension\Controller\EditCliente());
+        $this->loadExtension(new Extension\Controller\EditFacturaCliente());
+        $this->loadExtension(new Extension\Controller\EditFacturaProveedor());
+        $this->loadExtension(new Extension\Controller\EditPedidoCliente());
+        $this->loadExtension(new Extension\Controller\EditPedidoProveedor());
+        $this->loadExtension(new Extension\Controller\EditPresupuestoCliente());
+        $this->loadExtension(new Extension\Controller\EditPresupuestoProveedor());
         $this->loadExtension(new Extension\Controller\EditProducto());
         $this->loadExtension(new Extension\Model\Base\BusinessDocument());
         $this->loadExtension(new Extension\Model\Stock());
+        SalesHeaderHTML::addMod(new Mod\SalesHeaderHTMLMod());
+        PurchasesHeaderHTML::addMod(new Mod\PurchasesHeaderHTMLMod());
 
         if (class_exists('FacturaScripts\\Dinamic\\Controller\\Randomizer')) {
             $this->loadExtension(new Extension\Controller\Randomizer());

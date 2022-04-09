@@ -1,7 +1,7 @@
 <?php
 /**
  * This file is part of Proyectos plugin for FacturaScripts
- * Copyright (C) 2020 Carlos Garcia Gomez <carlos@facturascripts.com>
+ * Copyright (C) 2022 Carlos Garcia Gomez <carlos@facturascripts.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+
 namespace FacturaScripts\Plugins\Proyectos\Model;
 
 use FacturaScripts\Core\Model\Base;
@@ -38,25 +39,21 @@ class NotaProyecto extends Base\ModelClass
     public $descripcion;
 
     /**
-     *
      * @var string
      */
     public $fecha;
 
     /**
-     *
      * @var integer
      */
     public $idnota;
 
     /**
-     *
      * @var integer
      */
     public $idproyecto;
 
     /**
-     *
      * @var integer
      */
     public $idtarea;
@@ -74,7 +71,7 @@ class NotaProyecto extends Base\ModelClass
     }
 
     /**
-     * 
+     *
      * @return Proyecto
      */
     public function getProject()
@@ -85,7 +82,7 @@ class NotaProyecto extends Base\ModelClass
     }
 
     /**
-     * 
+     *
      * @return string
      */
     public function install()
@@ -97,7 +94,7 @@ class NotaProyecto extends Base\ModelClass
     }
 
     /**
-     * 
+     *
      * @return string
      */
     public static function primaryColumn(): string
@@ -106,7 +103,7 @@ class NotaProyecto extends Base\ModelClass
     }
 
     /**
-     * 
+     *
      * @return string
      */
     public function primaryDescriptionColumn(): string
@@ -115,7 +112,7 @@ class NotaProyecto extends Base\ModelClass
     }
 
     /**
-     * 
+     *
      * @return string
      */
     public static function tableName(): string
@@ -124,7 +121,7 @@ class NotaProyecto extends Base\ModelClass
     }
 
     /**
-     * 
+     *
      * @return bool
      */
     public function test()
@@ -134,7 +131,7 @@ class NotaProyecto extends Base\ModelClass
     }
 
     /**
-     * 
+     *
      * @param string $type
      * @param string $list
      *

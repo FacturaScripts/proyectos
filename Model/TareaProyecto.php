@@ -1,7 +1,7 @@
 <?php
 /**
  * This file is part of Proyectos plugin for FacturaScripts
- * Copyright (C) 2020 Carlos Garcia Gomez <carlos@facturascripts.com>
+ * Copyright (C) 2022 Carlos Garcia Gomez <carlos@facturascripts.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+
 namespace FacturaScripts\Plugins\Proyectos\Model;
 
 use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
@@ -37,55 +38,46 @@ class TareaProyecto extends Base\ModelOnChangeClass
     const TYPE_CANCELED = 1;
 
     /**
-     *
      * @var int
      */
     public $cantidad;
 
     /**
-     *
      * @var string
      */
     public $descripcion;
 
     /**
-     *
      * @var string
      */
     public $fecha;
 
     /**
-     *
      * @var string
      */
     public $fechafin;
 
     /**
-     *
      * @var string
      */
     public $fechainicio;
 
     /**
-     *
      * @var int
      */
     public $idfase;
 
     /**
-     *
      * @var int
      */
     public $idproyecto;
 
     /**
-     *
      * @var int
      */
     public $idtarea;
 
     /**
-     *
      * @var string
      */
     public $nombre;
@@ -105,7 +97,7 @@ class TareaProyecto extends Base\ModelOnChangeClass
     }
 
     /**
-     * 
+     *
      * @return FaseTarea[]
      */
     public function getAvaliablePhases()
@@ -120,7 +112,7 @@ class TareaProyecto extends Base\ModelOnChangeClass
     }
 
     /**
-     * 
+     *
      * @return FaseTarea
      */
     public function getPhase()
@@ -131,7 +123,7 @@ class TareaProyecto extends Base\ModelOnChangeClass
     }
 
     /**
-     * 
+     *
      * @return Proyecto
      */
     public function getProject()
@@ -142,7 +134,7 @@ class TareaProyecto extends Base\ModelOnChangeClass
     }
 
     /**
-     * 
+     *
      * @return string
      */
     public function install()
@@ -155,7 +147,7 @@ class TareaProyecto extends Base\ModelOnChangeClass
     }
 
     /**
-     * 
+     *
      * @return string
      */
     public static function primaryColumn(): string
@@ -164,7 +156,7 @@ class TareaProyecto extends Base\ModelOnChangeClass
     }
 
     /**
-     * 
+     *
      * @return string
      */
     public function primaryDescriptionColumn(): string
@@ -173,7 +165,7 @@ class TareaProyecto extends Base\ModelOnChangeClass
     }
 
     /**
-     * 
+     *
      * @return bool
      */
     public function save()
@@ -204,7 +196,7 @@ class TareaProyecto extends Base\ModelOnChangeClass
     }
 
     /**
-     * 
+     *
      * @return string
      */
     public static function tableName(): string
@@ -213,7 +205,7 @@ class TareaProyecto extends Base\ModelOnChangeClass
     }
 
     /**
-     * 
+     *
      * @return bool
      */
     public function test()
@@ -227,7 +219,7 @@ class TareaProyecto extends Base\ModelOnChangeClass
     /**
      * We ask if all tasks in a project are completed or canceled.
      * If correct, we mark the status of the project with the linked phase
-     * 
+     *
      * @param FaseTarea $phase
      */
     protected function checkOtherTasks($phase)
@@ -248,9 +240,9 @@ class TareaProyecto extends Base\ModelOnChangeClass
     /**
      * We ask if the sum of the completed and canceled tasks is
      * equal to the total project tasks to complete it.
-     * 
+     *
      * @param Proyecto $project
-     * @param Tarea[]  $tasks
+     * @param Tarea[] $tasks
      */
     protected function deepTaskCheck($project, $tasks)
     {

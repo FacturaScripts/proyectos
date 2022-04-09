@@ -1,7 +1,7 @@
 <?php
 /**
  * This file is part of Proyectos plugin for FacturaScripts
- * Copyright (C) 2020 Carlos Garcia Gomez <carlos@facturascripts.com>
+ * Copyright (C) 2022 Carlos Garcia Gomez <carlos@facturascripts.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+
 namespace FacturaScripts\Plugins\Proyectos\Model;
 
 use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
@@ -36,49 +37,41 @@ class StockProyecto extends Base\ModelClass
     const MAX_DECIMALS = 3;
 
     /**
-     *
      * @var float
      */
     public $cantidad;
 
     /**
-     *
      * @var float
      */
     public $disponible;
 
     /**
-     *
      * @var int
      */
     public $id;
 
     /**
-     *
      * @var int
      */
     public $idproducto;
 
     /**
-     *
      * @var int
      */
     public $idproyecto;
 
     /**
-     *
      * @var float
      */
     public $pterecibir;
 
     /**
-     *
      * @var string
      */
     public $referencia;
 
     /**
-     *
      * @var float
      */
     public $reservada;
@@ -93,7 +86,7 @@ class StockProyecto extends Base\ModelClass
     }
 
     /**
-     * 
+     *
      * @param int $idproyecto
      *
      * @return bool
@@ -105,7 +98,7 @@ class StockProyecto extends Base\ModelClass
     }
 
     /**
-     * 
+     *
      * @return Variante
      */
     public function getVariant()
@@ -117,7 +110,7 @@ class StockProyecto extends Base\ModelClass
     }
 
     /**
-     * 
+     *
      * @return Producto
      */
     public function getProduct()
@@ -128,7 +121,7 @@ class StockProyecto extends Base\ModelClass
     }
 
     /**
-     * 
+     *
      * @return string
      */
     public function install()
@@ -141,7 +134,7 @@ class StockProyecto extends Base\ModelClass
     }
 
     /**
-     * 
+     *
      * @return string
      */
     public static function primaryColumn(): string
@@ -150,7 +143,7 @@ class StockProyecto extends Base\ModelClass
     }
 
     /**
-     * 
+     *
      * @return string
      */
     public static function tableName(): string
@@ -183,7 +176,7 @@ class StockProyecto extends Base\ModelClass
     }
 
     /**
-     * 
+     *
      * @param string $type
      * @param string $list
      *
