@@ -17,14 +17,15 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace FacturaScripts\Plugins\Proyectos\Lib;
+namespace FacturaScripts\Plugins\Proyectos\Extension\Traits;
 
+use Closure;
 use FacturaScripts\Core\Base\ToolBox;
 use FacturaScripts\Dinamic\Model\Proyecto;
 
 trait ProjectControllerSalesPurchases
 {
-    public function autocompleteProjectAction()
+    public function autocompleteProjectAction(): Closure
     {
         return function ($query) {
             $list = [];
@@ -41,6 +42,18 @@ trait ProjectControllerSalesPurchases
             }
 
             return $list;
+        };
+    }
+
+    public function execPreviousAction(): Closure
+    {
+        return function ($action) {
+            if ($action === 'autocomplete-project') {
+                $this->setTemplate(false);
+                $query = (string)$this->request->get('term', '');
+                $this->response->setContent(json_encode($this->autocompleteProjectAction($query)));
+                return false;
+            }
         };
     }
 }

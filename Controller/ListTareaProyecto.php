@@ -1,7 +1,7 @@
 <?php
 /**
  * This file is part of Proyectos plugin for FacturaScripts
- * Copyright (C) 2022 Carlos Garcia Gomez <carlos@facturascripts.com>
+ * Copyright (C) 2020-2022 Carlos Garcia Gomez <carlos@facturascripts.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -32,12 +32,7 @@ use FacturaScripts\Core\Lib\ExtendedController\ListView;
 class ListTareaProyecto extends ListController
 {
 
-    /**
-     * Returns basic page attributes
-     *
-     * @return array
-     */
-    public function getPageData()
+    public function getPageData(): array
     {
         $data = parent::getPageData();
         $data['menu'] = 'projects';
@@ -52,10 +47,6 @@ class ListTareaProyecto extends ListController
         $this->createViewsPrivateTasks();
     }
 
-    /**
-     *
-     * @param string $viewName
-     */
     protected function createViewsPrivateTasks(string $viewName = 'ListTareaProyecto-private')
     {
         $this->addView($viewName, 'Join\TareaProyecto', 'private', 'fas fa-unlock-alt');
@@ -65,7 +56,7 @@ class ListTareaProyecto extends ListController
         $this->addOrderBy($viewName, ['nombre'], 'name');
         $this->addSearchFields($viewName, ['tareas.nombre', 'tareas.descripcion']);
 
-        /// filters
+        // filters
         $this->addFilterPeriod($viewName, 'fecha', 'date', 'tareas.fecha');
         $this->addFilterAutocomplete($viewName, 'idproyecto', 'project', 'tareas.idproyecto', 'proyectos', 'idproyecto', 'nombre');
 
@@ -73,10 +64,6 @@ class ListTareaProyecto extends ListController
         $this->addFilterSelect($viewName, 'idfase', 'phase', 'tareas.idfase', $status);
     }
 
-    /**
-     *
-     * @param string $viewName
-     */
     protected function createViewsTasks(string $viewName = 'ListTareaProyecto')
     {
         $this->addView($viewName, 'Join\TareaProyecto', 'tasks', 'fas fa-project-diagram');
@@ -86,7 +73,7 @@ class ListTareaProyecto extends ListController
         $this->addOrderBy($viewName, ['nombre'], 'title');
         $this->addSearchFields($viewName, ['tareas.nombre', 'tareas.descripcion']);
 
-        /// filters
+        // filters
         $this->addFilterPeriod($viewName, 'fecha', 'date', 'tareas.fecha');
         $this->addFilterAutocomplete($viewName, 'idproyecto', 'project', 'tareas.idproyecto', 'proyectos', 'idproyecto', 'nombre');
 
@@ -95,7 +82,6 @@ class ListTareaProyecto extends ListController
     }
 
     /**
-     *
      * @param string $viewName
      * @param ListView $view
      */

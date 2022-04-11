@@ -1,7 +1,7 @@
 <?php
 /**
  * This file is part of Proyectos plugin for FacturaScripts
- * Copyright (C) 2022 Carlos Garcia Gomez <carlos@facturascripts.com>
+ * Copyright (C) 2020-2022 Carlos Garcia Gomez <carlos@facturascripts.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -33,20 +33,12 @@ use FacturaScripts\Dinamic\Lib\ProjectTotalManager;
 class EditProyecto extends EditController
 {
 
-    /**
-     * @return string
-     */
-    public function getModelClassName()
+    public function getModelClassName(): string
     {
         return 'Proyecto';
     }
 
-    /**
-     * Returns basic page attributes
-     *
-     * @return array
-     */
-    public function getPageData()
+    public function getPageData(): array
     {
         $data = parent::getPageData();
         $data['menu'] = 'projects';
@@ -79,10 +71,6 @@ class EditProyecto extends EditController
         $this->createViewsUsers();
     }
 
-    /**
-     * @param string $modelName
-     * @param string $title
-     */
     protected function createViewsBusinessDocument(string $modelName, string $title)
     {
         $viewName = 'List' . $modelName;
@@ -97,9 +85,6 @@ class EditProyecto extends EditController
         }
     }
 
-    /**
-     * @param string $viewName
-     */
     protected function createViewsNotes(string $viewName = 'ListNotaProyecto')
     {
         $this->addListView($viewName, 'NotaProyecto', 'notes', 'fas fa-sticky-note');
@@ -107,9 +92,6 @@ class EditProyecto extends EditController
         $this->views[$viewName]->addSearchFields(['descripcion']);
     }
 
-    /**
-     * @param string $viewName
-     */
     protected function createViewsStock(string $viewName = 'ListStockProyecto')
     {
         if (false === (bool)$this->toolBox()->appSettings()->get('proyectos', 'stock', false)) {
@@ -149,9 +131,6 @@ class EditProyecto extends EditController
         }
     }
 
-    /**
-     * @param string $viewName
-     */
     protected function createViewsUsers(string $viewName = 'EditUserProyecto')
     {
         $this->addEditListView($viewName, 'UserProyecto', 'users', 'fas fa-users');
@@ -160,9 +139,6 @@ class EditProyecto extends EditController
         $this->views[$viewName]->disableColumn('project');
     }
 
-    /**
-     * @param string $viewName
-     */
     protected function createViewsTasks(string $viewName = 'ListTareaProyecto')
     {
         $this->addListView($viewName, 'TareaProyecto', 'tasks', 'fas fa-project-diagram');

@@ -23,8 +23,8 @@ use FacturaScripts\Core\Base\Contract\SalesModInterface;
 use FacturaScripts\Core\Base\Translator;
 use FacturaScripts\Core\Model\Base\SalesDocument;
 use FacturaScripts\Core\Model\User;
+use FacturaScripts\Dinamic\Lib\AssetManager;
 use FacturaScripts\Plugins\Proyectos\Model\Proyecto;
-use FacturaScripts\Plugins\Proyectos\Lib\ProjectCommonSalesPurchases;
 
 /**
  * Description of SalesHeaderHTMLMod
@@ -33,17 +33,18 @@ use FacturaScripts\Plugins\Proyectos\Lib\ProjectCommonSalesPurchases;
  */
 class SalesHeaderHTMLMod implements SalesModInterface
 {
-
-    use ProjectCommonSalesPurchases;
-
     public function apply(SalesDocument &$model, array $formData, User $user)
     {
-        $model->idproyecto = !empty($formData['idproyecto']) ? $formData['idproyecto'] : null;
     }
 
     public function applyBefore(SalesDocument &$model, array $formData, User $user)
     {
-        // TODO: Implement applyBefore() method.
+        $model->idproyecto = isset($formData['idproyecto']) && $formData['idproyecto'] ? $formData['idproyecto'] : null;
+    }
+
+    public function assets(): void
+    {
+        AssetManager::add('js', FS_ROUTE . '/Dinamic/Assets/JS/AutocompleteProject.js');
     }
 
     public function newFields(): array
@@ -62,29 +63,22 @@ class SalesHeaderHTMLMod implements SalesModInterface
     private static function proyecto(Translator $i18n, SalesDocument $model): string
     {
         $value = '';
+        $project = new Proyecto();
+        if ($model->idproyecto && $project->loadFromCode($model->idproyecto)) {
+            $value = $project->idproyecto . ' | ' . $project->nombre;
+        }
+
         $html = '<div class="col-sm">'
-            . $i18n->trans('project')
+            . '<a href="' . $project->url() . '">' . $i18n->trans('project') . '</a>'
             . '<div class="input-group">'
             . '<div class="input-group-prepend">';
 
-        if (false === empty($model->idproyecto)) {
-            $project = new Proyecto();
-            $project->loadFromCode($model->idproyecto);
-            $value = $project->idproyecto . ' | ' . $project->nombre;
-
-            if ($model->editable) {
-                $html .= '<button type="button" id="deleteProject" class="btn btn-warning">'
-                    . '<i class="fas fa-times" aria-hidden="true"></i>'
-                    . '</button>'
-                    . '<span id="searchProject" class="input-group-text d-none">'
-                    . '<i class="fas fa-search fa-fw"></i>'
-                    . '</span>';
-            }
-        } else {
-            $html .= '<button type="button" id="deleteProject" class="btn btn-warning d-none">'
+        if ($model->editable && $model->idproyecto) {
+            $html .= '<button type="button" id="deleteProject" class="btn btn-warning">'
                 . '<i class="fas fa-times" aria-hidden="true"></i>'
-                . '</button>'
-                . '<span id="searchProject" class="input-group-text">'
+                . '</button>';
+        } else {
+            $html .= '<span id="searchProject" class="input-group-text">'
                 . '<i class="fas fa-search fa-fw"></i>'
                 . '</span>';
         }
@@ -94,13 +88,7 @@ class SalesHeaderHTMLMod implements SalesModInterface
             . '<input type="hidden" name="idproyecto" value="' . $model->idproyecto . '">'
             . '<input type="text" id="findProjectInput" class="form-control" value="' . $value . '" ' . $disabled . '/>'
             . '</div>'
-            . '</div>'
-            . '<style>' . self::styleCSS() . '</style>'
-            . '<script>'
-            . self::scriptAutocompleteProject($model)
-            . self::scriptDeleteProject()
-            . '</script>';
-
+            . '</div>';
         return $html;
     }
 }

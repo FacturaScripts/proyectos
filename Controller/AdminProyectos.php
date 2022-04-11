@@ -1,7 +1,7 @@
 <?php
 /**
  * This file is part of Proyectos plugin for FacturaScripts
- * Copyright (C) 2022 Carlos Garcia Gomez <carlos@facturascripts.com>
+ * Copyright (C) 2020-2022 Carlos Garcia Gomez <carlos@facturascripts.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -35,11 +35,6 @@ class AdminProyectos extends PanelController
     private const VIEW_LIST_STATUS = 'EditEstadoProyecto';
     private const VIEW_LIST_PHASES = 'EditFaseTarea';
 
-    /**
-     * Return the basic data for this page.
-     *
-     * @return array
-     */
     public function getPageData(): array
     {
         $data = parent::getPageData();
@@ -60,33 +55,21 @@ class AdminProyectos extends PanelController
         $this->createViewPhases();
     }
 
-    /**
-     *
-     * @param string $viewName
-     */
     private function createViewEditConfig(string $viewName = self::VIEW_CONFIG_PROJECTS)
     {
         $this->addEditView($viewName, 'Settings', 'general');
 
-        /// disable buttons
+        // disable buttons
         $this->setSettings($viewName, 'btnDelete', false);
         $this->setSettings($viewName, 'btnNew', false);
     }
 
-    /**
-     *
-     * @param string $viewName
-     */
     private function createViewPhases(string $viewName = self::VIEW_LIST_PHASES)
     {
         $this->addEditListView($viewName, 'FaseTarea', 'phases', 'fas fa-hourglass-half');
         $this->views[$viewName]->setInLine(true);
     }
 
-    /**
-     *
-     * @param string $viewName
-     */
     private function createViewStatus(string $viewName = self::VIEW_LIST_STATUS)
     {
         $this->addEditListView($viewName, 'EstadoProyecto', 'states', 'fas fa-tags');

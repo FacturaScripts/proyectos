@@ -1,7 +1,7 @@
 <?php
 /**
  * This file is part of Proyectos plugin for FacturaScripts
- * Copyright (C) 2022 Carlos Garcia Gomez <carlos@facturascripts.com>
+ * Copyright (C) 2020-2022 Carlos Garcia Gomez <carlos@facturascripts.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -19,6 +19,7 @@
 
 namespace FacturaScripts\Plugins\Proyectos\Extension\Controller;
 
+use Closure;
 use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
 
 /**
@@ -28,8 +29,7 @@ use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
  */
 class EditProducto
 {
-
-    public function createViews()
+    public function createViews(): Closure
     {
         return function () {
             $viewName = 'ListStockProyecto';
@@ -41,17 +41,17 @@ class EditProducto
             $this->views[$viewName]->addOrderBy(['reservada'], 'reserved');
             $this->views[$viewName]->addOrderBy(['pterecibir'], 'pending-reception');
 
-            /// disable description column
+            // disable description column
             $this->views[$viewName]->disableColumn('description');
 
-            /// disable buttons
+            // disable buttons
             $this->setSettings($viewName, 'btnDelete', false);
             $this->setSettings($viewName, 'btnNew', false);
             $this->setSettings($viewName, 'checkBoxes', false);
         };
     }
 
-    public function loadData()
+    public function loadData(): Closure
     {
         return function ($viewName, $view) {
             if ($viewName === 'ListStockProyecto') {

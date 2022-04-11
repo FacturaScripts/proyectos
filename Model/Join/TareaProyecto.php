@@ -1,7 +1,7 @@
 <?php
 /**
  * This file is part of Proyectos plugin for FacturaScripts
- * Copyright (C) 2022 Carlos Garcia Gomez <carlos@facturascripts.com>
+ * Copyright (C) 2020-2022 Carlos Garcia Gomez <carlos@facturascripts.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -30,20 +30,12 @@ use FacturaScripts\Plugins\Proyectos\Model\TareaProyecto as parentTareaProyecto;
 class TareaProyecto extends JoinModel
 {
 
-    /**
-     *
-     * @param array $data
-     */
-    public function __construct($data = [])
+    public function __construct(array $data = [])
     {
         parent::__construct($data);
         $this->setMasterModel(new parentTareaProyecto());
     }
 
-    /**
-     *
-     * @return array
-     */
     protected function getFields(): array
     {
         return [
@@ -63,10 +55,6 @@ class TareaProyecto extends JoinModel
         ];
     }
 
-    /**
-     *
-     * @return string
-     */
     protected function getSQLFrom(): string
     {
         return 'tareas'
@@ -75,10 +63,6 @@ class TareaProyecto extends JoinModel
             . ' INNER JOIN proyectos_estados ON proyectos_estados.idestado = proyectos.idestado';
     }
 
-    /**
-     *
-     * @return array
-     */
     protected function getTables(): array
     {
         return [

@@ -1,7 +1,7 @@
 <?php
 /**
  * This file is part of Proyectos plugin for FacturaScripts
- * Copyright (C) 2022 Carlos Garcia Gomez <carlos@facturascripts.com>
+ * Copyright (C) 2020-2022 Carlos Garcia Gomez <carlos@facturascripts.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -54,34 +54,22 @@ class UserProyecto extends Base\ModelClass
     public function clear()
     {
         parent::clear();
-        $this->fecha = \date(self::DATE_STYLE);
+        $this->fecha = date(self::DATE_STYLE);
     }
 
-    /**
-     *
-     * @return string
-     */
-    public function install()
+    public function install(): string
     {
-        /// needed dependencies
+        // needed dependencies
         new Proyecto();
 
         return parent::install();
     }
 
-    /**
-     *
-     * @return string
-     */
     public static function primaryColumn(): string
     {
         return 'id';
     }
 
-    /**
-     *
-     * @return string
-     */
     public static function tableName(): string
     {
         return 'proyectos_users';

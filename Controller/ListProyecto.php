@@ -1,7 +1,7 @@
 <?php
 /**
  * This file is part of Proyectos plugin for FacturaScripts
- * Copyright (C) 2022 Carlos Garcia Gomez <carlos@facturascripts.com>
+ * Copyright (C) 2020-2022 Carlos Garcia Gomez <carlos@facturascripts.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -31,12 +31,7 @@ use FacturaScripts\Core\Lib\ExtendedController\ListView;
 class ListProyecto extends ListController
 {
 
-    /**
-     * Returns basic page attributes
-     *
-     * @return array
-     */
-    public function getPageData()
+    public function getPageData(): array
     {
         $data = parent::getPageData();
         $data['menu'] = 'projects';
@@ -51,10 +46,6 @@ class ListProyecto extends ListController
         $this->createViewsPrivateProyects();
     }
 
-    /**
-     *
-     * @param string $viewName
-     */
     protected function createViewsPrivateProyects(string $viewName = 'ListProyecto-private')
     {
         $this->addView($viewName, 'Proyecto', 'private', 'fas fa-unlock-alt');
@@ -66,7 +57,7 @@ class ListProyecto extends ListController
         $this->addOrderBy($viewName, ['totalventas'], 'total-sales');
         $this->addSearchFields($viewName, ['nombre', 'descripcion']);
 
-        /// filters
+        // filters
         $where = [
             ['label' => $this->toolBox()->i18n()->trans('only-active'), 'where' => [new DataBaseWhere('editable', true)]],
             ['label' => $this->toolBox()->i18n()->trans('only-closed'), 'where' => [new DataBaseWhere('editable', false)]],
@@ -85,10 +76,6 @@ class ListProyecto extends ListController
         $this->addFilterAutocomplete($viewName, 'codcliente', 'customer', 'codcliente', 'clientes', 'codcliente', 'nombre');
     }
 
-    /**
-     *
-     * @param string $viewName
-     */
     protected function createViewsProyects(string $viewName = 'ListProyecto')
     {
         $this->addView($viewName, 'Proyecto', 'projects', 'fab fa-stack-overflow');
@@ -100,7 +87,7 @@ class ListProyecto extends ListController
         $this->addOrderBy($viewName, ['totalventas'], 'total-sales');
         $this->addSearchFields($viewName, ['nombre', 'descripcion']);
 
-        /// filters
+        // filters
         $where = [
             ['label' => $this->toolBox()->i18n()->trans('only-active'), 'where' => [new DataBaseWhere('editable', true)]],
             ['label' => $this->toolBox()->i18n()->trans('only-closed'), 'where' => [new DataBaseWhere('editable', false)]],
@@ -124,7 +111,6 @@ class ListProyecto extends ListController
     }
 
     /**
-     *
      * @param string $viewName
      * @param ListView $view
      */

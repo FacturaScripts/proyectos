@@ -1,7 +1,7 @@
 <?php
 /**
  * This file is part of Proyectos plugin for FacturaScripts
- * Copyright (C) 2022 Carlos Garcia Gomez <carlos@facturascripts.com>
+ * Copyright (C) 2020-2022 Carlos Garcia Gomez <carlos@facturascripts.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -63,41 +63,25 @@ class FaseTarea extends Base\ModelClass
         $this->predeterminado = false;
     }
 
-    /**
-     *
-     * @return string
-     */
-    public function install()
+    public function install(): string
     {
-        /// needed dependencies
+        // needed dependencies
         new EstadoProyecto();
 
         return parent::install();
     }
 
-    /**
-     *
-     * @return string
-     */
     public static function primaryColumn(): string
     {
         return 'idfase';
     }
 
-    /**
-     *
-     * @return string
-     */
     public function primaryDescriptionColumn(): string
     {
         return 'nombre';
     }
 
-    /**
-     *
-     * @return bool
-     */
-    public function save()
+    public function save(): bool
     {
         if (isset($this->tipo)) {
             $this->ResetPhaseType();
@@ -110,22 +94,11 @@ class FaseTarea extends Base\ModelClass
         return parent::save();
     }
 
-    /**
-     *
-     * @return string
-     */
     public static function tableName(): string
     {
         return 'tareas_fases';
     }
 
-    /**
-     *
-     * @param string $type
-     * @param string $list
-     *
-     * @return string
-     */
     public function url(string $type = 'auto', string $list = 'AdminProyectos?activetab=List'): string
     {
         return parent::url('list', $list);
