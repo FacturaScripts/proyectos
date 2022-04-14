@@ -101,13 +101,13 @@ class TareaProyecto extends Base\ModelOnChangeClass
      */
     public function getAvailablePhases(): array
     {
-        $avaliable = [];
+        $available = [];
         $statusModel = new FaseTarea();
         foreach ($statusModel->all([], [], 0, 0) as $status) {
-            $avaliable[] = $status;
+            $available[] = $status;
         }
 
-        return $avaliable;
+        return $available;
     }
 
     /**

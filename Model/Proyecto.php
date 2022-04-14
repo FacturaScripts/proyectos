@@ -128,13 +128,13 @@ class Proyecto extends Base\ModelOnChangeClass
      */
     public function getAvailableStatus(): array
     {
-        $avaliable = [];
+        $available = [];
         $statusModel = new EstadoProyecto();
         foreach ($statusModel->all([], [], 0, 0) as $status) {
-            $avaliable[] = $status;
+            $available[] = $status;
         }
 
-        return $avaliable;
+        return $available;
     }
 
     /**
