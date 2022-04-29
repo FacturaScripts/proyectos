@@ -180,16 +180,7 @@ class EditProyecto extends EditController
     {
         switch ($action) {
             case 'rebuild-stock':
-                $idproyecto = (int)$this->request->query->get('code');
-                if (ProjectStockManager::rebuild($idproyecto)) {
-                    ProjectTotalManager::recalculate($idproyecto);
-
-                    // limpiamos caché para forzar actualizar los totales de los listados
-                    self::toolBox()::cache()->clear();
-                    self::toolBox()::i18nLog()->notice('project-stock-rebuild-ok');
-                    return true;
-                }
-                self::toolBox()::i18nLog()->warning('project-stock-rebuild-error');
+                $this->rebuildStockAction();
                 return true;
 
             default:
@@ -238,5 +229,20 @@ class EditProyecto extends EditController
                 $view->loadData('', $where);
                 break;
         }
+    }
+
+    protected function rebuildStockAction()
+    {
+        $idproyecto = (int)$this->request->query->get('code');
+        if (ProjectStockManager::rebuild($idproyecto)) {
+            ProjectTotalManager::recalculate($idproyecto);
+
+            // limpiamos caché para forzar actualizar los totales de los listados
+            self::toolBox()::cache()->clear();
+            self::toolBox()::i18nLog()->notice('project-stock-rebuild-ok');
+            return;
+        }
+
+        self::toolBox()::i18nLog()->warning('project-stock-rebuild-error');
     }
 }
