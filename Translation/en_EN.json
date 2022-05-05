@@ -2,6 +2,7 @@
     "burn-project-stock": "Burn project stock",
     "canceled": "Canceled",
     "completed": "Completed",
+    "generated-projects": "%quantity% proyectos generados",
     "phases": "Phases",
     "private": "Private",
     "processing": "Processing",

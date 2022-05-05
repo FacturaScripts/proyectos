@@ -70,7 +70,7 @@ class PurchasesHeaderHTMLMod implements PurchasesModInterface
             $value = $project->idproyecto . ' | ' . $project->nombre;
         }
 
-        $html = '<div class="col-sm">'
+        $html = '<div class="col-sm-12">'
             . '<a href="' . $project->url() . '">' . $i18n->trans('project') . '</a>'
             . '<div class="input-group">'
             . '<div class="input-group-prepend">';

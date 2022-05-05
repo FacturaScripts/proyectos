@@ -2,6 +2,7 @@
     "burn-project-stock": "Lagerbestand abziehen",
     "canceled": "abgebrochen",
     "completed": "vollendet",
+    "generated-projects": "%quantity% proyectos generados",
     "phases": "Fasen",
     "private": "Privat",
     "processing": "processing",
