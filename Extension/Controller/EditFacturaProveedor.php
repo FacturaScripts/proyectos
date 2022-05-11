@@ -1,7 +1,7 @@
 <?php
 /**
  * This file is part of Proyectos plugin for FacturaScripts
- * Copyright (C) 2022 Carlos Garcia Gomez <carlos@facturascripts.com>
+ * Copyright (C) 2020-2022 Carlos Garcia Gomez <carlos@facturascripts.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -19,22 +19,9 @@
 
 namespace FacturaScripts\Plugins\Proyectos\Extension\Controller;
 
-use FacturaScripts\Plugins\Proyectos\Lib\ProjectControllerSalesPurchases;
+use FacturaScripts\Plugins\Proyectos\Extension\Traits\ProjectControllerSalesPurchases;
 
 class EditFacturaProveedor
 {
-
     use ProjectControllerSalesPurchases;
-
-    public function execPreviousAction()
-    {
-        return function ($action) {
-            if ($action === 'autocomplete-project') {
-                $this->setTemplate(false);
-                $query = (string)$this->request->get('term', '');
-                $this->response->setContent(\json_encode($this->autocompleteProjectAction($query)));
-                return false;
-            }
-        };
-    }
 }

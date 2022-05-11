@@ -1,7 +1,7 @@
 <?php
 /**
  * This file is part of Proyectos plugin for FacturaScripts
- * Copyright (C) 2022 Carlos Garcia Gomez <carlos@facturascripts.com>
+ * Copyright (C) 2020-2022 Carlos Garcia Gomez <carlos@facturascripts.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -86,7 +86,6 @@ class StockProyecto extends Base\ModelClass
     }
 
     /**
-     *
      * @param int $idproyecto
      *
      * @return bool
@@ -98,7 +97,6 @@ class StockProyecto extends Base\ModelClass
     }
 
     /**
-     *
      * @return Variante
      */
     public function getVariant()
@@ -110,7 +108,6 @@ class StockProyecto extends Base\ModelClass
     }
 
     /**
-     *
      * @return Producto
      */
     public function getProduct()
@@ -120,53 +117,36 @@ class StockProyecto extends Base\ModelClass
         return $product;
     }
 
-    /**
-     *
-     * @return string
-     */
-    public function install()
+    public function install(): string
     {
-        /// needed dependecies
+        // needed dependencies
         new Proyecto();
         new Variante();
 
         return parent::install();
     }
 
-    /**
-     *
-     * @return string
-     */
     public static function primaryColumn(): string
     {
         return 'id';
     }
 
-    /**
-     *
-     * @return string
-     */
     public static function tableName(): string
     {
         return 'proyectos_stocks';
     }
 
-    /**
-     * Returns True if there is no erros on properties values.
-     *
-     * @return bool
-     */
-    public function test()
+    public function test(): bool
     {
-        $this->cantidad = \round($this->cantidad, self::MAX_DECIMALS);
+        $this->cantidad = round($this->cantidad, self::MAX_DECIMALS);
         $this->referencia = $this->toolBox()->utils()->noHtml($this->referencia);
 
-        $this->reservada = \round($this->reservada, self::MAX_DECIMALS);
+        $this->reservada = round($this->reservada, self::MAX_DECIMALS);
         if ($this->reservada < 0) {
             $this->reservada = 0;
         }
 
-        $this->pterecibir = \round($this->pterecibir, self::MAX_DECIMALS);
+        $this->pterecibir = round($this->pterecibir, self::MAX_DECIMALS);
         if ($this->pterecibir < 0) {
             $this->pterecibir = 0;
         }
@@ -175,13 +155,6 @@ class StockProyecto extends Base\ModelClass
         return parent::test();
     }
 
-    /**
-     *
-     * @param string $type
-     * @param string $list
-     *
-     * @return string
-     */
     public function url(string $type = 'auto', string $list = 'List'): string
     {
         return empty($this->primaryColumnValue()) ? parent::url($type, $list) : $this->getProduct()->url();

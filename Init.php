@@ -1,7 +1,7 @@
 <?php
 /**
  * This file is part of Proyectos plugin for FacturaScripts
- * Copyright (C) 2022 Carlos Garcia Gomez <carlos@facturascripts.com>
+ * Copyright (C) 2020-2022 Carlos Garcia Gomez <carlos@facturascripts.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -59,8 +59,8 @@ class Init extends InitClass
         $this->loadExtension(new Extension\Controller\EditProducto());
         $this->loadExtension(new Extension\Model\Base\BusinessDocument());
         $this->loadExtension(new Extension\Model\Stock());
-        SalesHeaderHTML::addMod(new Mod\SalesHeaderHTMLMod());
         PurchasesHeaderHTML::addMod(new Mod\PurchasesHeaderHTMLMod());
+        SalesHeaderHTML::addMod(new Mod\SalesHeaderHTMLMod());
 
         if (class_exists('FacturaScripts\\Dinamic\\Controller\\Randomizer')) {
             $this->loadExtension(new Extension\Controller\Randomizer());
@@ -135,12 +135,12 @@ class Init extends InitClass
 
     private function setupSettings()
     {
-        $appsettings = $this->toolBox()->appSettings();
-        $patron = $appsettings->get('proyectos', 'patron', 'PR-{ANYO}-{NUM}');
-        $longnumero = $appsettings->get('proyectos', 'longnumero', 6);
+        $appSettings = $this->toolBox()->appSettings();
+        $patron = $appSettings->get('proyectos', 'patron', 'PR-{ANYO}-{NUM}');
+        $longnumero = $appSettings->get('proyectos', 'longnumero', 6);
 
-        $appsettings->set('proyectos', 'patron', $patron);
-        $appsettings->set('proyectos', 'longnumero', $longnumero);
-        $appsettings->save();
+        $appSettings->set('proyectos', 'patron', $patron);
+        $appSettings->set('proyectos', 'longnumero', $longnumero);
+        $appSettings->save();
     }
 }

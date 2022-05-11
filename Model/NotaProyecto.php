@@ -1,7 +1,7 @@
 <?php
 /**
  * This file is part of Proyectos plugin for FacturaScripts
- * Copyright (C) 2022 Carlos Garcia Gomez <carlos@facturascripts.com>
+ * Copyright (C) 2020-2022 Carlos Garcia Gomez <carlos@facturascripts.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -33,7 +33,6 @@ class NotaProyecto extends Base\ModelClass
     use Base\ModelTrait;
 
     /**
-     *
      * @var string
      */
     public $descripcion;
@@ -67,11 +66,10 @@ class NotaProyecto extends Base\ModelClass
     public function clear()
     {
         parent::clear();
-        $this->fecha = \date(self::DATETIME_STYLE);
+        $this->fecha = date(self::DATETIME_STYLE);
     }
 
     /**
-     *
      * @return Proyecto
      */
     public function getProject()
@@ -81,62 +79,35 @@ class NotaProyecto extends Base\ModelClass
         return $project;
     }
 
-    /**
-     *
-     * @return string
-     */
-    public function install()
+    public function install(): string
     {
-        /// needed dependencies
+        // needed dependencies
         new TareaProyecto();
 
         return parent::install();
     }
 
-    /**
-     *
-     * @return string
-     */
     public static function primaryColumn(): string
     {
         return 'idnota';
     }
 
-    /**
-     *
-     * @return string
-     */
     public function primaryDescriptionColumn(): string
     {
         return 'idnota';
     }
 
-    /**
-     *
-     * @return string
-     */
     public static function tableName(): string
     {
         return 'proyectos_notas';
     }
 
-    /**
-     *
-     * @return bool
-     */
-    public function test()
+    public function test(): bool
     {
         $this->descripcion = $this->toolBox()->utils()->noHtml($this->descripcion);
         return parent::test();
     }
 
-    /**
-     *
-     * @param string $type
-     * @param string $list
-     *
-     * @return string
-     */
     public function url(string $type = 'auto', string $list = 'List'): string
     {
         return $type === 'list' && $this->idproyecto ? $this->getProject()->url() . '&activetab=ListNotaProyecto' : parent::url($type, $list);

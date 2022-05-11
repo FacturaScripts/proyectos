@@ -1,7 +1,7 @@
 <?php
 /**
  * This file is part of Proyectos plugin for FacturaScripts
- * Copyright (C) 2022 Carlos Garcia Gomez <carlos@facturascripts.com>
+ * Copyright (C) 2020-2022 Carlos Garcia Gomez <carlos@facturascripts.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -19,6 +19,8 @@
 
 namespace FacturaScripts\Plugins\Proyectos\Extension\Controller;
 
+use Closure;
+
 /**
  * Description of DocumentStitcher
  *
@@ -27,17 +29,17 @@ namespace FacturaScripts\Plugins\Proyectos\Extension\Controller;
 class DocumentStitcher
 {
 
-    protected function checkPrototype()
+    protected function checkPrototype(): Closure
     {
         return function ($prototype, $newLines) {
             $values = [];
             foreach ($this->documents as $doc) {
-                if (false === \in_array($doc->idproyecto, $values, true)) {
+                if (false === in_array($doc->idproyecto, $values, true)) {
                     $values[] = $doc->idproyecto;
                 }
             }
 
-            if (\count($values) > 1) {
+            if (count($values) > 1) {
                 $prototype->idproyecto = null;
             }
 

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view>
+    <columns>
+        <group name="data" numcolumns="12">
+            <column name="project" titleurl="ListProyecto" order="105">
+                <widget type="autocomplete" fieldname="idproyecto" onclick="EditProyecto">
+                    <values source="proyectos" fieldcode="idproyecto" fieldtitle="nombre" />
+                </widget>
+            </column>
+        </group>
+    </columns>
+</view>

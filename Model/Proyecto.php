@@ -1,7 +1,7 @@
 <?php
 /**
  * This file is part of Proyectos plugin for FacturaScripts
- * Copyright (C) 2022 Carlos Garcia Gomez <carlos@facturascripts.com>
+ * Copyright (C) 2020-2022 Carlos Garcia Gomez <carlos@facturascripts.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -113,7 +113,7 @@ class Proyecto extends Base\ModelOnChangeClass
         $this->totalcompras = 0.0;
         $this->totalventas = 0.0;
 
-        /// select default status
+        // select default status
         foreach ($this->getAvaliableStatus() as $status) {
             if ($status->predeterminado) {
                 $this->editable = $status->editable;
@@ -126,7 +126,7 @@ class Proyecto extends Base\ModelOnChangeClass
     /**
      * @return EstadoProyecto[]
      */
-    public function getAvaliableStatus()
+    public function getAvaliableStatus(): array
     {
         $avaliable = [];
         $statusModel = new EstadoProyecto();
@@ -150,53 +150,38 @@ class Proyecto extends Base\ModelOnChangeClass
     /**
      * @return TareaProyecto[]
      */
-    public function getTasks()
+    public function getTasks(): array
     {
         $task = new TareaProyecto();
         $where = [new DataBaseWhere('idproyecto', $this->idproyecto)];
         return $task->all($where, [], 0, 0);
     }
 
-    /**
-     * @return string
-     */
-    public function install()
+    public function install(): string
     {
-        /// needed dependencies
+        // needed dependencies
         new EstadoProyecto();
         new Cliente();
 
         return parent::install();
     }
 
-    /**
-     * @return string
-     */
     public static function primaryColumn(): string
     {
         return 'idproyecto';
     }
 
-    /**
-     * @return string
-     */
     public function primaryDescriptionColumn(): string
     {
         return 'nombre';
     }
 
-    /**
-     * @return string
-     */
     public static function tableName(): string
     {
         return 'proyectos';
     }
 
-    /**
-     * @return bool
-     */
-    public function test()
+    public function test(): bool
     {
         if (empty($this->nombre)) {
             ProjectCodeGenerator::new($this);
@@ -242,9 +227,6 @@ class Proyecto extends Base\ModelOnChangeClass
         return $userProject->loadFromCode('', $where);
     }
 
-    /**
-     * @param array $fields
-     */
     protected function setPreviousData(array $fields = [])
     {
         parent::setPreviousData(array_merge(['idestado'], $fields));

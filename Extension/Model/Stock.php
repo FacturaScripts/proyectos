@@ -1,7 +1,7 @@
 <?php
 /**
  * This file is part of Proyectos plugin for FacturaScripts
- * Copyright (C) 2022 Carlos Garcia Gomez <carlos@facturascripts.com>
+ * Copyright (C) 2020-2022 Carlos Garcia Gomez <carlos@facturascripts.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -19,6 +19,7 @@
 
 namespace FacturaScripts\Plugins\Proyectos\Extension\Model;
 
+use Closure;
 use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
 use FacturaScripts\Plugins\Proyectos\Model\StockProyecto;
 
@@ -29,22 +30,21 @@ use FacturaScripts\Plugins\Proyectos\Model\StockProyecto;
  */
 class Stock
 {
-
-    public function saveUpdateBefore()
+    public function saveUpdateBefore(): Closure
     {
         return function () {
             return $this->setAvailableStock();
         };
     }
 
-    public function saveInsertBefore()
+    public function saveInsertBefore(): Closure
     {
         return function () {
             return $this->setAvailableStock();
         };
     }
 
-    protected function setAvailableStock()
+    protected function setAvailableStock(): Closure
     {
         return function () {
             $burnStock = (bool)$this->toolBox()->appSettings()->get('proyectos', 'burnstock', 0);

@@ -23,8 +23,8 @@ use FacturaScripts\Core\Base\Contract\PurchasesModInterface;
 use FacturaScripts\Core\Base\Translator;
 use FacturaScripts\Core\Model\Base\PurchaseDocument;
 use FacturaScripts\Core\Model\User;
+use FacturaScripts\Dinamic\Lib\AssetManager;
 use FacturaScripts\Plugins\Proyectos\Model\Proyecto;
-use FacturaScripts\Plugins\Proyectos\Lib\ProjectCommonSalesPurchases;
 
 /**
  * Description of PurchasesHeaderHTMLMod
@@ -33,17 +33,20 @@ use FacturaScripts\Plugins\Proyectos\Lib\ProjectCommonSalesPurchases;
  */
 class PurchasesHeaderHTMLMod implements PurchasesModInterface
 {
-
-    use ProjectCommonSalesPurchases;
-
     public function apply(PurchaseDocument &$model, array $formData, User $user)
     {
-        $model->idproyecto = !empty($formData['idproyecto']) ? $formData['idproyecto'] : null;
     }
 
     public function applyBefore(PurchaseDocument &$model, array $formData, User $user)
     {
-        // TODO: Implement applyBefore() method.
+        // aplicamos antes para asegurarnos de capturar el valor incluso en nuevas compras,
+        // antes de seleccionar proveedor
+        $model->idproyecto = isset($formData['idproyecto']) && $formData['idproyecto'] ? $formData['idproyecto'] : null;
+    }
+
+    public function assets(): void
+    {
+        AssetManager::add('js', FS_ROUTE . '/Dinamic/Assets/JS/AutocompleteProject.js');
     }
 
     public function newFields(): array
@@ -62,29 +65,22 @@ class PurchasesHeaderHTMLMod implements PurchasesModInterface
     private static function proyecto(Translator $i18n, PurchaseDocument $model): string
     {
         $value = '';
-        $html = '<div class="col-sm">'
-            . $i18n->trans('project')
+        $project = new Proyecto();
+        if ($model->idproyecto && $project->loadFromCode($model->idproyecto)) {
+            $value = $project->idproyecto . ' | ' . $project->nombre;
+        }
+
+        $html = '<div class="col-sm-12">'
+            . '<a href="' . $project->url() . '">' . $i18n->trans('project') . '</a>'
             . '<div class="input-group">'
             . '<div class="input-group-prepend">';
 
-        if (false === empty($model->idproyecto)) {
-            $project = new Proyecto();
-            $project->loadFromCode($model->idproyecto);
-            $value = $project->idproyecto . ' | ' . $project->nombre;
-
-            if ($model->editable) {
-                $html .= '<button type="button" id="deleteProject" class="btn btn-warning">'
-                    . '<i class="fas fa-times" aria-hidden="true"></i>'
-                    . '</button>'
-                    . '<span id="searchProject" class="input-group-text d-none">'
-                    . '<i class="fas fa-search fa-fw"></i>'
-                    . '</span>';
-            }
-        } else {
-            $html .= '<button type="button" id="deleteProject" class="btn btn-warning d-none">'
+        if ($model->editable && $model->idproyecto) {
+            $html .= '<button type="button" id="deleteProject" class="btn btn-warning">'
                 . '<i class="fas fa-times" aria-hidden="true"></i>'
-                . '</button>'
-                . '<span id="searchProject" class="input-group-text">'
+                . '</button>';
+        } else {
+            $html .= '<span id="searchProject" class="input-group-text">'
                 . '<i class="fas fa-search fa-fw"></i>'
                 . '</span>';
         }
@@ -94,13 +90,7 @@ class PurchasesHeaderHTMLMod implements PurchasesModInterface
             . '<input type="hidden" name="idproyecto" value="' . $model->idproyecto . '">'
             . '<input type="text" id="findProjectInput" class="form-control" value="' . $value . '" ' . $disabled . '/>'
             . '</div>'
-            . '</div>'
-            . '<style>' . self::styleCSS() . '</style>'
-            . '<script>'
-            . self::scriptAutocompleteProject($model)
-            . self::scriptDeleteProject()
-            . '</script>';
-
+            . '</div>';
         return $html;
     }
 }
