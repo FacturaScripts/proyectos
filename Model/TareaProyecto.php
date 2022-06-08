@@ -88,7 +88,7 @@ class TareaProyecto extends Base\ModelOnChangeClass
         $this->fecha = date(self::DATE_STYLE);
 
         // select default status
-        foreach ($this->getAvaliablePhases() as $status) {
+        foreach ($this->getAvailablePhases() as $status) {
             if ($status->predeterminado) {
                 $this->idfase = $status->idfase;
                 break;
@@ -99,15 +99,15 @@ class TareaProyecto extends Base\ModelOnChangeClass
     /**
      * @return FaseTarea[]
      */
-    public function getAvaliablePhases(): array
+    public function getAvailablePhases(): array
     {
-        $avaliable = [];
+        $available = [];
         $statusModel = new FaseTarea();
         foreach ($statusModel->all([], [], 0, 0) as $status) {
-            $avaliable[] = $status;
+            $available[] = $status;
         }
 
-        return $avaliable;
+        return $available;
     }
 
     /**
