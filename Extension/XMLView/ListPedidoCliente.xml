@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view>
+    <columns>
+        <column name="project" order="185">
+            <widget type="select" fieldname="idproyecto" onclick="EditProyecto">
+                <values source="proyectos" fieldcode="idproyecto" fieldtitle="nombre" />
+            </widget>
+        </column>
+    </columns>
+</view>

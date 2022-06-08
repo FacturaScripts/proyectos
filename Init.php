@@ -57,6 +57,14 @@ class Init extends InitClass
         $this->loadExtension(new Extension\Controller\EditPresupuestoCliente());
         $this->loadExtension(new Extension\Controller\EditPresupuestoProveedor());
         $this->loadExtension(new Extension\Controller\EditProducto());
+        $this->loadExtension(new Extension\Controller\ListAlbaranCliente());
+        $this->loadExtension(new Extension\Controller\ListAlbaranProveedor());
+        $this->loadExtension(new Extension\Controller\ListFacturaCliente());
+        $this->loadExtension(new Extension\Controller\ListFacturaProveedor());
+        $this->loadExtension(new Extension\Controller\ListPedidoCliente());
+        $this->loadExtension(new Extension\Controller\ListPedidoProveedor());
+        $this->loadExtension(new Extension\Controller\ListPresupuestoCliente());
+        $this->loadExtension(new Extension\Controller\ListPresupuestoProveedor());
         $this->loadExtension(new Extension\Model\Base\BusinessDocument());
         $this->loadExtension(new Extension\Model\Stock());
         PurchasesHeaderHTML::addMod(new Mod\PurchasesHeaderHTMLMod());
