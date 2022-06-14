@@ -114,7 +114,7 @@ class Proyecto extends Base\ModelOnChangeClass
         $this->totalventas = 0.0;
 
         // select default status
-        foreach ($this->getAvaliableStatus() as $status) {
+        foreach ($this->getAvailableStatus() as $status) {
             if ($status->predeterminado) {
                 $this->editable = $status->editable;
                 $this->idestado = $status->idestado;
@@ -126,15 +126,15 @@ class Proyecto extends Base\ModelOnChangeClass
     /**
      * @return EstadoProyecto[]
      */
-    public function getAvaliableStatus(): array
+    public function getAvailableStatus(): array
     {
-        $avaliable = [];
+        $available = [];
         $statusModel = new EstadoProyecto();
         foreach ($statusModel->all([], [], 0, 0) as $status) {
-            $avaliable[] = $status;
+            $available[] = $status;
         }
 
-        return $avaliable;
+        return $available;
     }
 
     /**
