@@ -231,9 +231,12 @@ class EditProyecto extends EditController
         }
     }
 
-    protected function rebuildStockAction()
+    protected function rebuildStockAction(int $idproyecto = null)
     {
-        $idproyecto = (int)$this->request->query->get('code');
+        if (empty($idproyecto)) {
+            $idproyecto = (int)$this->request->query->get('code');
+        }
+
         if (ProjectStockManager::rebuild($idproyecto)) {
             ProjectTotalManager::recalculate($idproyecto);
 
