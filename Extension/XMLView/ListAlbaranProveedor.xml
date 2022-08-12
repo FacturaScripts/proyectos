@@ -7,4 +7,13 @@
             </widget>
         </column>
     </columns>
+    <modals>
+        <group name="link-up-AlbaranProveedor" title="link-up-AlbaranProveedor" icon="fas fa-copy">
+            <column name="linkupcode" title="code">
+                <widget type="autocomplete" fieldname="linkupcode" required="true">
+                    <values source="albaranesprov" fieldcode="idalbaran" fieldtitle="codigo"/>
+                </widget>
+            </column>
+        </group>
+    </modals>
 </view>

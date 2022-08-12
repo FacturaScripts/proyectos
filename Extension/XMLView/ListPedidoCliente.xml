@@ -7,4 +7,13 @@
             </widget>
         </column>
     </columns>
+    <modals>
+        <group name="link-up-PedidoCliente" title="link-up-PedidoCliente" icon="fas fa-copy">
+            <column name="linkupcode" title="code">
+                <widget type="autocomplete" fieldname="linkupcode" required="true">
+                    <values source="pedidoscli" fieldcode="idpedido" fieldtitle="codigo"/>
+                </widget>
+            </column>
+        </group>
+    </modals>
 </view>
