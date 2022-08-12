@@ -2,7 +2,8 @@
     "burn-project-stock": "Cremar estoc",
     "canceled": "Cancel·lat",
     "completed": "Completat",
-    "generated-projects": "%quantity% proyectos generados",
+    "generated-projects": "%quantity% projectes generats",
+    "link-document": "Enlazar documento",
     "phases": "Fases",
     "private": "Privat",
     "processing": "En procés",
@@ -13,5 +14,6 @@
     "task": "Tasca",
     "tasks": "Tasques",
     "total-purchases": "Total compres",
-    "total-sales": "Total vendes"
+    "total-sales": "Total vendes",
+    "unlink-document": "Desvincular..."
 }

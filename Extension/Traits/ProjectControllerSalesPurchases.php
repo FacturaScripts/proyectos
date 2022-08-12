@@ -30,7 +30,7 @@ trait ProjectControllerSalesPurchases
         return function ($query) {
             $list = [];
             $project = new Proyecto();
-            foreach ($project->codeModelSearch($query, 'idproyecto|descripcion') as $value) {
+            foreach ($project->codeModelSearch($query, 'idproyecto') as $value) {
                 $list[] = [
                     'key' => ToolBox::utils()->fixHtml($value->code),
                     'value' => ToolBox::utils()->fixHtml($value->description)

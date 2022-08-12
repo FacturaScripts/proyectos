@@ -3,12 +3,12 @@
     <columns>
         <column name="project" order="185">
             <widget type="select" fieldname="idproyecto" onclick="EditProyecto">
-                <values source="proyectos" fieldcode="idproyecto" fieldtitle="nombre" />
+                <values source="proyectos" fieldcode="idproyecto" fieldtitle="nombre"/>
             </widget>
         </column>
     </columns>
     <modals>
-        <group name="link-up-AlbaranCliente" title="link-up-AlbaranCliente" icon="fas fa-copy">
+        <group name="link-up-AlbaranCliente" title="link-document" icon="fas fa-link">
             <column name="linkupcode" title="code">
                 <widget type="autocomplete" fieldname="linkupcode" required="true">
                     <values source="albaranescli" fieldcode="idalbaran" fieldtitle="codigo"/>

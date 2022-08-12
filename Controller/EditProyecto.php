@@ -87,15 +87,8 @@ class EditProyecto extends EditController
         $this->addButton($viewName, [
             'type' => 'modal',
             'action' => 'link-up-' . $modelName,
-            'icon' => 'fas fa-unlink',
-            'label' => 'link-up-document'
-        ]);
-
-        $this->addButton($viewName, [
-            'type' => 'action',
-            'action' => 'unlink-up-' . $modelName,
             'icon' => 'fas fa-link',
-            'label' => 'unlink-up-document'
+            'label' => 'link-document'
         ]);
     }
 
@@ -226,6 +219,13 @@ class EditProyecto extends EditController
 
     protected function linkUpAction(string $modelName): bool
     {
+        if (false === $this->permissions->allowUpdate) {
+            $this->toolBox()->i18nLog()->warning('not-allowed-to-update');
+            return true;
+        } elseif (false === $this->validateFormToken()) {
+            return true;
+        }
+
         $modelClass = '\\FacturaScripts\\Dinamic\\Model\\' . $modelName;
         $model = new $modelClass();
         $modelTable = $model->tableName();
@@ -233,12 +233,14 @@ class EditProyecto extends EditController
         $code = $this->request->request->get('linkupcode', '');
         $idproyecto = $this->request->get('code', '');
 
-        if (false === $this->dataBase->exec("UPDATE $modelTable SET idproyecto = $idproyecto WHERE $modelKey = $code")) {
-            $this->toolBox()->i18nLog()->error('record-linked-up-error');
-            return false;
+        $sql = "UPDATE $modelTable SET idproyecto = " . $this->dataBase->var2str($idproyecto)
+            . " WHERE " . $this->dataBase->escapeColumn($modelKey) . " = " . $this->dataBase->var2str($code) . ';';
+        if (false === $this->dataBase->exec($sql)) {
+            $this->toolBox()->i18nLog()->error('record-save-error');
+            return true;
         }
 
-        $this->toolBox()->i18nLog()->info('record-linked-up');
+        $this->toolBox()->i18nLog()->info('record-updated-correctly');
         return true;
     }
 
@@ -268,19 +270,32 @@ class EditProyecto extends EditController
                 break;
 
             case 'EditUserProyecto':
-            case 'ListAlbaranCliente':
-            case 'ListAlbaranProveedor':
-            case 'ListFacturaCliente':
-            case 'ListFacturaProveedor':
             case 'ListNotaProyecto':
-            case 'ListPedidoCliente':
-            case 'ListPedidoProveedor':
-            case 'ListPresupuestoCliente':
-            case 'ListPresupuestoProveedor':
             case 'ListStockProyecto':
             case 'ListTareaProyecto':
                 $where = [new DataBaseWhere('idproyecto', $idproyecto)];
                 $view->loadData('', $where);
+                break;
+
+            case 'ListAlbaranCliente':
+            case 'ListAlbaranProveedor':
+            case 'ListFacturaCliente':
+            case 'ListFacturaProveedor':
+            case 'ListPedidoCliente':
+            case 'ListPedidoProveedor':
+            case 'ListPresupuestoCliente':
+            case 'ListPresupuestoProveedor':
+                $where = [new DataBaseWhere('idproyecto', $idproyecto)];
+                $view->loadData('', $where);
+                if ($view->count > 0) {
+                    $this->addButton($viewName, [
+                        'type' => 'action',
+                        'action' => 'unlink-up-' . $view->model->modelClassName(),
+                        'color' => 'warning',
+                        'icon' => 'fas fa-unlink',
+                        'label' => 'unlink-document'
+                    ]);
+                }
                 break;
         }
     }
@@ -305,20 +320,33 @@ class EditProyecto extends EditController
 
     protected function unlinkUpAction(string $modelName): bool
     {
+        if (false === $this->permissions->allowUpdate) {
+            $this->toolBox()->i18nLog()->warning('not-allowed-to-update');
+            return true;
+        } elseif (false === $this->validateFormToken()) {
+            return true;
+        }
+
         $modelClass = '\\FacturaScripts\\Dinamic\\Model\\' . $modelName;
         $model = new $modelClass();
         $modelTable = $model->tableName();
         $modelKey = $model->primaryColumn();
         $codes = $this->request->request->get('code', []);
+        if (empty($codes)) {
+            self::toolBox()->i18nLog()->warning('no-selected-item');
+            return true;
+        }
 
         foreach ($codes as $code) {
-            if (false === $this->dataBase->exec("UPDATE $modelTable SET idproyecto = NULL WHERE $modelKey = $code")) {
-                $this->toolBox()->i18nLog()->error('record-unlinked-up-error');
+            $sql = "UPDATE $modelTable SET idproyecto = NULL WHERE "
+                . $this->dataBase->escapeColumn($modelKey) . " = " . $this->dataBase->var2str($code) . ';';
+            if (false === $this->dataBase->exec($sql)) {
+                $this->toolBox()->i18nLog()->error('record-save-error');
                 return false;
             }
         }
 
-        $this->toolBox()->i18nLog()->info('record-unlinked-up');
+        $this->toolBox()->i18nLog()->info('record-updated-correctly');
         return true;
     }
 }
