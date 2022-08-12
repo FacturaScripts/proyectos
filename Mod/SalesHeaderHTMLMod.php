@@ -68,7 +68,7 @@ class SalesHeaderHTMLMod implements SalesModInterface
             $value = $project->idproyecto . ' | ' . $project->nombre;
         }
 
-        $html = '<div class="col-sm-12">'
+        $html = '<div class="col-sm-6">'
             . '<a href="' . $project->url() . '">' . $i18n->trans('project') . '</a>'
             . '<div class="input-group">'
             . '<div class="input-group-prepend">';

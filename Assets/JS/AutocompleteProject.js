@@ -35,4 +35,10 @@ $(function(){
             }
         });
     });
+
+    $('button#deleteProject').on('click', function(){
+        $('input[name="idproyecto"]').val('');
+        $('input#findProjectInput').val('');
+        $(this).parent().html('<span id="searchProject" class="input-group-text"><i class="fas fa-search fa-fw"></i></span>');
+    });
 });
