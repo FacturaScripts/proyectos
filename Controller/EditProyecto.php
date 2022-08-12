@@ -83,6 +83,20 @@ class EditProyecto extends EditController
         } elseif (substr($viewName, -9) === 'Proveedor') {
             $this->views[$viewName]->addSearchFields(['codigo', 'nombre', 'numproveedor', 'observaciones']);
         }
+
+        $this->addButton($viewName, [
+            'type' => 'modal',
+            'action' => 'link-up-' . $modelName,
+            'icon' => 'fas fa-unlink',
+            'label' => 'link-up-document'
+        ]);
+
+        $this->addButton($viewName, [
+            'type' => 'action',
+            'action' => 'unlink-up-' . $modelName,
+            'icon' => 'fas fa-link',
+            'label' => 'unlink-up-document'
+        ]);
     }
 
     protected function createViewsNotes(string $viewName = 'ListNotaProyecto')
@@ -183,9 +197,49 @@ class EditProyecto extends EditController
                 $this->rebuildStockAction();
                 return true;
 
+            case 'link-up-PresupuestoCliente':
+            case 'link-up-PedidoCliente':
+            case 'link-up-AlbaranCliente':
+            case 'link-up-FacturaCliente':
+            case 'link-up-PresupuestoProveedor':
+            case 'link-up-PedidoProveedor':
+            case 'link-up-AlbaranProveedor':
+            case 'link-up-FacturaProveedor':
+                $parts = explode('-', $action);
+                return $this->linkUpAction(end($parts));
+
+            case 'unlink-up-PresupuestoCliente':
+            case 'unlink-up-PedidoCliente':
+            case 'unlink-up-AlbaranCliente':
+            case 'unlink-up-FacturaCliente':
+            case 'unlink-up-PresupuestoProveedor':
+            case 'unlink-up-PedidoProveedor':
+            case 'unlink-up-AlbaranProveedor':
+            case 'unlink-up-FacturaProveedor':
+                $parts = explode('-', $action);
+                return $this->unlinkUpAction(end($parts));
+
             default:
                 return parent::execPreviousAction($action);
         }
+    }
+
+    protected function linkUpAction(string $modelName): bool
+    {
+        $modelClass = '\\FacturaScripts\\Dinamic\\Model\\' . $modelName;
+        $model = new $modelClass();
+        $modelTable = $model->tableName();
+        $modelKey = $model->primaryColumn();
+        $code = $this->request->request->get('linkupcode', '');
+        $idproyecto = $this->request->get('code', '');
+
+        if (false === $this->dataBase->exec("UPDATE $modelTable SET idproyecto = $idproyecto WHERE $modelKey = $code")) {
+            $this->toolBox()->i18nLog()->error('record-linked-up-error');
+            return false;
+        }
+
+        $this->toolBox()->i18nLog()->info('record-linked-up');
+        return true;
     }
 
     /**
@@ -247,5 +301,24 @@ class EditProyecto extends EditController
         }
 
         self::toolBox()::i18nLog()->warning('project-stock-rebuild-error');
+    }
+
+    protected function unlinkUpAction(string $modelName): bool
+    {
+        $modelClass = '\\FacturaScripts\\Dinamic\\Model\\' . $modelName;
+        $model = new $modelClass();
+        $modelTable = $model->tableName();
+        $modelKey = $model->primaryColumn();
+        $codes = $this->request->request->get('code', []);
+
+        foreach ($codes as $code) {
+            if (false === $this->dataBase->exec("UPDATE $modelTable SET idproyecto = NULL WHERE $modelKey = $code")) {
+                $this->toolBox()->i18nLog()->error('record-unlinked-up-error');
+                return false;
+            }
+        }
+
+        $this->toolBox()->i18nLog()->info('record-unlinked-up');
+        return true;
     }
 }

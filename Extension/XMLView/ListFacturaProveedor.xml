@@ -7,4 +7,13 @@
             </widget>
         </column>
     </columns>
+    <modals>
+        <group name="link-up-FacturaProveedor" title="link-up-FacturaProveedor" icon="fas fa-copy">
+            <column name="linkupcode" title="code">
+                <widget type="autocomplete" fieldname="linkupcode" required="true">
+                    <values source="facturasprov" fieldcode="idfactura" fieldtitle="codigo"/>
+                </widget>
+            </column>
+        </group>
+    </modals>
 </view>
