@@ -3,7 +3,7 @@
     "canceled": "Ezeztatua",
     "completed": "Osatuta",
     "generated-projects": "%quantity% proiektu sortuta",
-    "link-document": "Enlazar documento",
+    "link-document": "Dokumentua lotu",
     "phases": "Faseak",
     "private": "Pribatua",
     "processing": "Prozesatzen",
@@ -15,5 +15,5 @@
     "tasks": "Lanak",
     "total-purchases": "Erosketa totala",
     "total-sales": "Salmenta totala",
-    "unlink-document": "Desvincular..."
+    "unlink-document": "Lokabetu..."
 }

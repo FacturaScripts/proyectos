@@ -61,11 +61,7 @@ class EditProyecto extends EditController
         $this->createViewsTasks();
         $this->createViewsNotes();
         $this->createViewsStock();
-
-        if (class_exists('\\FacturaScripts\\Dinamic\\Model\\ServicioAT')) {
-            $this->createViewsServices();
-        }
-
+        $this->createViewsServices();
         $this->createViewsBusinessDocument('PresupuestoProveedor', 'supplier-estimations');
         $this->createViewsBusinessDocument('PedidoProveedor', 'supplier-orders');
         $this->createViewsBusinessDocument('AlbaranProveedor', 'supplier-delivery-notes');
@@ -107,6 +103,10 @@ class EditProyecto extends EditController
 
     protected function createViewsServices(string $viewName = 'ListServicioAT')
     {
+        if (false === class_exists('\\FacturaScripts\\Dinamic\\Model\\ServicioAT')) {
+            return;
+        }
+
         $this->addListView($viewName, 'ServicioAT', 'services', 'fas fa-headset');
         $this->views[$viewName]->addOrderBy(['fecha', 'hora'], 'date', 2);
         $this->views[$viewName]->addOrderBy(['idprioridad'], 'priority');

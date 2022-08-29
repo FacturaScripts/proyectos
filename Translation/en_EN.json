@@ -3,7 +3,7 @@
     "canceled": "Canceled",
     "completed": "Completed",
     "generated-projects": "%quantity% projects generated",
-    "link-document": "Enlazar documento",
+    "link-document": "Link document",
     "phases": "Phases",
     "private": "Private",
     "processing": "Processing",
@@ -15,5 +15,5 @@
     "tasks": "Tasks",
     "total-purchases": "Total purchases",
     "total-sales": "Total sales",
-    "unlink-document": "Desvincular..."
+    "unlink-document": "Unlink..."
 }
