@@ -3,6 +3,7 @@
     "canceled": "Cancelado",
     "completed": "Completado",
     "generated-projects": "%quantity% proxectos xerados",
+    "link-document": "Enlazar documento",
     "phases": "Fases",
     "private": "Privado",
     "processing": "Procesando",
@@ -13,5 +14,6 @@
     "task": "Tarefa",
     "tasks": "Tarefas",
     "total-purchases": "Total compras",
-    "total-sales": "Total vendas"
+    "total-sales": "Total vendas",
+    "unlink-document": "Desvincular..."
 }

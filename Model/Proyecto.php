@@ -22,6 +22,7 @@ namespace FacturaScripts\Plugins\Proyectos\Model;
 use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
 use FacturaScripts\Core\Model\Base;
 use FacturaScripts\Dinamic\Model\Cliente;
+use FacturaScripts\Dinamic\Model\CodeModel;
 use FacturaScripts\Plugins\Proyectos\Lib\ProjectCodeGenerator;
 
 /**
@@ -121,6 +122,14 @@ class Proyecto extends Base\ModelOnChangeClass
                 break;
             }
         }
+    }
+
+    public function codeModelSearch(string $query, string $fieldCode = '', array $where = []): array
+    {
+        $field = empty($fieldCode) ? static::primaryColumn() : $fieldCode;
+        $fields = $field . '|nombre|descripcion';
+        $where[] = new DataBaseWhere($fields, mb_strtolower($query, 'UTF8'), 'LIKE');
+        return CodeModel::all(static::tableName(), $field, $this->primaryDescriptionColumn(), false, $where);
     }
 
     /**
