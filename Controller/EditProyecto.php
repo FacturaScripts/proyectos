@@ -24,6 +24,7 @@ use FacturaScripts\Core\Lib\ExtendedController\EditController;
 use FacturaScripts\Core\Lib\ExtendedController\EditView;
 use FacturaScripts\Dinamic\Lib\ProjectStockManager;
 use FacturaScripts\Dinamic\Lib\ProjectTotalManager;
+use FacturaScripts\Plugins\Servicios\Model\EstadoAT;
 
 /**
  * Description of EditProyecto
@@ -60,6 +61,11 @@ class EditProyecto extends EditController
         $this->createViewsTasks();
         $this->createViewsNotes();
         $this->createViewsStock();
+
+        if (class_exists('\\FacturaScripts\\Dinamic\\Model\\ServicioAT')) {
+            $this->createViewsServices();
+        }
+
         $this->createViewsBusinessDocument('PresupuestoProveedor', 'supplier-estimations');
         $this->createViewsBusinessDocument('PedidoProveedor', 'supplier-orders');
         $this->createViewsBusinessDocument('AlbaranProveedor', 'supplier-delivery-notes');
@@ -97,6 +103,50 @@ class EditProyecto extends EditController
         $this->addListView($viewName, 'NotaProyecto', 'notes', 'fas fa-sticky-note');
         $this->views[$viewName]->addOrderBy(['fecha'], 'date', 2);
         $this->views[$viewName]->addSearchFields(['descripcion']);
+    }
+
+    protected function createViewsServices(string $viewName = 'ListServicioAT')
+    {
+        $this->addListView($viewName, 'ServicioAT', 'services', 'fas fa-headset');
+        $this->views[$viewName]->addOrderBy(['fecha', 'hora'], 'date', 2);
+        $this->views[$viewName]->addOrderBy(['idprioridad'], 'priority');
+        $this->views[$viewName]->addOrderBy(['idservicio'], 'code');
+        $this->views[$viewName]->addOrderBy(['neto'], 'net');
+        $this->views[$viewName]->addSearchFields(['descripcion', 'idservicio', 'material', 'observaciones', 'solucion']);
+
+        // filters
+        $this->views[$viewName]->addFilterPeriod('fecha', 'date', 'fecha');
+        $this->views[$viewName]->addFilterAutocomplete('codcliente', 'customer', 'codcliente', 'clientes', 'codcliente', 'nombre');
+        $priority = $this->codeModel->all('serviciosat_prioridades', 'id', 'nombre');
+        $this->views[$viewName]->addFilterSelect('idprioridad', 'priority', 'idprioridad', $priority);
+        $status = $this->codeModel->all('serviciosat_estados', 'id', 'nombre');
+        $this->views[$viewName]->addFilterSelect('idestado', 'status', 'idestado', $status);
+
+        $users = $this->codeModel->all('users', 'nick', 'nick');
+        $this->views[$viewName]->addFilterSelect('nick', 'user', 'nick', $users);
+
+        $agents = $this->codeModel->all('agentes', 'codagente', 'nombre');
+        $this->views[$viewName]->addFilterSelect('codagente', 'agent', 'codagente', $agents);
+
+        $this->views[$viewName]->addFilterNumber('netogt', 'net', 'neto', '>=');
+        $this->views[$viewName]->addFilterNumber('netolt', 'net', 'neto', '<=');
+
+        // asignamos colores
+        $estadoModel = new EstadoAT();
+        foreach ($estadoModel->all() as $estado) {
+            if (empty($estado->color)) {
+                continue;
+            }
+
+            $this->views[$viewName]->getRow('status')->options[] = [
+                'tag' => 'option',
+                'children' => [],
+                'color' => $estado->color,
+                'fieldname' => 'idestado',
+                'text' => $estado->id,
+                'title' => $estado->nombre
+            ];
+        }
     }
 
     protected function createViewsStock(string $viewName = 'ListStockProyecto')
@@ -138,14 +188,6 @@ class EditProyecto extends EditController
         }
     }
 
-    protected function createViewsUsers(string $viewName = 'EditUserProyecto')
-    {
-        $this->addEditListView($viewName, 'UserProyecto', 'users', 'fas fa-users');
-
-        // disable column
-        $this->views[$viewName]->disableColumn('project');
-    }
-
     protected function createViewsTasks(string $viewName = 'ListTareaProyecto')
     {
         $this->addListView($viewName, 'TareaProyecto', 'tasks', 'fas fa-project-diagram');
@@ -162,6 +204,14 @@ class EditProyecto extends EditController
         // disable columns
         $this->views[$viewName]->disableColumn('project');
         $this->views[$viewName]->disableColumn('company');
+    }
+
+    protected function createViewsUsers(string $viewName = 'EditUserProyecto')
+    {
+        $this->addEditListView($viewName, 'UserProyecto', 'users', 'fas fa-users');
+
+        // disable column
+        $this->views[$viewName]->disableColumn('project');
     }
 
     /**
@@ -273,6 +323,7 @@ class EditProyecto extends EditController
             case 'ListNotaProyecto':
             case 'ListStockProyecto':
             case 'ListTareaProyecto':
+            case 'ListServicioAT':
                 $where = [new DataBaseWhere('idproyecto', $idproyecto)];
                 $view->loadData('', $where);
                 break;
