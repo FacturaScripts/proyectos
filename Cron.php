@@ -32,7 +32,6 @@ use FacturaScripts\Dinamic\Model\Stock;
  */
 class Cron extends CronClass
 {
-
     public function run()
     {
         if ($this->isTimeForJob('project-stock-update', '10 minutes')) {
@@ -47,10 +46,10 @@ class Cron extends CronClass
                 $this->updateStock();
             }
 
-            $this->jobDone('project-stock-update');
-
             // limpiamos la caché para forzar refrescar los totales de los listados
             $this->toolBox()::cache()->clear();
+
+            $this->jobDone('project-stock-update');
         }
     }
 

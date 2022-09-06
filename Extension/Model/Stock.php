@@ -21,7 +21,7 @@ namespace FacturaScripts\Plugins\Proyectos\Extension\Model;
 
 use Closure;
 use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
-use FacturaScripts\Plugins\Proyectos\Model\StockProyecto;
+use FacturaScripts\Dinamic\Model\StockProyecto;
 
 /**
  * Description of Stock
@@ -30,14 +30,14 @@ use FacturaScripts\Plugins\Proyectos\Model\StockProyecto;
  */
 class Stock
 {
-    public function saveUpdateBefore(): Closure
+    protected function saveInsertBefore(): Closure
     {
         return function () {
             return $this->setAvailableStock();
         };
     }
 
-    public function saveInsertBefore(): Closure
+    protected function saveUpdateBefore(): Closure
     {
         return function () {
             return $this->setAvailableStock();
