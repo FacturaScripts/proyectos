@@ -1,19 +1,13 @@
 {
     "burn-project-stock": "Queimar stock",
     "canceled": "Cancelado",
-    "completed": "Completado",
     "generated-projects": "%quantity% proxectos xerados",
     "link-document": "Enlazar documento",
     "phases": "Fases",
-    "private": "Privado",
-    "processing": "Procesando",
     "project-stock-rebuild-error": "Erro ao rexenerar o stock",
     "project-stock-rebuild-ok": "Stock rexenerado correctamente",
-    "projects": "Proxectos",
     "show-project-stock": "Mostrar o stock do proxecto.",
     "task": "Tarefa",
     "tasks": "Tarefas",
-    "total-purchases": "Total compras",
-    "total-sales": "Total vendas",
     "unlink-document": "Desvincular..."
 }

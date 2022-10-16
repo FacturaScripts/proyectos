@@ -1,19 +1,13 @@
 {
     "burn-project-stock": "burn-project-stock",
     "canceled": "canceled",
-    "completed": "completed",
     "generated-projects": "%quantity% proyectos generados",
     "link-document": "Enlazar documento",
     "phases": "phases",
-    "private": "private",
-    "processing": "processing",
     "project-stock-rebuild-error": "project-stock-rebuild-error",
     "project-stock-rebuild-ok": "project-stock-rebuild-ok",
-    "projects": "projects",
     "show-project-stock": "show-project-stock",
     "task": "task",
     "tasks": "tasks",
-    "total-purchases": "total-purchases",
-    "total-sales": "total-sales",
     "unlink-document": "Desvincular..."
 }

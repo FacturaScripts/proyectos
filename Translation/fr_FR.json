@@ -1,19 +1,13 @@
 {
     "burn-project-stock": "Brûler le stock",
     "canceled": "Annulé",
-    "completed": "Terminé",
     "generated-projects": "%quantity% proyectos generados",
     "link-document": "Enlazar documento",
     "phases": "Phases",
-    "private": "Privé",
-    "processing": "Traitement",
     "project-stock-rebuild-error": "Erreur lors de la reconstitution du stock du projet",
     "project-stock-rebuild-ok": "Stock du projet reconstitué avec succès",
-    "projects": "Projets",
     "show-project-stock": "Afficher le stock du projet",
     "task": "Tâche",
     "tasks": "Tâches",
-    "total-purchases": "Total des achats",
-    "total-sales": "Total des ventes",
     "unlink-document": "Desvincular..."
 }

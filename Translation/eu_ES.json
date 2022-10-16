@@ -1,19 +1,13 @@
 {
     "burn-project-stock": "Stocka erre",
     "canceled": "Ezeztatua",
-    "completed": "Osatuta",
     "generated-projects": "%quantity% proiektu sortuta",
     "link-document": "Dokumentua lotu",
     "phases": "Faseak",
-    "private": "Pribatua",
-    "processing": "Prozesatzen",
     "project-stock-rebuild-error": "Errore bat gertatu da stocka sortzerakoan",
     "project-stock-rebuild-ok": "Stocka ondo birsortu da",
-    "projects": "Proiektuak",
     "show-project-stock": "Proiektuaren stocka erakutsi",
     "task": "Lana",
     "tasks": "Lanak",
-    "total-purchases": "Erosketa totala",
-    "total-sales": "Salmenta totala",
     "unlink-document": "Lokabetu..."
 }
