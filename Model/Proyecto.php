@@ -32,77 +32,48 @@ use FacturaScripts\Plugins\Proyectos\Lib\ProjectCodeGenerator;
  */
 class Proyecto extends Base\ModelOnChangeClass
 {
-
     use Base\ModelTrait;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $codcliente;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $descripcion;
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     public $editable;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $fecha;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $fechafin;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $fechainicio;
 
-    /**
-     * @var integer
-     */
+    /** @var int */
     public $idempresa;
 
-    /**
-     * @var integer
-     */
+    /** @var int */
     public $idestado;
 
-    /**
-     * @var integer
-     */
+    /** @var int */
     public $idproyecto;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $nick;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $nombre;
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     public $privado;
 
-    /**
-     * @var float
-     */
+    /** @var float */
     public $totalcompras;
 
-    /**
-     * @var float
-     */
+    /** @var float */
     public $totalventas;
 
     public function clear()
@@ -110,6 +81,7 @@ class Proyecto extends Base\ModelOnChangeClass
         parent::clear();
         $this->editable = true;
         $this->fecha = date(self::DATE_STYLE);
+        $this->idempresa = $this->toolBox()->appSettings()->get('default', 'idempresa', 1);
         $this->privado = false;
         $this->totalcompras = 0.0;
         $this->totalventas = 0.0;
