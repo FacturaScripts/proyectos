@@ -20,6 +20,7 @@
 namespace FacturaScripts\Plugins\Proyectos\Model;
 
 use FacturaScripts\Core\Model\Base;
+use FacturaScripts\Core\Session;
 
 /**
  * Description of FaseTarea
@@ -67,6 +68,7 @@ class NotaProyecto extends Base\ModelClass
     {
         parent::clear();
         $this->fecha = date(self::DATETIME_STYLE);
+        $this->nick = Session::user()->nick;
     }
 
     /**

@@ -56,12 +56,13 @@ class EditNotaProyecto extends EditController
         switch ($viewName) {
             case $this->getMainViewName():
                 parent::loadData($viewName, $view);
-                if (false === $view->model->exists()) {
-                    $view->model->nick = $this->user->nick;
-                } elseif (false === $view->model->getProject()->userCanSee($this->user)) {
+                if (false === $view->model->getProject()->userCanSee($this->user)) {
                     $this->setTemplate('Error/AccessDenied');
                 }
-                $this->views[$viewName]->disableColumn('task');
+
+                if (empty($view->model->idtarea)) {
+                    $this->views[$viewName]->disableColumn('task');
+                }
                 break;
         }
     }
