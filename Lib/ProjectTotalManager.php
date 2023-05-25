@@ -1,7 +1,7 @@
 <?php
 /**
  * This file is part of Proyectos plugin for FacturaScripts
- * Copyright (C) 2022 Carlos Garcia Gomez <carlos@facturascripts.com>
+ * Copyright (C) 2022-2023 Carlos Garcia Gomez <carlos@facturascripts.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -35,12 +35,7 @@ use FacturaScripts\Plugins\Proyectos\Model\Proyecto;
  */
 class ProjectTotalManager
 {
-
-    /**
-     *
-     * @param int $idproyecto
-     */
-    public static function recalculate($idproyecto)
+    public static function recalculate(int $idproyecto)
     {
         $project = new Proyecto();
         if (false === $project->loadFromCode($idproyecto)) {
@@ -58,17 +53,24 @@ class ProjectTotalManager
             $project->totalcompras += $order->total;
         }
 
+        $netoPedidos = 0.0;
+        $netoAlbaranes = 0.0;
+        $netoFacturas = 0.0;
         $project->totalventas = 0.0;
         foreach (static::salesInvoices($idproyecto) as $invoice) {
             $project->totalventas += $invoice->total;
+            $netoFacturas += $invoice->neto;
         }
         foreach (static::salesDeliveryNotes($idproyecto) as $delivery) {
             $project->totalventas += $delivery->total;
+            $netoAlbaranes += $delivery->neto;
         }
         foreach (static::salesOrders($idproyecto) as $order) {
             $project->totalventas += $order->total;
+            $netoPedidos += $order->neto;
         }
 
+        $project->totalpendientefacturar = ($netoPedidos + $netoAlbaranes) - $netoFacturas;
         $project->save();
     }
 
@@ -88,26 +90,14 @@ class ProjectTotalManager
         return $delivery->all($where, [], 0, 0);
     }
 
-    /**
-     *
-     * @param int $idproyecto
-     *
-     * @return FacturaProveedor[]
-     */
-    protected static function purchaseInvoices($idproyecto)
+    protected static function purchaseInvoices(int $idproyecto): array
     {
         $invoice = new FacturaProveedor();
         $where = [new DataBaseWhere('idproyecto', $idproyecto)];
         return $invoice->all($where, [], 0, 0);
     }
 
-    /**
-     *
-     * @param int $idproyecto
-     *
-     * @return PedidoProveedor[]
-     */
-    protected static function purchaseOrders($idproyecto)
+    protected static function purchaseOrders(int $idproyecto): array
     {
         $order = new PedidoProveedor();
         $where = [
@@ -117,13 +107,7 @@ class ProjectTotalManager
         return $order->all($where, [], 0, 0);
     }
 
-    /**
-     *
-     * @param int $idproyecto
-     *
-     * @return AlbaranCliente[]
-     */
-    protected static function salesDeliveryNotes($idproyecto)
+    protected static function salesDeliveryNotes(int $idproyecto): array
     {
         $delivery = new AlbaranCliente();
         $where = [
@@ -133,26 +117,14 @@ class ProjectTotalManager
         return $delivery->all($where, [], 0, 0);
     }
 
-    /**
-     *
-     * @param int $idproyecto
-     *
-     * @return FacturaCliente[]
-     */
-    protected static function salesInvoices($idproyecto)
+    protected static function salesInvoices(int $idproyecto): array
     {
         $invoice = new FacturaCliente();
         $where = [new DataBaseWhere('idproyecto', $idproyecto)];
         return $invoice->all($where, [], 0, 0);
     }
 
-    /**
-     *
-     * @param int $idproyecto
-     *
-     * @return PedidoCliente[]
-     */
-    protected static function salesOrders($idproyecto)
+    protected static function salesOrders(int $idproyecto): array
     {
         $order = new PedidoCliente();
         $where = [

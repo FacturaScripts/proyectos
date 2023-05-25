@@ -74,6 +74,9 @@ class Proyecto extends Base\ModelOnChangeClass
     public $totalcompras;
 
     /** @var float */
+    public $totalpendientefacturar;
+
+    /** @var float */
     public $totalventas;
 
     public function clear()

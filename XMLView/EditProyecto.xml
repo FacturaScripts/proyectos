@@ -45,11 +45,16 @@
             <column name="private" order="130">
                 <widget type="checkbox" fieldname="privado"/>
             </column>
-            <column name="total-purchases" order="140">
+        </group>
+        <group name="totals" numcolumns="12">
+            <column name="total-purchases" order="100">
                 <widget type="money" fieldname="totalcompras" readonly="true"/>
             </column>
-            <column name="total-sales" order="150">
+            <column name="total-sales" order="110">
                 <widget type="money" fieldname="totalventas" readonly="true"/>
+            </column>
+            <column name="total-pending-invoice" order="120">
+                <widget type="money" fieldname="totalpendientefacturar" readonly="true"/>
             </column>
         </group>
     </columns>
