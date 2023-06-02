@@ -2,12 +2,11 @@
     "burn-project-stock": "Lagerbestand abziehen",
     "canceled": "abgebrochen",
     "generated-projects": "%quantity% proyectos generados",
+    "import-tasks-from-another-project": "Importar tareas desde otro proyecto",
     "link-document": "Enlazar documento",
     "phases": "Fasen",
     "project-stock-rebuild-error": "project-stock-rebuild-error",
     "project-stock-rebuild-ok": "project-stock-rebuild-ok",
     "show-project-stock": "show-project-stock",
-    "task": "task",
-    "tasks": "tasks",
     "unlink-document": "Desvincular..."
 }

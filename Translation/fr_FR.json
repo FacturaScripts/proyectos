@@ -2,12 +2,11 @@
     "burn-project-stock": "Brûler le stock",
     "canceled": "Annulé",
     "generated-projects": "%quantity% proyectos generados",
+    "import-tasks-from-another-project": "Importar tareas desde otro proyecto",
     "link-document": "Enlazar documento",
     "phases": "Phases",
     "project-stock-rebuild-error": "Erreur lors de la reconstitution du stock du projet",
     "project-stock-rebuild-ok": "Stock du projet reconstitué avec succès",
     "show-project-stock": "Afficher le stock du projet",
-    "task": "Tâche",
-    "tasks": "Tâches",
     "unlink-document": "Desvincular..."
 }

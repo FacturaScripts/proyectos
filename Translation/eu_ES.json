@@ -2,12 +2,11 @@
     "burn-project-stock": "Stocka erre",
     "canceled": "Ezeztatua",
     "generated-projects": "%quantity% proiektu sortuta",
+    "import-tasks-from-another-project": "Importar tareas desde otro proyecto",
     "link-document": "Dokumentua lotu",
     "phases": "Faseak",
     "project-stock-rebuild-error": "Errore bat gertatu da stocka sortzerakoan",
     "project-stock-rebuild-ok": "Stocka ondo birsortu da",
     "show-project-stock": "Proiektuaren stocka erakutsi",
-    "task": "Lana",
-    "tasks": "Lanak",
     "unlink-document": "Lokabetu..."
 }

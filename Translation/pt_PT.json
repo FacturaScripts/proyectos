@@ -2,12 +2,11 @@
     "burn-project-stock": "burn-project-stock",
     "canceled": "Cancelado",
     "generated-projects": "%quantity% proyectos generados",
+    "import-tasks-from-another-project": "Importar tareas desde otro proyecto",
     "link-document": "Enlazar documento",
     "phases": "Fases",
     "project-stock-rebuild-error": "project-stock-rebuild-error",
     "project-stock-rebuild-ok": "Estoque reconstruído com sucesso",
     "show-project-stock": "Mostras estoque do Projeto",
-    "task": "Tarefa",
-    "tasks": "Tarefas",
     "unlink-document": "Desvincular..."
 }

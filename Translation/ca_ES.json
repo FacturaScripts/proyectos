@@ -2,12 +2,11 @@
     "burn-project-stock": "Cremar estoc",
     "canceled": "Cancel·lat",
     "generated-projects": "%quantity% projectes generats",
+    "import-tasks-from-another-project": "Importar tasques des d'un altre projecte",
     "link-document": "Enlazar documento",
     "phases": "Fases",
     "project-stock-rebuild-error": "Error al regenerar l'estoc",
     "project-stock-rebuild-ok": "Estoc regenerat correctament",
     "show-project-stock": "Mostrar l'estoc del projecte",
-    "task": "Tasca",
-    "tasks": "Tasques",
     "unlink-document": "Desvincular..."
 }
