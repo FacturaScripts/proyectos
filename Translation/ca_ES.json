@@ -8,5 +8,7 @@
     "project-stock-rebuild-error": "Error al regenerar l'estoc",
     "project-stock-rebuild-ok": "Estoc regenerat correctament",
     "show-project-stock": "Mostrar l'estoc del projecte",
+    "tasks-imported-correctly": "Tareas importadas correctamente",
+    "total-pending-invoice": "Pendiente facturar",
     "unlink-document": "Desvincular..."
 }

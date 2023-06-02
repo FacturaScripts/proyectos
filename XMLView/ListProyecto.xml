@@ -2,46 +2,49 @@
 <view>
     <columns>
         <column name="code" display="none" order="100">
-            <widget type="text" fieldname="idproyecto" />
+            <widget type="text" fieldname="idproyecto"/>
         </column>
         <column name="company" display="none" order="110">
             <widget type="select" fieldname="idempresa">
-                <values source="empresas" fieldcode="idempresa" fieldtitle="nombrecorto" />
+                <values source="empresas" fieldcode="idempresa" fieldtitle="nombrecorto"/>
             </widget>
         </column>
         <column name="name" order="120">
-            <widget type="text" fieldname="nombre" />
+            <widget type="text" fieldname="nombre"/>
         </column>
         <column name="description" order="130">
-            <widget type="textarea" fieldname="descripcion" />
+            <widget type="textarea" fieldname="descripcion"/>
         </column>
         <column name="customer" order="140">
             <widget type="autocomplete" fieldname="codcliente" onclick="EditCliente">
-                <values source="clientes" fieldcode="codcliente" fieldtitle="nombre" />
+                <values source="clientes" fieldcode="codcliente" fieldtitle="nombre"/>
             </widget>
         </column>
         <column name="admin" display="none" order="150">
-            <widget type="text" fieldname="nick" />
+            <widget type="text" fieldname="nick"/>
         </column>
         <column name="start-date" display="none" order="160">
-            <widget type="date" fieldname="fechainicio" />
+            <widget type="date" fieldname="fechainicio"/>
         </column>
         <column name="end-date" display="none" order="170">
-            <widget type="date" fieldname="fechafin" />
+            <widget type="date" fieldname="fechafin"/>
         </column>
         <column name="status" display="right" order="180">
             <widget type="select" fieldname="idestado">
-                <values source="proyectos_estados" fieldcode="idestado" fieldtitle="nombre" />
+                <values source="proyectos_estados" fieldcode="idestado" fieldtitle="nombre"/>
             </widget>
         </column>
         <column name="total-purchases" display="right" order="190">
-            <widget type="money" fieldname="totalcompras" />
+            <widget type="money" fieldname="totalcompras"/>
         </column>
-        <column name="total-sales" display="right" order="200">
-            <widget type="money" fieldname="totalventas" />
+        <column name="total-pending-invoice" display="none" order="200">
+            <widget type="money" fieldname="totalpendientefacturar"/>
         </column>
-        <column name="date" display="right" order="210">
-            <widget type="date" fieldname="fecha" />
+        <column name="total-sales" display="right" order="210">
+            <widget type="money" fieldname="totalventas"/>
+        </column>
+        <column name="date" display="right" order="220">
+            <widget type="date" fieldname="fecha"/>
         </column>
     </columns>
     <rows>

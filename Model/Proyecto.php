@@ -1,7 +1,7 @@
 <?php
 /**
  * This file is part of Proyectos plugin for FacturaScripts
- * Copyright (C) 2020-2022 Carlos Garcia Gomez <carlos@facturascripts.com>
+ * Copyright (C) 2020-2023 Carlos Garcia Gomez <carlos@facturascripts.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -88,6 +88,7 @@ class Proyecto extends Base\ModelOnChangeClass
         $this->idempresa = $this->toolBox()->appSettings()->get('default', 'idempresa', 1);
         $this->privado = false;
         $this->totalcompras = 0.0;
+        $this->totalpendientefacturar = 0.0;
         $this->totalventas = 0.0;
         $this->nick = Session::user()->nick;
 

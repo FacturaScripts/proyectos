@@ -8,5 +8,7 @@
     "project-stock-rebuild-error": "Erro ao rexenerar o stock",
     "project-stock-rebuild-ok": "Stock rexenerado correctamente",
     "show-project-stock": "Mostrar o stock do proxecto.",
+    "tasks-imported-correctly": "Tareas importadas correctamente",
+    "total-pending-invoice": "Pendiente facturar",
     "unlink-document": "Desvincular..."
 }

@@ -20,7 +20,7 @@
             <column name="end-date" order="150">
                 <widget type="date" fieldname="fechafin"/>
             </column>
-            <column name="status" order="160">
+            <column name="status" titleurl="AdminProyectos" order="160">
                 <widget type="select" fieldname="idestado" required="true">
                     <values source="proyectos_estados" fieldcode="idestado" fieldtitle="nombre"/>
                 </widget>
@@ -50,11 +50,11 @@
             <column name="total-purchases" order="100">
                 <widget type="money" fieldname="totalcompras" readonly="true"/>
             </column>
-            <column name="total-sales" order="110">
-                <widget type="money" fieldname="totalventas" readonly="true"/>
-            </column>
-            <column name="total-pending-invoice" order="120">
+            <column name="total-pending-invoice" order="110">
                 <widget type="money" fieldname="totalpendientefacturar" readonly="true"/>
+            </column>
+            <column name="total-sales" order="120">
+                <widget type="money" fieldname="totalventas" readonly="true"/>
             </column>
         </group>
     </columns>

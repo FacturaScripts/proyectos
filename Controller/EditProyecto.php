@@ -217,7 +217,7 @@ class EditProyecto extends EditController
             'type' => 'modal',
             'action' => 'import-task',
             'icon' => 'fas fa-file-import',
-            'label' => 'import-task'
+            'label' => 'import'
         ]);
     }
 

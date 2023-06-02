@@ -8,5 +8,7 @@
     "project-stock-rebuild-error": "Erreur lors de la reconstitution du stock du projet",
     "project-stock-rebuild-ok": "Stock du projet reconstitué avec succès",
     "show-project-stock": "Afficher le stock du projet",
+    "tasks-imported-correctly": "Tareas importadas correctamente",
+    "total-pending-invoice": "Pendiente facturar",
     "unlink-document": "Desvincular..."
 }
