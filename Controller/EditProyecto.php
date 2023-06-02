@@ -22,8 +22,10 @@ namespace FacturaScripts\Plugins\Proyectos\Controller;
 use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
 use FacturaScripts\Core\Lib\ExtendedController\EditController;
 use FacturaScripts\Core\Lib\ExtendedController\EditView;
+use FacturaScripts\Core\Model\Base\ModelCore;
 use FacturaScripts\Dinamic\Lib\ProjectStockManager;
 use FacturaScripts\Dinamic\Lib\ProjectTotalManager;
+use FacturaScripts\Plugins\Proyectos\Model\Proyecto;
 use FacturaScripts\Plugins\Servicios\Model\EstadoAT;
 
 /**
@@ -99,6 +101,9 @@ class EditProyecto extends EditController
         $this->addListView($viewName, 'NotaProyecto', 'notes', 'fas fa-sticky-note');
         $this->views[$viewName]->addOrderBy(['fecha'], 'date', 2);
         $this->views[$viewName]->addSearchFields(['descripcion']);
+
+        $status = $this->codeModel->all('tareas', 'idtarea', 'nombre');
+        $this->views[$viewName]->addFilterSelect('idtarea', 'task', 'idtarea', $status);
     }
 
     protected function createViewsServices(string $viewName = 'ListServicioAT')
@@ -191,9 +196,11 @@ class EditProyecto extends EditController
     protected function createViewsTasks(string $viewName = 'ListTareaProyecto')
     {
         $this->addListView($viewName, 'TareaProyecto', 'tasks', 'fas fa-project-diagram');
-        $this->views[$viewName]->addOrderBy(['fecha'], 'date', 2);
+        $this->views[$viewName]->addOrderBy(['fecha'], 'date');
         $this->views[$viewName]->addOrderBy(['fechainicio'], 'start-date');
         $this->views[$viewName]->addOrderBy(['fechafin'], 'end-date');
+        $this->views[$viewName]->addOrderBy(['nombre'], 'name', 1);
+        $this->views[$viewName]->addOrderBy(['descripcion'], 'description');
         $this->views[$viewName]->addSearchFields(['descripcion', 'nombre']);
 
         // filters
@@ -204,6 +211,13 @@ class EditProyecto extends EditController
         // disable columns
         $this->views[$viewName]->disableColumn('project');
         $this->views[$viewName]->disableColumn('company');
+
+        $this->addButton($viewName, [
+            'type' => 'modal',
+            'action' => 'import-task',
+            'icon' => 'fas fa-file-import',
+            'label' => 'import-task'
+        ]);
     }
 
     protected function createViewsUsers(string $viewName = 'EditUserProyecto')
@@ -236,9 +250,8 @@ class EditProyecto extends EditController
     protected function execPreviousAction($action)
     {
         switch ($action) {
-            case 'rebuild-stock':
-                $this->rebuildStockAction();
-                return true;
+            case 'import-task':
+                return $this->importTaskAction();
 
             case 'link-up-PresupuestoCliente':
             case 'link-up-PedidoCliente':
@@ -250,6 +263,10 @@ class EditProyecto extends EditController
             case 'link-up-FacturaProveedor':
                 $parts = explode('-', $action);
                 return $this->linkUpAction(end($parts));
+
+            case 'rebuild-stock':
+                $this->rebuildStockAction();
+                return true;
 
             case 'unlink-up-PresupuestoCliente':
             case 'unlink-up-PedidoCliente':
@@ -265,6 +282,56 @@ class EditProyecto extends EditController
             default:
                 return parent::execPreviousAction($action);
         }
+    }
+
+    protected function importTaskAction(): bool
+    {
+        if (false === $this->permissions->allowUpdate) {
+            $this->toolBox()->i18nLog()->warning('not-allowed-to-update');
+            return true;
+        } elseif (false === $this->validateFormToken()) {
+            return true;
+        }
+
+        // cargamos el proyecto actual
+        $origProject = new Proyecto();
+        if (false === $origProject->loadFromCode($this->request->get('code', ''))) {
+            return true;
+        }
+
+        // obtenemos el ID del proyecto a copiar
+        $copyProject = new Proyecto();
+        if (false === $copyProject->loadFromCode($this->request->get('idproyecto', ''))
+            || $origProject->idproyecto === $copyProject->idproyecto) {
+            return true;
+        }
+
+        $newTransaction = $this->dataBase->inTransaction();
+        if (false === $newTransaction) {
+            $newTransaction = true;
+            $this->dataBase->beginTransaction();
+        }
+
+        // obtenemos las tareas del proyecto a copiar y las insertamos en el proyecto actual
+        foreach ($copyProject->getTasks() as $task) {
+            $task->idtarea = null;
+            $task->fecha = date(ModelCore::DATETIME_STYLE);
+            $task->idproyecto = $origProject->idproyecto;
+            if (false === $task->save()) {
+                if ($newTransaction) {
+                    $this->dataBase->rollback();
+                }
+                $this->toolBox()->i18nLog()->warning('tasks-not-imported');
+                return true;
+            }
+        }
+
+        if ($newTransaction) {
+            $this->dataBase->commit();
+        }
+
+        $this->toolBox()->i18nLog()->notice('tasks-imported-correctly');
+        return true;
     }
 
     protected function linkUpAction(string $modelName): bool
@@ -308,7 +375,6 @@ class EditProyecto extends EditController
                 parent::loadData($viewName, $view);
                 if (false === $view->model->exists()) {
                     $view->model->idempresa = $this->user->idempresa;
-                    $view->model->nick = $this->user->nick;
                 } elseif (false === $view->model->userCanSee($this->user)) {
                     $this->setTemplate('Error/AccessDenied');
                 } elseif (false === $view->model->editable) {

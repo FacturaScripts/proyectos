@@ -9,7 +9,7 @@
                 <widget type="textarea" fieldname="descripcion" />
             </column>
             <column name="task" order="120">
-                <widget type="autocomplete" fieldname="idtarea" onclick="EditTareaProyecto">
+                <widget type="autocomplete" fieldname="idtarea">
                     <values source="tareas" fieldcode="idtarea" fieldtitle="nombre" />
                 </widget>
             </column>

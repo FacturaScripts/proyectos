@@ -100,7 +100,6 @@ class EditTareaProyecto extends EditController
                 $view->loadData('', $where, ['fecha' => 'DESC']);
                 if (false === $view->model->exists()) {
                     $view->model->idproyecto = $this->getViewModelValue($mainViewName, 'idproyecto');
-                    $view->model->nick = $this->user->nick;
                 }
                 break;
         }

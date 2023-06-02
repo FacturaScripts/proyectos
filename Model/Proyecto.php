@@ -21,6 +21,7 @@ namespace FacturaScripts\Plugins\Proyectos\Model;
 
 use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
 use FacturaScripts\Core\Model\Base;
+use FacturaScripts\Core\Session;
 use FacturaScripts\Dinamic\Model\Cliente;
 use FacturaScripts\Dinamic\Model\CodeModel;
 use FacturaScripts\Plugins\Proyectos\Lib\ProjectCodeGenerator;
@@ -88,6 +89,7 @@ class Proyecto extends Base\ModelOnChangeClass
         $this->privado = false;
         $this->totalcompras = 0.0;
         $this->totalventas = 0.0;
+        $this->nick = Session::user()->nick;
 
         // select default status
         foreach ($this->getAvailableStatus() as $status) {

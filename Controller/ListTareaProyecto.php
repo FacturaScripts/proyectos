@@ -54,6 +54,7 @@ class ListTareaProyecto extends ListController
         $this->addOrderBy($viewName, ['fechainicio'], 'start-date');
         $this->addOrderBy($viewName, ['fechafin'], 'end-date');
         $this->addOrderBy($viewName, ['nombre'], 'name');
+        $this->addOrderBy($viewName, ['descripcion'], 'description');
         $this->addSearchFields($viewName, ['tareas.nombre', 'tareas.descripcion']);
 
         // filters
@@ -71,6 +72,7 @@ class ListTareaProyecto extends ListController
         $this->addOrderBy($viewName, ['fechainicio'], 'start-date');
         $this->addOrderBy($viewName, ['fechafin'], 'end-date');
         $this->addOrderBy($viewName, ['nombre'], 'title');
+        $this->addOrderBy($viewName, ['descripcion'], 'description');
         $this->addSearchFields($viewName, ['tareas.nombre', 'tareas.descripcion']);
 
         // filters

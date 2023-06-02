@@ -11,12 +11,12 @@
                 </widget>
             </column>
             <column name="task" order="120">
-                <widget type="select" fieldname="idtarea" fieldfilter="project" onclick="EditTareaProyecto">
+                <widget type="select" fieldname="idtarea" fieldfilter="project" readonly="dinamic" onclick="EditTareaProyecto">
                     <values source="tareas" fieldcode="idtarea" fieldtitle="nombre" />
                 </widget>
             </column>
             <column name="date" order="130">
-                <widget type="date" fieldname="fecha" readonly="true" required="true" />
+                <widget type="datetime" fieldname="fecha" readonly="true" required="true" />
             </column>
             <column name="user" order="140">
                 <widget type="text" fieldname="nick" readonly="true" required="true" />
