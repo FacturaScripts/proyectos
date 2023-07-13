@@ -35,7 +35,7 @@ class Cron extends CronClass
 {
     public function run()
     {
-        if ($this->isTimeForJob('project-stock-update', '10 minutes')) {
+        if ($this->isTimeForJob('project-stock-update', '1 month')) {
             $projectModel = new Proyecto();
             foreach ($projectModel->all([], ['idproyecto' => 'DESC'], 0, 0) as $project) {
                 ProjectStockManager::rebuild($project->idproyecto);

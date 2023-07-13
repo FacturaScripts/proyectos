@@ -2,13 +2,13 @@
     "burn-project-stock": "Stocka erre",
     "canceled": "Ezeztatua",
     "generated-projects": "%quantity% proiektu sortuta",
-    "import-tasks-from-another-project": "Importar tareas desde otro proyecto",
+    "import-tasks-from-another-project": "Zereginak beste proiektu batetik inportatu",
     "link-document": "Dokumentua lotu",
     "phases": "Faseak",
     "project-stock-rebuild-error": "Errore bat gertatu da stocka sortzerakoan",
     "project-stock-rebuild-ok": "Stocka ondo birsortu da",
     "show-project-stock": "Proiektuaren stocka erakutsi",
-    "tasks-imported-correctly": "Tareas importadas correctamente",
-    "total-pending-invoice": "Pendiente facturar",
+    "tasks-imported-correctly": "Zereginak behar bezala inportatu dira",
+    "total-pending-invoice": "Fakturaren zain",
     "unlink-document": "Lokabetu..."
 }

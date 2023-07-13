@@ -16,7 +16,7 @@
             <column name="show-project-stock" order="100">
                 <widget type="checkbox" fieldname="stock"/>
             </column>
-            <column name="burn-project-stock" order="100">
+            <column name="burn-project-stock" order="110">
                 <widget type="checkbox" fieldname="burnstock"/>
             </column>
         </group>
