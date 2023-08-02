@@ -358,6 +358,9 @@ class EditProyecto extends EditController
             return true;
         }
 
+        ProjectStockManager::rebuild($idproyecto);
+        ProjectTotalManager::recalculate($idproyecto);
+
         $this->toolBox()->i18nLog()->info('record-updated-correctly');
         return true;
     }
@@ -463,6 +466,11 @@ class EditProyecto extends EditController
                 return false;
             }
         }
+
+        $mainViewName = $this->getMainViewName();
+        $idproyecto = $this->getViewModelValue($mainViewName, 'idproyecto');
+        ProjectStockManager::rebuild($idproyecto);
+        ProjectTotalManager::recalculate($idproyecto);
 
         $this->toolBox()->i18nLog()->info('record-updated-correctly');
         return true;
