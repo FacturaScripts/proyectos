@@ -21,6 +21,7 @@ namespace FacturaScripts\Plugins\Proyectos;
 
 use FacturaScripts\Core\Base\CronClass;
 use FacturaScripts\Core\Cache;
+use FacturaScripts\Core\Tools;
 use FacturaScripts\Dinamic\Lib\ProjectStockManager;
 use FacturaScripts\Dinamic\Lib\ProjectTotalManager;
 use FacturaScripts\Dinamic\Model\Proyecto;
@@ -42,7 +43,7 @@ class Cron extends CronClass
                 ProjectTotalManager::recalculate($project->idproyecto);
             }
 
-            $burnStock = (bool)$this->toolBox()->appSettings()->get('proyectos', 'burnstock', 0);
+            $burnStock = (bool)Tools::settings('proyectos', 'burnstock', 0);
             if ($burnStock) {
                 $this->updateStock();
             }
@@ -54,7 +55,7 @@ class Cron extends CronClass
         }
     }
 
-    protected function updateStock()
+    protected function updateStock(): void
     {
         $stockModel = new Stock();
         $offset = 0;

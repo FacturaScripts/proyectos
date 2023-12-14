@@ -1,7 +1,7 @@
 <?php
 /**
  * This file is part of Proyectos plugin for FacturaScripts
- * Copyright (C) 2020-2022 Carlos Garcia Gomez <carlos@facturascripts.com>
+ * Copyright (C) 2020-2023 Carlos Garcia Gomez <carlos@facturascripts.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -21,6 +21,7 @@ namespace FacturaScripts\Plugins\Proyectos\Model;
 
 use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
 use FacturaScripts\Core\Model\Base;
+use FacturaScripts\Core\Tools;
 use FacturaScripts\Dinamic\Model\Producto;
 use FacturaScripts\Dinamic\Model\Variante;
 
@@ -31,49 +32,32 @@ use FacturaScripts\Dinamic\Model\Variante;
  */
 class StockProyecto extends Base\ModelClass
 {
-
     use Base\ModelTrait;
 
     const MAX_DECIMALS = 3;
 
-    /**
-     * @var float
-     */
+    /** @var float */
     public $cantidad;
 
-    /**
-     * @var float
-     */
+    /** @var float */
     public $disponible;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     public $id;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     public $idproducto;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     public $idproyecto;
 
-    /**
-     * @var float
-     */
+    /** @var float */
     public $pterecibir;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $referencia;
 
-    /**
-     * @var float
-     */
+    /** @var float */
     public $reservada;
 
     public function clear()
@@ -139,7 +123,7 @@ class StockProyecto extends Base\ModelClass
     public function test(): bool
     {
         $this->cantidad = round($this->cantidad, self::MAX_DECIMALS);
-        $this->referencia = $this->toolBox()->utils()->noHtml($this->referencia);
+        $this->referencia = Tools::noHtml($this->referencia);
 
         $this->reservada = round($this->reservada, self::MAX_DECIMALS);
         if ($this->reservada < 0) {

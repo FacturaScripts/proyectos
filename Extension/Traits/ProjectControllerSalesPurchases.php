@@ -1,7 +1,7 @@
 <?php
 /**
  * This file is part of Proyectos plugin for FacturaScripts
- * Copyright (C) 2022 Carlos Garcia Gomez <carlos@facturascripts.com>
+ * Copyright (C) 2022-2023 Carlos Garcia Gomez <carlos@facturascripts.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -20,7 +20,7 @@
 namespace FacturaScripts\Plugins\Proyectos\Extension\Traits;
 
 use Closure;
-use FacturaScripts\Core\Base\ToolBox;
+use FacturaScripts\Core\Tools;
 use FacturaScripts\Dinamic\Model\Proyecto;
 
 trait ProjectControllerSalesPurchases
@@ -32,13 +32,13 @@ trait ProjectControllerSalesPurchases
             $project = new Proyecto();
             foreach ($project->codeModelSearch($query, 'idproyecto') as $value) {
                 $list[] = [
-                    'key' => ToolBox::utils()->fixHtml($value->code),
-                    'value' => ToolBox::utils()->fixHtml($value->description)
+                    'key' => Tools::fixHtml($value->code),
+                    'value' => Tools::fixHtml($value->description)
                 ];
             }
 
             if (empty($list)) {
-                $list[] = ['key' => null, 'value' => ToolBox::i18n()->trans('no-data')];
+                $list[] = ['key' => null, 'value' => Tools::lang()->trans('no-data')];
             }
 
             return $list;

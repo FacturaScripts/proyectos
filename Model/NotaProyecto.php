@@ -1,7 +1,7 @@
 <?php
 /**
  * This file is part of Proyectos plugin for FacturaScripts
- * Copyright (C) 2020-2022 Carlos Garcia Gomez <carlos@facturascripts.com>
+ * Copyright (C) 2020-2023 Carlos Garcia Gomez <carlos@facturascripts.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -21,6 +21,7 @@ namespace FacturaScripts\Plugins\Proyectos\Model;
 
 use FacturaScripts\Core\Model\Base;
 use FacturaScripts\Core\Session;
+use FacturaScripts\Core\Tools;
 
 /**
  * Description of FaseTarea
@@ -30,44 +31,30 @@ use FacturaScripts\Core\Session;
  */
 class NotaProyecto extends Base\ModelClass
 {
-
     use Base\ModelTrait;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $descripcion;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $fecha;
 
-    /**
-     * @var integer
-     */
+    /** @var integer */
     public $idnota;
 
-    /**
-     * @var integer
-     */
+    /** @var integer */
     public $idproyecto;
 
-    /**
-     * @var integer
-     */
+    /** @var integer */
     public $idtarea;
 
-    /**
-     * User id
-     * @var string
-     */
+    /** @var string */
     public $nick;
 
     public function clear()
     {
         parent::clear();
-        $this->fecha = date(self::DATETIME_STYLE);
+        $this->fecha = Tools::dateTime();
         $this->nick = Session::user()->nick;
     }
 
@@ -106,7 +93,8 @@ class NotaProyecto extends Base\ModelClass
 
     public function test(): bool
     {
-        $this->descripcion = $this->toolBox()->utils()->noHtml($this->descripcion);
+        $this->descripcion = Tools::noHtml($this->descripcion);
+
         return parent::test();
     }
 

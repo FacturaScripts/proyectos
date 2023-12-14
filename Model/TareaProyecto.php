@@ -1,7 +1,7 @@
 <?php
 /**
  * This file is part of Proyectos plugin for FacturaScripts
- * Copyright (C) 2020-2022 Carlos Garcia Gomez <carlos@facturascripts.com>
+ * Copyright (C) 2020-2023 Carlos Garcia Gomez <carlos@facturascripts.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -21,6 +21,7 @@ namespace FacturaScripts\Plugins\Proyectos\Model;
 
 use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
 use FacturaScripts\Core\Model\Base;
+use FacturaScripts\Core\Tools;
 
 /**
  * Description of TareaProyecto
@@ -30,62 +31,43 @@ use FacturaScripts\Core\Model\Base;
  */
 class TareaProyecto extends Base\ModelOnChangeClass
 {
-
     use Base\ModelTrait;
 
     const TYPE_COMPLETED = 0;
     const TYPE_PROCESSING = 2;
     const TYPE_CANCELED = 1;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     public $cantidad;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $descripcion;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $fecha;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $fechafin;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $fechainicio;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     public $idfase;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     public $idproyecto;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     public $idtarea;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $nombre;
 
     public function clear()
     {
         parent::clear();
-        $this->fecha = date(self::DATE_STYLE);
+        $this->fecha = Tools::date();
 
         // select default status
         foreach ($this->getAvailablePhases() as $status) {
@@ -183,8 +165,8 @@ class TareaProyecto extends Base\ModelOnChangeClass
 
     public function test(): bool
     {
-        $this->descripcion = $this->toolBox()->utils()->noHtml($this->descripcion);
-        $this->nombre = $this->toolBox()->utils()->noHtml($this->nombre);
+        $this->descripcion = Tools::noHtml($this->descripcion);
+        $this->nombre = Tools::noHtml($this->nombre);
 
         return parent::test();
     }
@@ -215,7 +197,7 @@ class TareaProyecto extends Base\ModelOnChangeClass
      * equal to the total project tasks to complete it.
      *
      * @param Proyecto $project
-     * @param Tarea[] $tasks
+     * @param TareaProyecto[] $tasks
      */
     protected function deepTaskCheck($project, $tasks)
     {
@@ -230,7 +212,7 @@ class TareaProyecto extends Base\ModelOnChangeClass
             }
         }
 
-        if ($completed + $canceled === \count($tasks)) {
+        if ($completed + $canceled === count($tasks)) {
             $phase = new FaseTarea();
             $where = [new DataBaseWhere('tipo', self::TYPE_COMPLETED)];
             if ($phase->loadFromCode('', $where)) {

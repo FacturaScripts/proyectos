@@ -1,7 +1,7 @@
 <?php
 /**
  * This file is part of Proyectos plugin for FacturaScripts
- * Copyright (C) 2020-2022 Carlos Garcia Gomez <carlos@facturascripts.com>
+ * Copyright (C) 2020-2023 Carlos Garcia Gomez <carlos@facturascripts.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -26,6 +26,7 @@ use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
 use FacturaScripts\Core\Base\InitClass;
 use FacturaScripts\Core\Model\Role;
 use FacturaScripts\Core\Model\RoleAccess;
+use FacturaScripts\Core\Tools;
 use FacturaScripts\Dinamic\Model\AlbaranCliente;
 use FacturaScripts\Dinamic\Model\AlbaranProveedor;
 use FacturaScripts\Dinamic\Model\FacturaCliente;
@@ -40,7 +41,7 @@ use FacturaScripts\Dinamic\Model\PresupuestoProveedor;
  *
  * @author Carlos Garcia Gomez <carlos@facturascripts.com>
  */
-class Init extends InitClass
+final class Init extends InitClass
 {
     const ROLE_NAME = 'Proyectos';
 
@@ -67,6 +68,7 @@ class Init extends InitClass
         $this->loadExtension(new Extension\Controller\ListPresupuestoProveedor());
         $this->loadExtension(new Extension\Model\Base\BusinessDocument());
         $this->loadExtension(new Extension\Model\Stock());
+
         PurchasesHeaderHTML::addMod(new Mod\PurchasesHeaderHTMLMod());
         SalesHeaderHTML::addMod(new Mod\SalesHeaderHTMLMod());
 
@@ -92,7 +94,7 @@ class Init extends InitClass
         $this->createRoleForPlugin();
     }
 
-    private function createRoleForPlugin()
+    private function createRoleForPlugin(): void
     {
         $dataBase = new DataBase();
         $dataBase->beginTransaction();
@@ -141,14 +143,10 @@ class Init extends InitClass
         $dataBase->commit();
     }
 
-    private function setupSettings()
+    private function setupSettings(): void
     {
-        $appSettings = $this->toolBox()->appSettings();
-        $patron = $appSettings->get('proyectos', 'patron', 'PR-{ANYO}-{NUM}');
-        $longnumero = $appSettings->get('proyectos', 'longnumero', 6);
-
-        $appSettings->set('proyectos', 'patron', $patron);
-        $appSettings->set('proyectos', 'longnumero', $longnumero);
-        $appSettings->save();
+        Tools::settings('proyectos', 'patron', 'PR-{ANYO}-{NUM}');
+        Tools::settings('proyectos', 'longnumero', 6);
+        Tools::settingsSave();
     }
 }

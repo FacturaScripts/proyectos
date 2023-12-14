@@ -21,7 +21,9 @@ namespace FacturaScripts\Plugins\Proyectos\Model;
 
 use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
 use FacturaScripts\Core\Model\Base;
+use FacturaScripts\Core\Model\User;
 use FacturaScripts\Core\Session;
+use FacturaScripts\Core\Tools;
 use FacturaScripts\Dinamic\Model\Cliente;
 use FacturaScripts\Dinamic\Model\CodeModel;
 use FacturaScripts\Plugins\Proyectos\Lib\ProjectCodeGenerator;
@@ -84,8 +86,8 @@ class Proyecto extends Base\ModelOnChangeClass
     {
         parent::clear();
         $this->editable = true;
-        $this->fecha = date(self::DATE_STYLE);
-        $this->idempresa = $this->toolBox()->appSettings()->get('default', 'idempresa', 1);
+        $this->fecha = Tools::date();
+        $this->idempresa = Tools::settings('default', 'idempresa', 1);
         $this->privado = false;
         $this->totalcompras = 0.0;
         $this->totalpendientefacturar = 0.0;
@@ -174,8 +176,9 @@ class Proyecto extends Base\ModelOnChangeClass
             ProjectCodeGenerator::new($this);
         }
 
-        $this->descripcion = $this->toolBox()->utils()->noHtml($this->descripcion);
-        $this->nombre = $this->toolBox()->utils()->noHtml($this->nombre);
+        $this->descripcion = Tools::noHtml($this->descripcion);
+        $this->nombre = Tools::noHtml($this->nombre);
+
         return parent::test();
     }
 

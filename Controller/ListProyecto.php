@@ -1,7 +1,7 @@
 <?php
 /**
  * This file is part of Proyectos plugin for FacturaScripts
- * Copyright (C) 2020-2022 Carlos Garcia Gomez <carlos@facturascripts.com>
+ * Copyright (C) 2020-2023 Carlos Garcia Gomez <carlos@facturascripts.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -22,6 +22,7 @@ namespace FacturaScripts\Plugins\Proyectos\Controller;
 use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
 use FacturaScripts\Core\Lib\ExtendedController\ListController;
 use FacturaScripts\Core\Lib\ExtendedController\ListView;
+use FacturaScripts\Core\Tools;
 
 /**
  * Description of ListProyecto
@@ -30,7 +31,6 @@ use FacturaScripts\Core\Lib\ExtendedController\ListView;
  */
 class ListProyecto extends ListController
 {
-
     public function getPageData(): array
     {
         $data = parent::getPageData();
@@ -42,11 +42,11 @@ class ListProyecto extends ListController
 
     protected function createViews()
     {
-        $this->createViewsProyects();
-        $this->createViewsPrivateProyects();
+        $this->createViewsProjects();
+        $this->createViewsPrivateProjects();
     }
 
-    protected function createViewsPrivateProyects(string $viewName = 'ListProyecto-private')
+    protected function createViewsPrivateProjects(string $viewName = 'ListProyecto-private'): void
     {
         $this->addView($viewName, 'Proyecto', 'private', 'fas fa-unlock-alt');
         $this->addOrderBy($viewName, ['fecha', 'idproyecto'], 'date', 2);
@@ -59,9 +59,9 @@ class ListProyecto extends ListController
 
         // filters
         $where = [
-            ['label' => $this->toolBox()->i18n()->trans('only-active'), 'where' => [new DataBaseWhere('editable', true)]],
-            ['label' => $this->toolBox()->i18n()->trans('only-closed'), 'where' => [new DataBaseWhere('editable', false)]],
-            ['label' => $this->toolBox()->i18n()->trans('all'), 'where' => []]
+            ['label' => Tools::lang()->trans('only-active'), 'where' => [new DataBaseWhere('editable', true)]],
+            ['label' => Tools::lang()->trans('only-closed'), 'where' => [new DataBaseWhere('editable', false)]],
+            ['label' => Tools::lang()->trans('all'), 'where' => []]
         ];
         foreach ($this->codeModel->all('proyectos_estados', 'idestado', 'nombre') as $status) {
             $where[] = ['label' => $status->description, 'where' => [new DataBaseWhere('idestado', $status->code)]];
@@ -76,7 +76,7 @@ class ListProyecto extends ListController
         $this->addFilterAutocomplete($viewName, 'codcliente', 'customer', 'codcliente', 'clientes', 'codcliente', 'nombre');
     }
 
-    protected function createViewsProyects(string $viewName = 'ListProyecto')
+    protected function createViewsProjects(string $viewName = 'ListProyecto'): void
     {
         $this->addView($viewName, 'Proyecto', 'projects', 'fab fa-stack-overflow');
         $this->addOrderBy($viewName, ['fecha', 'idproyecto'], 'date', 2);
@@ -89,9 +89,9 @@ class ListProyecto extends ListController
 
         // filters
         $where = [
-            ['label' => $this->toolBox()->i18n()->trans('only-active'), 'where' => [new DataBaseWhere('editable', true)]],
-            ['label' => $this->toolBox()->i18n()->trans('only-closed'), 'where' => [new DataBaseWhere('editable', false)]],
-            ['label' => $this->toolBox()->i18n()->trans('all'), 'where' => []]
+            ['label' => Tools::lang()->trans('only-active'), 'where' => [new DataBaseWhere('editable', true)]],
+            ['label' => Tools::lang()->trans('only-closed'), 'where' => [new DataBaseWhere('editable', false)]],
+            ['label' => Tools::lang()->trans('all'), 'where' => []]
         ];
         foreach ($this->codeModel->all('proyectos_estados', 'idestado', 'nombre') as $status) {
             $where[] = ['label' => $status->description, 'where' => [new DataBaseWhere('idestado', $status->code)]];

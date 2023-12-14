@@ -24,6 +24,7 @@ use FacturaScripts\Core\Cache;
 use FacturaScripts\Core\Lib\ExtendedController\EditController;
 use FacturaScripts\Core\Lib\ExtendedController\EditView;
 use FacturaScripts\Core\Model\Base\ModelCore;
+use FacturaScripts\Core\Tools;
 use FacturaScripts\Dinamic\Lib\ProjectStockManager;
 use FacturaScripts\Dinamic\Lib\ProjectTotalManager;
 use FacturaScripts\Plugins\Proyectos\Model\Proyecto;
@@ -36,7 +37,6 @@ use FacturaScripts\Plugins\Servicios\Model\EstadoAT;
  */
 class EditProyecto extends EditController
 {
-
     public function getModelClassName(): string
     {
         return 'Proyecto';
@@ -76,7 +76,7 @@ class EditProyecto extends EditController
         $this->createViewsUsers();
     }
 
-    protected function createViewsBusinessDocument(string $modelName, string $title)
+    protected function createViewsBusinessDocument(string $modelName, string $title): void
     {
         $viewName = 'List' . $modelName;
         $this->addListView($viewName, $modelName, $title, 'fas fa-copy');
@@ -97,7 +97,7 @@ class EditProyecto extends EditController
         ]);
     }
 
-    protected function createViewsNotes(string $viewName = 'ListNotaProyecto')
+    protected function createViewsNotes(string $viewName = 'ListNotaProyecto'): void
     {
         $this->addListView($viewName, 'NotaProyecto', 'notes', 'fas fa-sticky-note');
         $this->views[$viewName]->addOrderBy(['fecha'], 'date', 2);
@@ -107,7 +107,7 @@ class EditProyecto extends EditController
         $this->views[$viewName]->addFilterSelect('idtarea', 'task', 'idtarea', $status);
     }
 
-    protected function createViewsServices(string $viewName = 'ListServicioAT')
+    protected function createViewsServices(string $viewName = 'ListServicioAT'): void
     {
         if (false === class_exists('\\FacturaScripts\\Dinamic\\Model\\ServicioAT')) {
             return;
@@ -155,9 +155,9 @@ class EditProyecto extends EditController
         }
     }
 
-    protected function createViewsStock(string $viewName = 'ListStockProyecto')
+    protected function createViewsStock(string $viewName = 'ListStockProyecto'): void
     {
-        if (false === (bool)$this->toolBox()->appSettings()->get('proyectos', 'stock', false)) {
+        if (false === (bool)Tools::settings('proyectos', 'stock', false)) {
             return;
         }
 
@@ -194,7 +194,7 @@ class EditProyecto extends EditController
         }
     }
 
-    protected function createViewsTasks(string $viewName = 'ListTareaProyecto')
+    protected function createViewsTasks(string $viewName = 'ListTareaProyecto'): void
     {
         $this->addListView($viewName, 'TareaProyecto', 'tasks', 'fas fa-project-diagram');
         $this->views[$viewName]->addOrderBy(['fecha'], 'date');
@@ -221,7 +221,7 @@ class EditProyecto extends EditController
         ]);
     }
 
-    protected function createViewsUsers(string $viewName = 'EditUserProyecto')
+    protected function createViewsUsers(string $viewName = 'EditUserProyecto'): void
     {
         $this->addEditListView($viewName, 'UserProyecto', 'users', 'fas fa-users');
 
@@ -288,7 +288,7 @@ class EditProyecto extends EditController
     protected function importTaskAction(): bool
     {
         if (false === $this->permissions->allowUpdate) {
-            $this->toolBox()->i18nLog()->warning('not-allowed-to-update');
+            Tools::log()->warning('not-allowed-to-update');
             return true;
         } elseif (false === $this->validateFormToken()) {
             return true;
@@ -322,7 +322,7 @@ class EditProyecto extends EditController
                 if ($newTransaction) {
                     $this->dataBase->rollback();
                 }
-                $this->toolBox()->i18nLog()->warning('tasks-not-imported');
+                Tools::log()->warning('tasks-not-imported');
                 return true;
             }
         }
@@ -331,14 +331,14 @@ class EditProyecto extends EditController
             $this->dataBase->commit();
         }
 
-        $this->toolBox()->i18nLog()->notice('tasks-imported-correctly');
+        Tools::log()->notice('tasks-imported-correctly');
         return true;
     }
 
     protected function linkUpAction(string $modelName): bool
     {
         if (false === $this->permissions->allowUpdate) {
-            $this->toolBox()->i18nLog()->warning('not-allowed-to-update');
+            Tools::log()->warning('not-allowed-to-update');
             return true;
         } elseif (false === $this->validateFormToken()) {
             return true;
@@ -354,14 +354,14 @@ class EditProyecto extends EditController
         $sql = "UPDATE $modelTable SET idproyecto = " . $this->dataBase->var2str($idproyecto)
             . " WHERE " . $this->dataBase->escapeColumn($modelKey) . " = " . $this->dataBase->var2str($code) . ';';
         if (false === $this->dataBase->exec($sql)) {
-            $this->toolBox()->i18nLog()->error('record-save-error');
+            Tools::log()->error('record-save-error');
             return true;
         }
 
         ProjectStockManager::rebuild($idproyecto);
         ProjectTotalManager::recalculate($idproyecto);
 
-        $this->toolBox()->i18nLog()->info('record-updated-correctly');
+        Tools::log()->info('record-updated-correctly');
         return true;
     }
 
@@ -421,7 +421,7 @@ class EditProyecto extends EditController
         }
     }
 
-    protected function rebuildStockAction(int $idproyecto = null)
+    protected function rebuildStockAction(int $idproyecto = null): void
     {
         if (empty($idproyecto)) {
             $idproyecto = (int)$this->request->query->get('code');
@@ -432,17 +432,17 @@ class EditProyecto extends EditController
 
             // limpiamos caché para forzar actualizar los totales de los listados
             Cache::clear();
-            self::toolBox()::i18nLog()->notice('project-stock-rebuild-ok');
+            Tools::log()->notice('project-stock-rebuild-ok');
             return;
         }
 
-        self::toolBox()::i18nLog()->warning('project-stock-rebuild-error');
+        Tools::log()->warning('project-stock-rebuild-error');
     }
 
     protected function unlinkUpAction(string $modelName): bool
     {
         if (false === $this->permissions->allowUpdate) {
-            $this->toolBox()->i18nLog()->warning('not-allowed-to-update');
+            Tools::log()->warning('not-allowed-to-update');
             return true;
         } elseif (false === $this->validateFormToken()) {
             return true;
@@ -454,7 +454,7 @@ class EditProyecto extends EditController
         $modelKey = $model->primaryColumn();
         $codes = $this->request->request->get('code', []);
         if (empty($codes)) {
-            self::toolBox()->i18nLog()->warning('no-selected-item');
+            Tools::log()->warning('no-selected-item');
             return true;
         }
 
@@ -462,7 +462,7 @@ class EditProyecto extends EditController
             $sql = "UPDATE $modelTable SET idproyecto = NULL WHERE "
                 . $this->dataBase->escapeColumn($modelKey) . " = " . $this->dataBase->var2str($code) . ';';
             if (false === $this->dataBase->exec($sql)) {
-                $this->toolBox()->i18nLog()->error('record-save-error');
+                Tools::log()->error('record-save-error');
                 return false;
             }
         }
@@ -472,7 +472,7 @@ class EditProyecto extends EditController
         ProjectStockManager::rebuild($idproyecto);
         ProjectTotalManager::recalculate($idproyecto);
 
-        $this->toolBox()->i18nLog()->info('record-updated-correctly');
+        Tools::log()->info('record-updated-correctly');
         return true;
     }
 }
