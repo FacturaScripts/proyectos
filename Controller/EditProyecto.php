@@ -89,12 +89,16 @@ class EditProyecto extends EditController
             $this->views[$viewName]->addSearchFields(['codigo', 'nombre', 'numproveedor', 'observaciones']);
         }
 
+        // añadimos botón para enlazar documentos
         $this->addButton($viewName, [
             'type' => 'modal',
             'action' => 'link-up-' . $modelName,
             'icon' => 'fas fa-link',
             'label' => 'link-document'
         ]);
+
+        // desactivamos el botón de eliminar
+        $this->setSettings($viewName, 'btnDelete', false);
     }
 
     protected function createViewsNotes(string $viewName = 'ListNotaProyecto'): void
@@ -153,6 +157,9 @@ class EditProyecto extends EditController
                 'title' => $estado->nombre
             ];
         }
+
+        // desactivamos el botón de eliminar
+        $this->setSettings($viewName, 'btnDelete', false);
     }
 
     protected function createViewsStock(string $viewName = 'ListStockProyecto'): void
