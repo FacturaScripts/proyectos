@@ -358,6 +358,11 @@ class EditProyecto extends EditController
         $code = $this->request->request->get('linkupcode', '');
         $idproyecto = $this->request->get('code', '');
 
+		//Si realizamos una búsqueda en vacío, no continuamos con el proceso
+		if (empty($code)) {
+			return true;
+		}
+
         $sql = "UPDATE $modelTable SET idproyecto = " . $this->dataBase->var2str($idproyecto)
             . " WHERE " . $this->dataBase->escapeColumn($modelKey) . " = " . $this->dataBase->var2str($code) . ';';
         if (false === $this->dataBase->exec($sql)) {

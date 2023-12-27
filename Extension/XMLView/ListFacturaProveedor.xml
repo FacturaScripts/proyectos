@@ -10,8 +10,13 @@
     <modals>
         <group name="link-up-FacturaProveedor" title="link-document" icon="fas fa-link">
             <column name="linkupcode" title="code">
-                <widget type="autocomplete" fieldname="linkupcode" required="true">
+                <widget type="autocomplete" fieldname="linkupcode">
                     <values source="facturasprov" fieldcode="idfactura" fieldtitle="codigo"/>
+                </widget>
+            </column>
+			<column name="linkupnumprov" title="numsupplier">
+                <widget type="autocomplete" fieldname="linkupcode">
+					<values source="facturasprov" fieldcode="idfactura" fieldtitle="numproveedor"/>
                 </widget>
             </column>
         </group>
