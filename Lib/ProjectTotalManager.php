@@ -71,6 +71,10 @@ class ProjectTotalManager
         }
 
         $project->totalpendientefacturar = ($netoPedidos + $netoAlbaranes) - $netoFacturas;
+        if ($project->totalpendientefacturar < 0) {
+            $project->totalpendientefacturar = 0;
+        }
+        
         $project->save();
     }
 
