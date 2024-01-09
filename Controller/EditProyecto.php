@@ -358,8 +358,9 @@ class EditProyecto extends EditController
         $code = $this->request->request->get('linkupcode', '');
         $idproyecto = $this->request->get('code', '');
 
-		//Si realizamos una búsqueda en vacío, no continuamos con el proceso
+		//Si realizamos una búsqueda en vacío, informamos al usuario y finalizamos el proceso
 		if (empty($code)) {
+			Tools::log()->warning('no-selected-item');
 			return true;
 		}
 
