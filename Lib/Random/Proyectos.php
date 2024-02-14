@@ -1,7 +1,7 @@
 <?php
 /**
  * This file is part of Randomizer plugin for FacturaScripts
- * Copyright (C) 2021 Carlos Garcia Gomez <carlos@facturascripts.com>
+ * Copyright (C) 2021-2024 Carlos Garcia Gomez <carlos@facturascripts.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -44,17 +44,9 @@ use Faker;
  */
 class Proyectos extends NewItems
 {
-
-    /**
-     * @var FaseTarea[]
-     */
+    /** @var FaseTarea[] */
     private static $phases = null;
 
-    /**
-     * @param int $number
-     *
-     * @return int
-     */
     public static function create(int $number = 25): int
     {
         $faker = Faker\Factory::create('es_ES');
@@ -63,7 +55,7 @@ class Proyectos extends NewItems
         for ($generated = 0; $generated < $number; $generated++) {
             $project = new Proyecto();
             $project->codcliente = static::codcliente();
-            $project->descripcion = $faker->optional()->text;
+            $project->descripcion = $faker->optional()->text();
             $project->fecha = $faker->date();
             $project->fechafin = $faker->optional(0.1)->date();
             $project->fechainicio = $faker->optional(0.1)->date();
@@ -136,7 +128,7 @@ class Proyectos extends NewItems
         for ($index = 1; $index <= $max; $index++) {
             $task = new TareaProyecto();
             $task->cantidad = $faker->numberBetween(1, 99);
-            $task->descripcion = $faker->text;
+            $task->descripcion = $faker->text();
             $task->fecha = $faker->date();
             $task->fechafin = $faker->optional(0.1)->date();
             $task->fechainicio = $faker->optional(0.1)->date();
