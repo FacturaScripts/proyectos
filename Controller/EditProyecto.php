@@ -1,7 +1,7 @@
 <?php
 /**
  * This file is part of Proyectos plugin for FacturaScripts
- * Copyright (C) 2020-2023 Carlos Garcia Gomez <carlos@facturascripts.com>
+ * Copyright (C) 2020-2024 Carlos Garcia Gomez <carlos@facturascripts.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -79,15 +79,18 @@ class EditProyecto extends EditController
     protected function createViewsBusinessDocument(string $modelName, string $title): void
     {
         $viewName = 'List' . $modelName;
-        $this->addListView($viewName, $modelName, $title, 'fas fa-copy');
-        $this->views[$viewName]->addOrderBy(['fecha', 'hora'], 'date', 2);
-        $this->views[$viewName]->addOrderBy(['total'], 'total');
+        $this->addListView($viewName, $modelName, $title, 'fas fa-copy')
+            ->addOrderBy(['fecha', 'hora'], 'date', 2)
+            ->addOrderBy(['total'], 'total');
 
         if (substr($viewName, -7) === 'Cliente') {
             $this->views[$viewName]->addSearchFields(['codigo', 'nombrecliente', 'numero2', 'observaciones']);
         } elseif (substr($viewName, -9) === 'Proveedor') {
             $this->views[$viewName]->addSearchFields(['codigo', 'nombre', 'numproveedor', 'observaciones']);
         }
+
+        // desactivamos la columna de proyecto
+        $this->views[$viewName]->disableColumn('project');
 
         // añadimos botón para enlazar documentos
         $this->addButton($viewName, [
@@ -103,9 +106,9 @@ class EditProyecto extends EditController
 
     protected function createViewsNotes(string $viewName = 'ListNotaProyecto'): void
     {
-        $this->addListView($viewName, 'NotaProyecto', 'notes', 'fas fa-sticky-note');
-        $this->views[$viewName]->addOrderBy(['fecha'], 'date', 2);
-        $this->views[$viewName]->addSearchFields(['descripcion']);
+        $this->addListView($viewName, 'NotaProyecto', 'notes', 'fas fa-sticky-note')
+            ->addOrderBy(['fecha'], 'date', 2)
+            ->addSearchFields(['descripcion']);
 
         $status = $this->codeModel->all('tareas', 'idtarea', 'nombre');
         $this->views[$viewName]->addFilterSelect('idtarea', 'task', 'idtarea', $status);
@@ -117,18 +120,20 @@ class EditProyecto extends EditController
             return;
         }
 
-        $this->addListView($viewName, 'ServicioAT', 'services', 'fas fa-headset');
-        $this->views[$viewName]->addOrderBy(['fecha', 'hora'], 'date', 2);
-        $this->views[$viewName]->addOrderBy(['idprioridad'], 'priority');
-        $this->views[$viewName]->addOrderBy(['idservicio'], 'code');
-        $this->views[$viewName]->addOrderBy(['neto'], 'net');
-        $this->views[$viewName]->addSearchFields(['descripcion', 'idservicio', 'material', 'observaciones', 'solucion']);
+        $this->addListView($viewName, 'ServicioAT', 'services', 'fas fa-headset')
+            ->addOrderBy(['fecha', 'hora'], 'date', 2)
+            ->addOrderBy(['idprioridad'], 'priority')
+            ->addOrderBy(['idservicio'], 'code')
+            ->addOrderBy(['neto'], 'net')
+            ->addSearchFields(['descripcion', 'idservicio', 'material', 'observaciones', 'solucion']);
 
         // filters
-        $this->views[$viewName]->addFilterPeriod('fecha', 'date', 'fecha');
-        $this->views[$viewName]->addFilterAutocomplete('codcliente', 'customer', 'codcliente', 'clientes', 'codcliente', 'nombre');
+        $this->views[$viewName]->addFilterPeriod('fecha', 'date', 'fecha')
+            ->addFilterAutocomplete('codcliente', 'customer', 'codcliente', 'clientes', 'codcliente', 'nombre');
+
         $priority = $this->codeModel->all('serviciosat_prioridades', 'id', 'nombre');
         $this->views[$viewName]->addFilterSelect('idprioridad', 'priority', 'idprioridad', $priority);
+
         $status = $this->codeModel->all('serviciosat_estados', 'id', 'nombre');
         $this->views[$viewName]->addFilterSelect('idestado', 'status', 'idestado', $status);
 
@@ -138,8 +143,8 @@ class EditProyecto extends EditController
         $agents = $this->codeModel->all('agentes', 'codagente', 'nombre');
         $this->views[$viewName]->addFilterSelect('codagente', 'agent', 'codagente', $agents);
 
-        $this->views[$viewName]->addFilterNumber('netogt', 'net', 'neto', '>=');
-        $this->views[$viewName]->addFilterNumber('netolt', 'net', 'neto', '<=');
+        $this->views[$viewName]->addFilterNumber('netogt', 'net', 'neto', '>=')
+            ->addFilterNumber('netolt', 'net', 'neto', '<=');
 
         // asignamos colores
         $estadoModel = new EstadoAT();
@@ -168,19 +173,19 @@ class EditProyecto extends EditController
             return;
         }
 
-        $this->addListView($viewName, 'StockProyecto', 'stock', 'fas fa-dolly');
-        $this->views[$viewName]->addSearchFields(['referencia']);
-        $this->views[$viewName]->addOrderBy(['referencia'], 'reference');
-        $this->views[$viewName]->addOrderBy(['cantidad'], 'quantity');
-        $this->views[$viewName]->addOrderBy(['disponible'], 'available');
-        $this->views[$viewName]->addOrderBy(['reservada'], 'reserved');
-        $this->views[$viewName]->addOrderBy(['pterecibir'], 'pending-reception');
+        $this->addListView($viewName, 'StockProyecto', 'stock', 'fas fa-dolly')
+            ->addSearchFields(['referencia'])
+            ->addOrderBy(['referencia'], 'reference')
+            ->addOrderBy(['cantidad'], 'quantity')
+            ->addOrderBy(['disponible'], 'available')
+            ->addOrderBy(['reservada'], 'reserved')
+            ->addOrderBy(['pterecibir'], 'pending-reception');
 
         // filters
-        $this->views[$viewName]->addFilterNumber('cantidad', 'quantity', 'cantidad');
-        $this->views[$viewName]->addFilterNumber('reservada', 'reserved', 'reservada');
-        $this->views[$viewName]->addFilterNumber('pterecibir', 'pending-reception', 'pterecibir');
-        $this->views[$viewName]->addFilterNumber('disponible', 'available', 'disponible');
+        $this->views[$viewName]->addFilterNumber('cantidad', 'quantity', 'cantidad')
+            ->addFilterNumber('reservada', 'reserved', 'reservada')
+            ->addFilterNumber('pterecibir', 'pending-reception', 'pterecibir')
+            ->addFilterNumber('disponible', 'available', 'disponible');
 
         // disable column
         $this->views[$viewName]->disableColumn('project');
@@ -203,16 +208,17 @@ class EditProyecto extends EditController
 
     protected function createViewsTasks(string $viewName = 'ListTareaProyecto'): void
     {
-        $this->addListView($viewName, 'TareaProyecto', 'tasks', 'fas fa-project-diagram');
-        $this->views[$viewName]->addOrderBy(['fecha'], 'date');
-        $this->views[$viewName]->addOrderBy(['fechainicio'], 'start-date');
-        $this->views[$viewName]->addOrderBy(['fechafin'], 'end-date');
-        $this->views[$viewName]->addOrderBy(['nombre'], 'name', 1);
-        $this->views[$viewName]->addOrderBy(['descripcion'], 'description');
-        $this->views[$viewName]->addSearchFields(['descripcion', 'nombre']);
+        $this->addListView($viewName, 'TareaProyecto', 'tasks', 'fas fa-project-diagram')
+            ->addOrderBy(['fecha'], 'date')
+            ->addOrderBy(['fechainicio'], 'start-date')
+            ->addOrderBy(['fechafin'], 'end-date')
+            ->addOrderBy(['nombre'], 'name', 1)
+            ->addOrderBy(['descripcion'], 'description')
+            ->addSearchFields(['descripcion', 'nombre']);
 
         // filters
         $this->views[$viewName]->addFilterPeriod('fecha', 'date', 'fecha');
+
         $status = $this->codeModel->all('tareas_fases', 'idfase', 'nombre');
         $this->views[$viewName]->addFilterSelect('idfase', 'phase', 'idfase', $status);
 
@@ -309,8 +315,8 @@ class EditProyecto extends EditController
 
         // obtenemos el ID del proyecto a copiar
         $copyProject = new Proyecto();
-        if (false === $copyProject->loadFromCode($this->request->get('idproyecto', ''))
-            || $origProject->idproyecto === $copyProject->idproyecto) {
+        if (false === $copyProject->loadFromCode($this->request->get('idproyecto', '')) ||
+            $origProject->idproyecto === $copyProject->idproyecto) {
             return true;
         }
 
