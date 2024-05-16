@@ -1,7 +1,7 @@
 <?php
 /**
  * This file is part of Proyectos plugin for FacturaScripts
- * Copyright (C) 2022-2023 Carlos Garcia Gomez <carlos@facturascripts.com>
+ * Copyright (C) 2022-2024 Carlos Garcia Gomez <carlos@facturascripts.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -26,6 +26,7 @@ use FacturaScripts\Dinamic\Model\FacturaCliente;
 use FacturaScripts\Dinamic\Model\FacturaProveedor;
 use FacturaScripts\Dinamic\Model\PedidoCliente;
 use FacturaScripts\Dinamic\Model\PedidoProveedor;
+use FacturaScripts\Dinamic\Model\PresupuestoCliente;
 use FacturaScripts\Plugins\Proyectos\Model\Proyecto;
 
 /**
@@ -53,10 +54,15 @@ class ProjectTotalManager
             $project->totalcompras += $order->total;
         }
 
+        $netoPresupuestos = 0.0;
         $netoPedidos = 0.0;
         $netoAlbaranes = 0.0;
         $netoFacturas = 0.0;
         $project->totalventas = 0.0;
+        foreach (static::salesEstimations($idproyecto) as $estimation) {
+            $project->totalventas += $estimation->total;
+            $netoPresupuestos += $estimation->neto;
+        }
         foreach (static::salesInvoices($idproyecto) as $invoice) {
             $project->totalventas += $invoice->total;
             $netoFacturas += $invoice->neto;
@@ -70,21 +76,20 @@ class ProjectTotalManager
             $netoPedidos += $order->neto;
         }
 
-        $project->totalpendientefacturar = ($netoPedidos + $netoAlbaranes) - $netoFacturas;
+        $project->totalpendientefacturar = ($netoPresupuestos + $netoPedidos + $netoAlbaranes) - $netoFacturas;
         if ($project->totalpendientefacturar < 0) {
             $project->totalpendientefacturar = 0;
         }
-        
+
         $project->save();
     }
 
     /**
-     *
      * @param int $idproyecto
      *
      * @return AlbaranProveedor[]
      */
-    protected static function purchaseDeliveryNotes($idproyecto)
+    protected static function purchaseDeliveryNotes($idproyecto): array
     {
         $delivery = new AlbaranProveedor();
         $where = [
@@ -94,6 +99,10 @@ class ProjectTotalManager
         return $delivery->all($where, [], 0, 0);
     }
 
+    /**
+     * @param int $idproyecto
+     * @return FacturaProveedor[]
+     */
     protected static function purchaseInvoices(int $idproyecto): array
     {
         $invoice = new FacturaProveedor();
@@ -101,6 +110,10 @@ class ProjectTotalManager
         return $invoice->all($where, [], 0, 0);
     }
 
+    /**
+     * @param int $idproyecto
+     * @return PedidoProveedor[]
+     */
     protected static function purchaseOrders(int $idproyecto): array
     {
         $order = new PedidoProveedor();
@@ -111,6 +124,10 @@ class ProjectTotalManager
         return $order->all($where, [], 0, 0);
     }
 
+    /**
+     * @param int $idproyecto
+     * @return AlbaranCliente[]
+     */
     protected static function salesDeliveryNotes(int $idproyecto): array
     {
         $delivery = new AlbaranCliente();
@@ -121,6 +138,21 @@ class ProjectTotalManager
         return $delivery->all($where, [], 0, 0);
     }
 
+    /**
+     * @param int $idproyecto
+     * @return PresupuestoCliente[]
+     */
+    protected static function salesEstimations(int $idproyecto): array
+    {
+        $estimation = new PresupuestoCliente();
+        $where = [new DataBaseWhere('idproyecto', $idproyecto)];
+        return $estimation->all($where, [], 0, 0);
+    }
+
+    /**
+     * @param int $idproyecto
+     * @return FacturaCliente[]
+     */
     protected static function salesInvoices(int $idproyecto): array
     {
         $invoice = new FacturaCliente();
@@ -128,6 +160,10 @@ class ProjectTotalManager
         return $invoice->all($where, [], 0, 0);
     }
 
+    /**
+     * @param int $idproyecto
+     * @return PedidoCliente[]
+     */
     protected static function salesOrders(int $idproyecto): array
     {
         $order = new PedidoCliente();
