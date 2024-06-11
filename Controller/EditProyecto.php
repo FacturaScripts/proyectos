@@ -81,16 +81,15 @@ class EditProyecto extends EditController
         $viewName = 'List' . $modelName;
         $this->addListView($viewName, $modelName, $title, 'fas fa-copy')
             ->addOrderBy(['fecha', 'hora'], 'date', 2)
-            ->addOrderBy(['total'], 'total');
+            ->addOrderBy(['total'], 'total')
+            ->disableColumn('project')
+            ->setSettings('btnDelete', false);
 
         if (substr($viewName, -7) === 'Cliente') {
             $this->views[$viewName]->addSearchFields(['codigo', 'nombrecliente', 'numero2', 'observaciones']);
         } elseif (substr($viewName, -9) === 'Proveedor') {
             $this->views[$viewName]->addSearchFields(['codigo', 'nombre', 'numproveedor', 'observaciones']);
         }
-
-        // desactivamos la columna de proyecto
-        $this->views[$viewName]->disableColumn('project');
 
         // añadimos botón para enlazar documentos
         $this->addButton($viewName, [
@@ -99,9 +98,6 @@ class EditProyecto extends EditController
             'icon' => 'fas fa-link',
             'label' => 'link-document'
         ]);
-
-        // desactivamos el botón de eliminar
-        $this->setSettings($viewName, 'btnDelete', false);
     }
 
     protected function createViewsNotes(string $viewName = 'ListNotaProyecto'): void
