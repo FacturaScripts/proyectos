@@ -73,6 +73,84 @@
         <type>double precision</type>
         <default>0</default>
     </column>
+
+
+
+    <column>
+        <name>albaranes_compra</name>
+        <type>double precision</type>
+        <default>0</default>
+    </column>
+
+    <column>
+        <name>albaranes_venta</name>
+        <type>double precision</type>
+        <default>0</default>
+    </column>
+
+    <column>
+        <name>facturas_compra</name>
+        <type>double precision</type>
+        <default>0</default>
+    </column>
+
+    <column>
+        <name>facturas_venta</name>
+        <type>double precision</type>
+        <default>0</default>
+    </column>
+
+    <column>
+        <name>pedidos_compra</name>
+        <type>double precision</type>
+        <default>0</default>
+    </column>
+
+    <column>
+        <name>pedidos_venta</name>
+        <type>double precision</type>
+        <default>0</default>
+    </column>
+
+
+    <column>
+        <name>presupuestos_compra</name>
+        <type>double precision</type>
+        <default>0</default>
+    </column>
+
+    <column>
+        <name>presupuesto_venta</name>
+        <type>double precision</type>
+        <default>0</default>
+    </column>
+
+    <column>
+        <name>previsioncompras</name>
+        <type>double precision</type>
+        <default>0</default>
+    </column>
+    <column>
+        <name>previsionventas</name>
+        <type>double precision</type>
+        <default>0</default>
+    </column>
+    <column>
+        <name>beneficioprevisto</name>
+        <type>double precision</type>
+        <default>0</default>
+    </column>
+    <column>
+        <name>beneficiobruto</name>
+        <type>double precision</type>
+        <default>0</default>
+    </column>
+    <column>
+        <name>fernando</name>
+        <type>double precision</type>
+        <default>0</default>
+    </column>
+
     <constraint>
         <name>proyectos_pkey</name>
         <type>PRIMARY KEY (idproyecto)</type>

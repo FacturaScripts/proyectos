@@ -483,9 +483,145 @@ class EditProyecto extends EditController
         $mainViewName = $this->getMainViewName();
         $idproyecto = $this->getViewModelValue($mainViewName, 'idproyecto');
         ProjectStockManager::rebuild($idproyecto);
-        ProjectTotalManager::recalculate($idproyecto);
+	if($idproyecto){
+		ProjectTotalManager::recalculate($idproyecto);
+	}
 
         Tools::log()->info('record-updated-correctly');
         return true;
     }
+
+
+    public function presupuestosVenta(): string
+	{
+		$idproyecto = $this->request->get('code', '');
+		$return = 0;
+
+		if($idproyecto){
+			foreach (ProjectTotalManager::salesEstimations($idproyecto) as $estimation) {
+				$return += $estimation->neto;
+			}
+		}
+
+
+		return $return;
+	}
+
+    public function pedidosVenta(): string
+	{
+		$idproyecto = $this->request->get('code', '');
+		$return = 0;
+		if($idproyecto){
+			foreach (ProjectTotalManager::salesOrders($idproyecto) as $order) {
+				$return += $order->neto;
+			}
+		}
+
+		return $return;
+	}
+
+    public function albaranesVenta(): string
+	{
+		$idproyecto = $this->request->get('code', '');
+		$return = 0;
+		if($idproyecto){
+			foreach (ProjectTotalManager::salesDeliveryNotes($idproyecto) as $delivery) {
+				$return += $delivery->neto;
+			}
+		}
+
+
+		return $return;
+	}
+
+    public function facturasVenta(): string
+	{
+		$idproyecto = $this->request->get('code', '');
+		$return = 0;
+		if($idproyecto){
+			foreach (ProjectTotalManager::salesInvoices($idproyecto) as $invoice) {
+				$return += $invoice->neto;
+			}
+		}
+
+		return $return;
+	}
+
+
+    public function presupuestosCompra(): string
+	{
+		$idproyecto = $this->request->get('code', '');
+		$return = 0;
+		foreach (ProjectTotalManager::purchaseEstimations($idproyecto) as $estimation) {
+			$return += $estimation->neto;
+		}
+		return $return;
+	}
+
+    public function pedidosCompra(): string
+	{
+		$idproyecto = $this->request->get('code', '');
+		$return = 0;
+		foreach (ProjectTotalManager::purchaseOrders($idproyecto) as $order) {
+			$return += $order->neto;
+		}
+		return $return;
+	}
+
+    public function albaranesCompra(): string
+	{
+		$idproyecto = $this->request->get('code', '');
+		$return = 0;
+		foreach (ProjectTotalManager::purchaseDeliveryNotes($idproyecto) as $delivery) {
+			$return += $delivery->neto;
+		}
+		return $return;
+	}
+
+    public function facturasCompra(): string
+	{
+
+		$idproyecto = $this->request->get('code', '');
+		$return = 0;
+		foreach (ProjectTotalManager::purchaseInvoices($idproyecto) as $invoice) {
+			$return += $invoice->neto;
+		}
+		return $return;
+	}
+
+    public function beneficio(): string
+	{
+		$idproyecto = $this->request->get('code', '');
+		$project = new Proyecto();
+		if (false === $project->loadFromCode($idproyecto)) {
+			return "";
+		}
+		return $project->beneficiobruto ? $project->beneficiobruto : "";
+	}
+
+    public function beneficio2(): string
+	{
+		$idproyecto = $this->request->get('code', '');
+		$project = new Proyecto();
+		if (false === $project->loadFromCode($idproyecto)) {
+			return "";
+		}
+
+		$totalVentas = $project->totalventas;
+		$totalCompras = $project->totalcompras;
+
+
+		if ($totalVentas == 0) {
+			return "";
+		}
+
+		$beneficio = $totalVentas - $totalCompras;
+
+		$porcentajeBeneficio = ($beneficio / $totalVentas) * 100;
+
+		$return = number_format($porcentajeBeneficio, 2) . "%";
+		return $return;
+	}
+
+
 }
