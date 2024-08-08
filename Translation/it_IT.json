@@ -1,14 +1,14 @@
 {
-    "burn-project-stock": "burn-project-stock",
+    "burn-project-stock": "consumare progetto azioni",
     "canceled": "annullato",
-    "generated-projects": "%quantity% proyectos generados",
-    "import-tasks-from-another-project": "Importar tareas desde otro proyecto",
-    "link-document": "Enlazar documento",
+    "generated-projects": "%quantity% progetti generati",
+    "import-tasks-from-another-project": "Importa attività da un altro progetto",
+    "link-document": "Collega documento",
     "phases": "phases",
-    "project-stock-rebuild-error": "project-stock-rebuild-error",
-    "project-stock-rebuild-ok": "project-stock-rebuild-ok",
+    "project-stock-rebuild-error": "Errore nel ricostituire lo stock",
+    "project-stock-rebuild-ok": "progetto-stock-rebuild-ok",
     "show-project-stock": "show-project-stock",
     "tasks-imported-correctly": "Tareas importadas correctamente",
-    "total-pending-invoice": "Pendiente facturar",
-    "unlink-document": "Desvincular..."
+    "total-pending-invoice": "Totale fatture in sospeso",
+    "unlink-document": "Scollegare..."
 }

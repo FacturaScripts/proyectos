@@ -1,10 +1,10 @@
 {
     "burn-project-stock": "Quemar stock",
-    "canceled": "Cancelado",
+    "canceled": "Anulowany",
     "generated-projects": "%quantity% proyectos generados",
     "import-tasks-from-another-project": "Importar tareas desde otro proyecto",
     "link-document": "Vincular...",
-    "phases": "Fases",
+    "phases": "Fazy",
     "project-stock-rebuild-error": "Error al regenerar el stock",
     "project-stock-rebuild-ok": "Stock regenerado correctamente",
     "show-project-stock": "Mostrar stock del proyecto",

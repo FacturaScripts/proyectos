@@ -2,13 +2,13 @@
     "burn-project-stock": "Quemar stock",
     "canceled": "Cancelado",
     "generated-projects": "%quantity% proyectos generados",
-    "import-tasks-from-another-project": "Importar tareas desde otro proyecto",
+    "import-tasks-from-another-project": "Importovat úkoly z jiného projektu",
     "link-document": "Vincular...",
     "phases": "Fases",
     "project-stock-rebuild-error": "Error al regenerar el stock",
     "project-stock-rebuild-ok": "Stock regenerado correctamente",
     "show-project-stock": "Mostrar stock del proyecto",
-    "tasks-imported-correctly": "Tareas importadas correctamente",
-    "total-pending-invoice": "Pendiente facturar",
+    "tasks-imported-correctly": "Úkoly byly úspěšně importovány",
+    "total-pending-invoice": "Nesplacená faktura",
     "unlink-document": "Desvincular..."
 }
