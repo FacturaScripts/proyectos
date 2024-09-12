@@ -46,16 +46,32 @@
                 <widget type="checkbox" fieldname="privado"/>
             </column>
         </group>
+
         <group name="totals" numcolumns="12">
-            <column name="total-purchases" order="100">
-                <widget type="money" fieldname="totalcompras" readonly="true"/>
+            <column name="Presupuesto" order="100">
+                <widget type="money" fieldname="presupuestos_compra" readonly="true"/>
             </column>
-            <column name="total-pending-invoice" order="110">
-                <widget type="money" fieldname="totalpendientefacturar" readonly="true"/>
+            <column name="Pedidos" order="110">
+                <widget type="money" fieldname="pedidos_compra" readonly="true"/>
             </column>
-            <column name="total-sales" order="120">
-                <widget type="money" fieldname="totalventas" readonly="true"/>
+            <column name="Albaranes" order="120">
+                <widget type="money" fieldname="albaranes_compra" readonly="true"/>
+            </column>
+            <column name="Facturas" order="120">
+                <widget type="money" fieldname="facturas_compra" readonly="true"/>
             </column>
         </group>
+
     </columns>
+    <rows>
+        <row type="statistics">
+            <datalabel icon="fas fa-copy" label="Ofertado" function="presupuestosVenta"/>
+            <datalabel icon="fas fa-copy" label="Pedido" function="pedidosVenta"/>
+            <datalabel icon="fas fa-copy" label="Entregado" function="albaranesVenta"/>
+            <datalabel icon="fas fa-copy" label="Facturado" function="facturasVenta"/>
+
+            <datalabel icon="fas fa-money-bill-alt" label="Beneficio" function="beneficio"/>
+            <datalabel icon="fas fa-money-bill-alt" label="Beneficio%" function="beneficio2"/>
+        </row>
+    </rows>
 </view>

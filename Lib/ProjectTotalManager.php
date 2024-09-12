@@ -27,6 +27,7 @@ use FacturaScripts\Dinamic\Model\FacturaProveedor;
 use FacturaScripts\Dinamic\Model\PedidoCliente;
 use FacturaScripts\Dinamic\Model\PedidoProveedor;
 use FacturaScripts\Dinamic\Model\PresupuestoCliente;
+use FacturaScripts\Dinamic\Model\PresupuestoProveedor;
 use FacturaScripts\Plugins\Proyectos\Model\Proyecto;
 
 /**
@@ -43,53 +44,108 @@ class ProjectTotalManager
             return;
         }
 
+        $where = [
+            new DataBaseWhere('idproyecto', $idproyecto),
+            new DataBaseWhere('editable', true)
+        ];
+
+        $project->albaranes_compra = 0.0;
+        $project->albaranes_venta = 0.0;
+        $project->facturas_compra = 0.0;
+        $project->facturas_venta = 0.0;
+        $project->pedidos_compra = 0.0;
+        $project->pedidos_venta = 0.0;
+        $project->presupuesto_venta = 0.0;
+        $project->presupuestos_compra = 0.0;
+
+	//pedidos o albaranes de compra
+        $project->previsioncompras = 0.0;
+
+	//presupuestos, pedidos o albaranes de venta
+        $project->previsionventas = 0.0;
+
         $project->totalcompras = 0.0;
-        foreach (static::purchaseInvoices($idproyecto) as $invoice) {
-            $project->totalcompras += $invoice->total;
+
+        $project->totalventas = 0.0;
+
+	//Presupuestos de compra
+        foreach (static::purchaseEstimations($idproyecto) as $estimation) {
+            $project->previsioncompras += $estimation->neto;
+	    $project->presupuestos_compra += $estimation->neto;
         }
-        foreach (static::purchaseDeliveryNotes($idproyecto) as $delivery) {
-            $project->totalcompras += $delivery->total;
-        }
+
+	//Pedido de compra
         foreach (static::purchaseOrders($idproyecto) as $order) {
-            $project->totalcompras += $order->total;
+            $project->previsioncompras += $order->neto;
+	    $project->pedidos_compra += $order->neto;
+        }
+
+
+	//Albaran de compra
+        foreach (static::purchaseDeliveryNotes($idproyecto) as $delivery) {
+            $project->previsioncompras += $delivery->neto;
+	    $project->albaranes_compra += $delivery->neto;
+        }
+
+
+	//Factura de compra
+        foreach (static::purchaseInvoices($idproyecto) as $invoice) {
+            $project->totalcompras += $invoice->neto;
+	    $project->facturas_compra += $invoice->neto;
         }
 
         $netoPresupuestos = 0.0;
         $netoPedidos = 0.0;
         $netoAlbaranes = 0.0;
         $netoFacturas = 0.0;
-        $project->totalventas = 0.0;
+
+
+	//Presupuestos de venta
         foreach (static::salesEstimations($idproyecto) as $estimation) {
-            $project->totalventas += $estimation->total;
+            $project->previsionventas += $estimation->neto;
             $netoPresupuestos += $estimation->neto;
-        }
-        foreach (static::salesInvoices($idproyecto) as $invoice) {
-            $project->totalventas += $invoice->total;
-            $netoFacturas += $invoice->neto;
-        }
-        foreach (static::salesDeliveryNotes($idproyecto) as $delivery) {
-            $project->totalventas += $delivery->total;
-            $netoAlbaranes += $delivery->neto;
-        }
-        foreach (static::salesOrders($idproyecto) as $order) {
-            $project->totalventas += $order->total;
-            $netoPedidos += $order->neto;
+	    $project->presupuesto_venta += $estimation->neto;
         }
 
+	//Pedidos de venta
+        foreach (static::salesOrders($idproyecto) as $order) {
+            $project->previsionventas += $order->neto;
+            $netoPedidos += $order->neto;
+	    $project->pedidos_venta += $order->neto;
+        }
+
+	//Albaran de venta
+        foreach (static::salesDeliveryNotes($idproyecto) as $delivery) {
+            $project->previsionventas += $delivery->neto;
+            $netoAlbaranes += $delivery->neto;
+//						if($delivery && $delivery->net)
+//										$project->albaranes_venta += $delivery->net;
+        }
+
+	//Facturas de venta
+        foreach (static::salesInvoices($idproyecto) as $invoice) {
+            $project->totalventas += $invoice->neto;
+            $netoFacturas += $invoice->neto;
+	    $project->facturas_venta += $invoice->neto;
+        }
+
+
         $project->totalpendientefacturar = ($netoPresupuestos + $netoPedidos + $netoAlbaranes) - $netoFacturas;
+
         if ($project->totalpendientefacturar < 0) {
             $project->totalpendientefacturar = 0;
         }
 
+        $project->beneficioprevisto = $project->previsionventas - $project->previsioncompras;
+        $project->beneficiobruto = $project->totalventas - $project->totalcompras;
+
         $project->save();
     }
-
     /**
      * @param int $idproyecto
-     *
      * @return AlbaranProveedor[]
      */
-    protected static function purchaseDeliveryNotes($idproyecto): array
+    public static function purchaseDeliveryNotes(int $idproyecto): array
     {
         $delivery = new AlbaranProveedor();
         $where = [
@@ -101,12 +157,33 @@ class ProjectTotalManager
 
     /**
      * @param int $idproyecto
+
+    /**
+     * @param int $idproyecto
+     *
+     * @return PresupuestoProveedor[]
+     */
+    public static function purchaseEstimations($idproyecto): array
+    {
+        $presupuesto = new PresupuestoProveedor();
+        $where = [
+            new DataBaseWhere('idproyecto', $idproyecto),
+            new DataBaseWhere('editable', true)
+        ];
+        return $presupuesto->all($where, [], 0, 0);
+    }
+
+    /**
+     * @param int $idproyecto
      * @return FacturaProveedor[]
      */
-    protected static function purchaseInvoices(int $idproyecto): array
+    public static function purchaseInvoices(int $idproyecto): array
     {
         $invoice = new FacturaProveedor();
-        $where = [new DataBaseWhere('idproyecto', $idproyecto)];
+        $where = [
+		new DataBaseWhere('idproyecto', $idproyecto),
+//		new DataBaseWhere('editable', true)
+	];
         return $invoice->all($where, [], 0, 0);
     }
 
@@ -114,7 +191,7 @@ class ProjectTotalManager
      * @param int $idproyecto
      * @return PedidoProveedor[]
      */
-    protected static function purchaseOrders(int $idproyecto): array
+    public static function purchaseOrders(int $idproyecto): array
     {
         $order = new PedidoProveedor();
         $where = [
@@ -128,7 +205,7 @@ class ProjectTotalManager
      * @param int $idproyecto
      * @return AlbaranCliente[]
      */
-    protected static function salesDeliveryNotes(int $idproyecto): array
+    public static function salesDeliveryNotes(int $idproyecto): array
     {
         $delivery = new AlbaranCliente();
         $where = [
@@ -142,10 +219,13 @@ class ProjectTotalManager
      * @param int $idproyecto
      * @return PresupuestoCliente[]
      */
-    protected static function salesEstimations(int $idproyecto): array
+    public static function salesEstimations(int $idproyecto): array
     {
         $estimation = new PresupuestoCliente();
-        $where = [new DataBaseWhere('idproyecto', $idproyecto)];
+        $where = [
+		new DataBaseWhere('idproyecto', $idproyecto),
+		new DataBaseWhere('editable', true)
+	];
         return $estimation->all($where, [], 0, 0);
     }
 
@@ -153,10 +233,13 @@ class ProjectTotalManager
      * @param int $idproyecto
      * @return FacturaCliente[]
      */
-    protected static function salesInvoices(int $idproyecto): array
+    public static function salesInvoices(int $idproyecto): array
     {
         $invoice = new FacturaCliente();
-        $where = [new DataBaseWhere('idproyecto', $idproyecto)];
+        $where = [
+		new DataBaseWhere('idproyecto', $idproyecto),
+//new DataBaseWhere('editable', true)
+	];
         return $invoice->all($where, [], 0, 0);
     }
 
@@ -164,7 +247,7 @@ class ProjectTotalManager
      * @param int $idproyecto
      * @return PedidoCliente[]
      */
-    protected static function salesOrders(int $idproyecto): array
+    public static function salesOrders(int $idproyecto): array
     {
         $order = new PedidoCliente();
         $where = [
@@ -173,4 +256,7 @@ class ProjectTotalManager
         ];
         return $order->all($where, [], 0, 0);
     }
+
+
+
 }
