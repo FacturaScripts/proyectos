@@ -1,14 +1,14 @@
 {
     "burn-project-stock": "quemar-proyecto-stock",
     "canceled": "Cancelado",
-    "generated-projects": "%quantity% proyectos generados",
+    "generated-projects": "%quantity% projetos gerados",
     "import-tasks-from-another-project": "Importar tarefas de outro projeto",
     "link-document": "Vincular documento",
     "phases": "Fases",
     "project-stock-rebuild-error": "erro-de-reconstrução-de-estoque-do-projeto",
     "project-stock-rebuild-ok": "Estoque reconstruído com sucesso",
     "show-project-stock": "Mostras estoque do Projeto",
-    "tasks-imported-correctly": "Tareas importadas correctamente",
-    "total-pending-invoice": "Pendiente facturar",
+    "tasks-imported-correctly": "Tarefas importadas corretamente",
+    "total-pending-invoice": "Pendente de faturação",
     "unlink-document": "Desvincular..."
 }

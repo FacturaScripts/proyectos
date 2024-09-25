@@ -2,13 +2,13 @@
     "burn-project-stock": "Lagerbestand abziehen",
     "canceled": "abgebrochen",
     "generated-projects": "%quantity% generierte Projekte",
-    "import-tasks-from-another-project": "Importar tareas desde otro proyecto",
-    "link-document": "Enlazar documento",
+    "import-tasks-from-another-project": "Aufgaben aus einem anderen Projekt importieren",
+    "link-document": "Dokument verknüpfen...",
     "phases": "Fasen",
     "project-stock-rebuild-error": "Fehler beim Neuaufbau des Lagerbestands",
-    "project-stock-rebuild-ok": "project-stock-rebuild-ok",
-    "show-project-stock": "show-project-stock",
-    "tasks-imported-correctly": "Tareas importadas correctamente",
+    "project-stock-rebuild-ok": "Bestand erfolgreich regeneriert",
+    "show-project-stock": "Projektbestand anzeigen",
+    "tasks-imported-correctly": "Aufgaben erfolgreich importiert",
     "total-pending-invoice": "Ausstehende Rechnung",
-    "unlink-document": "Desvincular..."
+    "unlink-document": "Trennen..."
 }

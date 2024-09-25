@@ -4,11 +4,11 @@
     "generated-projects": "%quantity% progetti generati",
     "import-tasks-from-another-project": "Importa attività da un altro progetto",
     "link-document": "Collega documento",
-    "phases": "phases",
+    "phases": "Fasi",
     "project-stock-rebuild-error": "Errore nel ricostituire lo stock",
     "project-stock-rebuild-ok": "progetto-stock-rebuild-ok",
-    "show-project-stock": "show-project-stock",
-    "tasks-imported-correctly": "Tareas importadas correctamente",
+    "show-project-stock": "Mostra stock del progetto",
+    "tasks-imported-correctly": "Compiti importati correttamente",
     "total-pending-invoice": "Totale fatture in sospeso",
     "unlink-document": "Scollegare..."
 }
