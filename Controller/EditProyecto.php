@@ -461,6 +461,12 @@ class EditProyecto extends EditController
             return true;
         }
 
+        // obtenemos el proyecto
+        $project = $this->getModel();
+        if (false === $project->loadFromCode($this->request->get('code', ''))) {
+            return true;
+        }
+
         $modelClass = '\\FacturaScripts\\Dinamic\\Model\\' . $modelName;
         $model = new $modelClass();
         $modelTable = $model->tableName();
@@ -480,10 +486,8 @@ class EditProyecto extends EditController
             }
         }
 
-        $mainViewName = $this->getMainViewName();
-        $idproyecto = $this->getViewModelValue($mainViewName, 'idproyecto');
-        ProjectStockManager::rebuild($idproyecto);
-        ProjectTotalManager::recalculate($idproyecto);
+        ProjectStockManager::rebuild($project->idproyecto);
+        ProjectTotalManager::recalculate($project->idproyecto);
 
         Tools::log()->info('record-updated-correctly');
         return true;
