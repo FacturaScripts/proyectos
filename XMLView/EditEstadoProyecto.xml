@@ -8,10 +8,22 @@
             <column name="name" order="110">
                 <widget type="text" fieldname="nombre" />
             </column>
-            <column name="editable" display="center" order="120">
+            <column name="color" numcolumns="3" order="120">
+                <widget type="select" fieldname="color" translate="true">
+                    <values title="color-primary">primary</values>
+                    <values title="color-secondary">secondary</values>
+                    <values title="color-success">success</values>
+                    <values title="color-danger">danger</values>
+                    <values title="color-warning">warning</values>
+                    <values title="color-info">info</values>
+                    <values title="color-light">light</values>
+                    <values title="color-dark">dark</values>
+                </widget>
+            </column>
+            <column name="editable" display="center" order="130">
                 <widget type="checkbox" fieldname="editable" />
             </column>
-            <column name="default" display="center" order="130">
+            <column name="default" display="center" order="140">
                 <widget type="checkbox" fieldname="predeterminado" />
             </column>
         </group>

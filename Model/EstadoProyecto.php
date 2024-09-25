@@ -32,24 +32,19 @@ class EstadoProyecto extends Base\ModelClass
 {
     use Base\ModelTrait;
 
-    /**
-     * @var bool
-     */
+    /** @var string */
+    public $color;
+
+    /** @var bool */
     public $editable;
 
-    /**
-     * @var integer
-     */
+    /** @var integer */
     public $idestado;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $nombre;
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     public $predeterminado;
 
     public function clear()
@@ -75,7 +70,7 @@ class EstadoProyecto extends Base\ModelClass
         $this->nombre = Tools::noHtml($this->nombre);
 
         if (isset($this->predeterminado)) {
-            $this->ResetProjectDefault();
+            $this->resetProjectDefault();
         }
 
         return parent::save();
@@ -86,21 +81,25 @@ class EstadoProyecto extends Base\ModelClass
         return 'proyectos_estados';
     }
 
+    public function test(): bool
+    {
+        $this->color = Tools::noHtml($this->color);
+        $this->nombre = Tools::noHtml($this->nombre);
+        return parent::test();
+    }
+
     public function url(string $type = 'auto', string $list = 'AdminProyectos?activetab=List'): string
     {
         return parent::url('list', $list);
     }
 
-    /**
-     * Set a single default state
-     */
-    protected function ResetProjectDefault()
+    protected function resetProjectDefault(): void
     {
         $where = [
             new DataBaseWhere('predeterminado', true),
             new DataBaseWhere('idestado', $this->idestado, '!=')
         ];
-        foreach ($this->all($where) as $status) {
+        foreach ($this->all($where, [], 0, 0) as $status) {
             $status->predeterminado = false;
             $status->saveUpdate();
         }
