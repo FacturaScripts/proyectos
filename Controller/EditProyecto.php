@@ -21,12 +21,21 @@ namespace FacturaScripts\Plugins\Proyectos\Controller;
 
 use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
 use FacturaScripts\Core\Cache;
+use FacturaScripts\Core\DataSrc\Agentes;
+use FacturaScripts\Core\DataSrc\Almacenes;
+use FacturaScripts\Core\DataSrc\Divisas;
+use FacturaScripts\Core\DataSrc\Empresas;
+use FacturaScripts\Core\DataSrc\FormasPago;
+use FacturaScripts\Core\DataSrc\GruposClientes;
+use FacturaScripts\Core\DataSrc\Series;
 use FacturaScripts\Core\Lib\ExtendedController\EditController;
 use FacturaScripts\Core\Lib\ExtendedController\EditView;
+use FacturaScripts\Core\Lib\InvoiceOperation;
 use FacturaScripts\Core\Model\Base\ModelCore;
 use FacturaScripts\Core\Tools;
 use FacturaScripts\Dinamic\Lib\ProjectStockManager;
 use FacturaScripts\Dinamic\Lib\ProjectTotalManager;
+use FacturaScripts\Dinamic\Model\EstadoDocumento;
 use FacturaScripts\Plugins\Proyectos\Model\Proyecto;
 use FacturaScripts\Plugins\Servicios\Model\EstadoAT;
 
@@ -52,6 +61,91 @@ class EditProyecto extends EditController
         return $data;
     }
 
+    protected function addColorStatus(string $viewName, string $modelName): void
+    {
+        $estadoDocumento = new EstadoDocumento();
+        $where = [new DataBaseWhere('tipodoc', $modelName)];
+        foreach ($estadoDocumento->all($where, [], 0, 0) as $status) {
+            if ($status->color) {
+                $this->listView($viewName)->addColor('idestado', $status->idestado, $status->color, $status->nombre);
+            }
+        }
+    }
+
+    protected function addCommonSalesPurchases(string $viewName, string $modelName)
+    {
+        // desactivamos la columna de proyecto
+        $this->listView($viewName)->disableColumn('project');
+
+        // añadimos botón para enlazar documentos
+        $this->addButton($viewName, [
+            'type' => 'modal',
+            'action' => 'link-up-' . $modelName,
+            'icon' => 'fas fa-link',
+            'label' => 'link-document'
+        ]);
+
+        // desactivamos el botón de eliminar
+        $this->listView($viewName)->setSettings('btnDelete', false);
+    }
+
+    protected function addCommonViewFilters(string $viewName, string $modelName): void
+    {
+        $this->listView($viewName)->addFilterPeriod('date', 'period', 'fecha');
+        $this->listView($viewName)->addFilterNumber('min-total', 'total', 'total', '>=');
+        $this->listView($viewName)->addFilterNumber('max-total', 'total', 'total', '<=');
+
+        $where = [new DataBaseWhere('tipodoc', $modelName)];
+        $statusValues = $this->codeModel->all('estados_documentos', 'idestado', 'nombre', true, $where);
+        $this->listView($viewName)->addFilterSelect('idestado', 'state', 'idestado', $statusValues);
+
+        if ($this->permissions->onlyOwnerData === false) {
+            $users = $this->codeModel->all('users', 'nick', 'nick');
+            if (count($users) > 1) {
+                $this->listView($viewName)->addFilterSelect('nick', 'user', 'nick', $users);
+            }
+        }
+
+        $companies = Empresas::codeModel();
+        if (count($companies) > 2) {
+            $this->listView($viewName)->addFilterSelect('idempresa', 'company', 'idempresa', $companies);
+        }
+
+        $warehouses = Almacenes::codeModel();
+        if (count($warehouses) > 2) {
+            $this->listView($viewName)->addFilterSelect('codalmacen', 'warehouse', 'codalmacen', $warehouses);
+        }
+
+        $series = Series::codeModel();
+        if (count($series) > 2) {
+            $this->listView($viewName)->addFilterSelect('codserie', 'series', 'codserie', $series);
+        }
+
+        $operations = [['code' => '', 'description' => '------']];
+        foreach (InvoiceOperation::all() as $key => $value) {
+            $operations[] = [
+                'code' => $key,
+                'description' => Tools::lang()->trans($value)
+            ];
+        }
+        $this->listView($viewName)->addFilterSelect('operacion', 'operation', 'operacion', $operations);
+
+        $payMethods = FormasPago::codeModel();
+        if (count($payMethods) > 2) {
+            $this->listView($viewName)->addFilterSelect('codpago', 'payment-method', 'codpago', $payMethods);
+        }
+
+        $currencies = Divisas::codeModel();
+        if (count($currencies) > 2) {
+            $this->listView($viewName)->addFilterSelect('coddivisa', 'currency', 'coddivisa', $currencies);
+        }
+
+        $this->listView($viewName)->addFilterCheckbox('totalrecargo', 'surcharge', 'totalrecargo', '!=', 0);
+        $this->listView($viewName)->addFilterCheckbox('totalirpf', 'retention', 'totalirpf', '!=', 0);
+        $this->listView($viewName)->addFilterCheckbox('totalsuplidos', 'supplied-amount', 'totalsuplidos', '!=', 0);
+        $this->listView($viewName)->addFilterCheckbox('numdocs', 'has-attachments', 'numdocs', '!=', 0);
+    }
+
     protected function createViews()
     {
         parent::createViews();
@@ -65,43 +159,98 @@ class EditProyecto extends EditController
         $this->createViewsNotes();
         $this->createViewsStock();
         $this->createViewsServices();
-        $this->createViewsBusinessDocument('PresupuestoProveedor', 'supplier-estimations');
-        $this->createViewsBusinessDocument('PedidoProveedor', 'supplier-orders');
-        $this->createViewsBusinessDocument('AlbaranProveedor', 'supplier-delivery-notes');
-        $this->createViewsBusinessDocument('FacturaProveedor', 'supplier-invoices');
-        $this->createViewsBusinessDocument('PresupuestoCliente', 'customer-estimations');
-        $this->createViewsBusinessDocument('PedidoCliente', 'customer-orders');
-        $this->createViewsBusinessDocument('AlbaranCliente', 'customer-delivery-notes');
-        $this->createViewsBusinessDocument('FacturaCliente', 'customer-invoices');
+        $this->createViewPurchases('PresupuestoProveedor', 'supplier-estimations');
+        $this->createViewPurchases('PedidoProveedor', 'supplier-orders');
+        $this->createViewPurchases('AlbaranProveedor', 'supplier-delivery-notes');
+        $this->createViewPurchases('FacturaProveedor', 'supplier-invoices');
+        $this->createViewSales('PresupuestoCliente', 'customer-estimations');
+        $this->createViewSales('PedidoCliente', 'customer-orders');
+        $this->createViewSales('AlbaranCliente', 'customer-delivery-notes');
+        $this->createViewSales('FacturaCliente', 'customer-invoices');
         $this->createViewsUsers();
     }
 
-    protected function createViewsBusinessDocument(string $modelName, string $title): void
+    protected function createViewPurchases(string $modelName, string $label)
     {
         $viewName = 'List' . $modelName;
-        $this->addListView($viewName, $modelName, $title, 'fas fa-copy')
-            ->addOrderBy(['fecha', 'hora'], 'date', 2)
-            ->addOrderBy(['total'], 'total');
+        $this->addlISTView($viewName, $modelName, $label, 'fas fa-copy')
+            ->addOrderBy(['codigo'], 'code')
+            ->addOrderBy(['fecha', $this->tableColToNumber('numero')], 'date', 2)
+            ->addOrderBy([$this->tableColToNumber('numero')], 'number')
+            ->addOrderBy(['numproveedor'], 'numsupplier')
+            ->addOrderBy(['codproveedor'], 'supplier-code')
+            ->addOrderBy(['total'], 'total')
+            ->addSearchFields(['cifnif', 'codigo', 'nombre', 'numproveedor', 'observaciones']);
 
-        if (substr($viewName, -7) === 'Cliente') {
-            $this->views[$viewName]->addSearchFields(['codigo', 'nombrecliente', 'numero2', 'observaciones']);
-        } elseif (substr($viewName, -9) === 'Proveedor') {
-            $this->views[$viewName]->addSearchFields(['codigo', 'nombre', 'numproveedor', 'observaciones']);
+        // filtros
+        $this->addCommonViewFilters($viewName, $modelName);
+        $this->listView($viewName)->addFilterAutocomplete('codproveedor', 'supplier', 'codproveedor', 'Proveedor');
+        $this->listView($viewName)->addFilterCheckbox('femail', 'email-not-sent', 'femail', 'IS', null);
+
+        // asignamos los colores
+        $this->addColorStatus($viewName, $modelName);
+
+        $this->addCommonSalesPurchases($viewName, $modelName);
+    }
+
+    protected function createViewSales(string $modelName, string $label)
+    {
+        $viewName = 'List' . $modelName;
+        $this->addListView($viewName, $modelName, $label, 'fas fa-copy')
+            ->addOrderBy(['codigo'], 'code')
+            ->addOrderBy(['codcliente'], 'customer-code')
+            ->addOrderBy(['fecha', $this->tableColToNumber('numero')], 'date', 2)
+            ->addOrderBy([$this->tableColToNumber('numero')], 'number')
+            ->addOrderBy(['numero2'], 'number2')
+            ->addOrderBy(['total'], 'total')
+            ->addSearchFields(['cifnif', 'codigo', 'codigoenv', 'nombrecliente', 'numero2', 'observaciones']);
+
+        if ($modelName === 'PresupuestoCliente') {
+            $this->listView($viewName)->addOrderBy(['finoferta'], 'expiration');
         }
 
-        // desactivamos la columna de proyecto
-        $this->views[$viewName]->disableColumn('project');
+        $this->addCommonViewFilters($viewName, $modelName);
 
-        // añadimos botón para enlazar documentos
-        $this->addButton($viewName, [
-            'type' => 'modal',
-            'action' => 'link-up-' . $modelName,
-            'icon' => 'fas fa-link',
-            'label' => 'link-document'
-        ]);
+        // filtramos por grupos de clientes
+        $optionsGroup = [
+            ['label' => Tools::lang()->trans('any-group'), 'where' => []],
+            [
+                'label' => Tools::lang()->trans('without-groups'),
+                'where' => [new DataBaseWhere('codcliente', "SELECT DISTINCT codcliente FROM clientes WHERE codgrupo IS NULL", 'IN')]
+            ],
+            ['label' => '------', 'where' => []],
+        ];
+        foreach (GruposClientes::all() as $grupo) {
+            $sqlGrupo = 'SELECT DISTINCT codcliente FROM clientes WHERE codgrupo = ' . $this->dataBase->var2str($grupo->codgrupo);
+            $optionsGroup[] = [
+                'label' => $grupo->nombre,
+                'where' => [new DataBaseWhere('codcliente', $sqlGrupo, 'IN')]
+            ];
+        }
+        if (count($optionsGroup) > 3) {
+            $this->listView($viewName)->addFilterSelectWhere('codgrupo', $optionsGroup);
+        }
 
-        // desactivamos el botón de eliminar
-        $this->setSettings($viewName, 'btnDelete', false);
+        // filtramos por clientes y direcciones
+        $this->listView($viewName)->addFilterAutocomplete('codcliente', 'customer', 'codcliente', 'Cliente');
+        $this->listView($viewName)->addFilterAutocomplete('idcontactofact', 'billing-address', 'idcontactofact', 'contactos', 'idcontacto', 'direccion');
+        $this->listView($viewName)->addFilterautocomplete('idcontactoenv', 'shipping-address', 'idcontactoenv', 'contactos', 'idcontacto', 'direccion');
+
+        if ($this->permissions->onlyOwnerData === false) {
+            $agents = Agentes::codeModel();
+            if (count($agents) > 1) {
+                $this->listView($viewName)->addFilterSelect('codagente', 'agent', 'codagente', $agents);
+            }
+        }
+
+        $carriers = $this->codeModel->all('agenciastrans', 'codtrans', 'nombre');
+        $this->listView($viewName)->addFilterSelect('codtrans', 'carrier', 'codtrans', $carriers);
+        $this->listView($viewName)->addFilterCheckbox('femail', 'email-not-sent', 'femail', 'IS', null);
+
+        // asignamos los colores
+        $this->addColorStatus($viewName, $modelName);
+
+        $this->addCommonSalesPurchases($viewName, $modelName);
     }
 
     protected function createViewsNotes(string $viewName = 'ListNotaProyecto'): void
@@ -450,6 +599,13 @@ class EditProyecto extends EditController
         }
 
         Tools::log()->warning('project-stock-rebuild-error');
+    }
+
+    private function tableColToNumber(string $name): string
+    {
+        return strtolower(FS_DB_TYPE) == 'postgresql' ?
+            'CAST(' . $name . ' as integer)' :
+            'CAST(' . $name . ' as unsigned)';
     }
 
     protected function unlinkUpAction(string $modelName): bool
