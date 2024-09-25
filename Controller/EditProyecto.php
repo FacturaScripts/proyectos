@@ -180,7 +180,8 @@ class EditProyecto extends EditController
             ->addOrderBy(['numproveedor'], 'numsupplier')
             ->addOrderBy(['codproveedor'], 'supplier-code')
             ->addOrderBy(['total'], 'total')
-            ->addSearchFields(['cifnif', 'codigo', 'nombre', 'numproveedor', 'observaciones']);
+            ->addSearchFields(['cifnif', 'codigo', 'nombre', 'numproveedor', 'observaciones'])
+            ->setSettings('btnNew', false);
 
         // filtros
         $this->addCommonViewFilters($viewName, $modelName);
@@ -203,7 +204,8 @@ class EditProyecto extends EditController
             ->addOrderBy([$this->tableColToNumber('numero')], 'number')
             ->addOrderBy(['numero2'], 'number2')
             ->addOrderBy(['total'], 'total')
-            ->addSearchFields(['cifnif', 'codigo', 'codigoenv', 'nombrecliente', 'numero2', 'observaciones']);
+            ->addSearchFields(['cifnif', 'codigo', 'codigoenv', 'nombrecliente', 'numero2', 'observaciones'])
+            ->setSettings('btnNew', false);
 
         if ($modelName === 'PresupuestoCliente') {
             $this->listView($viewName)->addOrderBy(['finoferta'], 'expiration');
@@ -570,6 +572,22 @@ class EditProyecto extends EditController
             case 'ListPresupuestoProveedor':
                 $where = [new DataBaseWhere('idproyecto', $idproyecto)];
                 $view->loadData('', $where);
+
+                // añadimos el botón de nuevo documento
+                $codcliente = $this->getViewModelValue($mainViewName, 'codcliente');
+                $url = $view->model->url('edit') . '?idproyecto=' . $idproyecto;
+                if (false === empty($codcliente)
+                    && in_array($view->model->modelClassName(), ['PresupuestoCliente', 'PedidoCliente', 'AlbaranCliente', 'FacturaCliente'])) {
+                    $url .= '&codcliente=' . $codcliente;
+                }
+                $this->addButton($viewName, [
+                    'type' => 'link',
+                    'action' => $url,
+                    'color' => 'success',
+                    'icon' => 'fa-solid fa-plus',
+                ]);
+
+                // si hay documentos añadimos el botón de desvincular
                 if ($view->count > 0) {
                     $this->addButton($viewName, [
                         'type' => 'action',
