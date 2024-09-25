@@ -617,6 +617,12 @@ class EditProyecto extends EditController
             return true;
         }
 
+        // obtenemos el proyecto
+        $project = $this->getModel();
+        if (false === $project->loadFromCode($this->request->get('code', ''))) {
+            return true;
+        }
+
         $modelClass = '\\FacturaScripts\\Dinamic\\Model\\' . $modelName;
         $model = new $modelClass();
         $modelTable = $model->tableName();
