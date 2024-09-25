@@ -636,10 +636,8 @@ class EditProyecto extends EditController
             }
         }
 
-        $mainViewName = $this->getMainViewName();
-        $idproyecto = $this->getViewModelValue($mainViewName, 'idproyecto');
-        ProjectStockManager::rebuild($idproyecto);
-        ProjectTotalManager::recalculate($idproyecto);
+        ProjectStockManager::rebuild($project->idproyecto);
+        ProjectTotalManager::recalculate($project->idproyecto);
 
         Tools::log()->info('record-updated-correctly');
         return true;
