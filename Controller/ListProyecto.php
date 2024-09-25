@@ -1,7 +1,7 @@
 <?php
 /**
  * This file is part of Proyectos plugin for FacturaScripts
- * Copyright (C) 2020-2023 Carlos Garcia Gomez <carlos@facturascripts.com>
+ * Copyright (C) 2020-2024 Carlos Garcia Gomez <carlos@facturascripts.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -23,6 +23,7 @@ use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
 use FacturaScripts\Core\Lib\ExtendedController\ListController;
 use FacturaScripts\Core\Lib\ExtendedController\ListView;
 use FacturaScripts\Core\Tools;
+use FacturaScripts\Plugins\Proyectos\Model\EstadoProyecto;
 
 /**
  * Description of ListProyecto
@@ -42,72 +43,42 @@ class ListProyecto extends ListController
 
     protected function createViews()
     {
-        $this->createViewsProjects();
-        $this->createViewsPrivateProjects();
+        $this->createViewsProjects('ListProyecto');
+        $this->createViewsProjects('ListProyecto-private');
     }
 
-    protected function createViewsPrivateProjects(string $viewName = 'ListProyecto-private'): void
+    protected function createViewsProjects(string $viewName): void
     {
-        $this->addView($viewName, 'Proyecto', 'private', 'fas fa-unlock-alt');
-        $this->addOrderBy($viewName, ['fecha', 'idproyecto'], 'date', 2);
-        $this->addOrderBy($viewName, ['fechainicio'], 'start-date');
-        $this->addOrderBy($viewName, ['fechafin'], 'end-date');
-        $this->addOrderBy($viewName, ['nombre'], 'name');
-        $this->addOrderBy($viewName, ['totalcompras'], 'total-purchases');
-        $this->addOrderBy($viewName, ['totalventas'], 'total-sales');
-        $this->addSearchFields($viewName, ['nombre', 'descripcion']);
-
         // filters
-        $where = [
-            ['label' => Tools::lang()->trans('only-active'), 'where' => [new DataBaseWhere('editable', true)]],
-            ['label' => Tools::lang()->trans('only-closed'), 'where' => [new DataBaseWhere('editable', false)]],
-            ['label' => Tools::lang()->trans('all'), 'where' => []]
-        ];
-        foreach ($this->codeModel->all('proyectos_estados', 'idestado', 'nombre') as $status) {
-            $where[] = ['label' => $status->description, 'where' => [new DataBaseWhere('idestado', $status->code)]];
-        }
-        $this->addFilterSelectWhere($viewName, 'status', $where);
-
-        $this->addFilterPeriod($viewName, 'fecha', 'date', 'fecha');
-        $this->addFilterNumber($viewName, 'totalcompras-gt', 'total-purchases', 'totalcompras', '>=');
-        $this->addFilterNumber($viewName, 'totalcompras-lt', 'total-purchases', 'totalcompras', '<=');
-        $this->addFilterNumber($viewName, 'totalventas-gt', 'total-sales', 'totalventas', '>=');
-        $this->addFilterNumber($viewName, 'totalventas-lt', 'total-sales', 'totalventas', '<=');
-        $this->addFilterAutocomplete($viewName, 'codcliente', 'customer', 'codcliente', 'clientes', 'codcliente', 'nombre');
-    }
-
-    protected function createViewsProjects(string $viewName = 'ListProyecto'): void
-    {
-        $this->addView($viewName, 'Proyecto', 'projects', 'fab fa-stack-overflow');
-        $this->addOrderBy($viewName, ['fecha', 'idproyecto'], 'date', 2);
-        $this->addOrderBy($viewName, ['fechainicio'], 'start-date');
-        $this->addOrderBy($viewName, ['fechafin'], 'end-date');
-        $this->addOrderBy($viewName, ['nombre'], 'name');
-        $this->addOrderBy($viewName, ['totalcompras'], 'total-purchases');
-        $this->addOrderBy($viewName, ['totalventas'], 'total-sales');
-        $this->addSearchFields($viewName, ['nombre', 'descripcion']);
-
-        // filters
-        $where = [
-            ['label' => Tools::lang()->trans('only-active'), 'where' => [new DataBaseWhere('editable', true)]],
-            ['label' => Tools::lang()->trans('only-closed'), 'where' => [new DataBaseWhere('editable', false)]],
-            ['label' => Tools::lang()->trans('all'), 'where' => []]
-        ];
-        foreach ($this->codeModel->all('proyectos_estados', 'idestado', 'nombre') as $status) {
-            $where[] = ['label' => $status->description, 'where' => [new DataBaseWhere('idestado', $status->code)]];
-        }
-        $this->addFilterSelectWhere($viewName, 'status', $where);
-
-        $this->addFilterPeriod($viewName, 'fecha', 'date', 'fecha');
-        $this->addFilterAutocomplete($viewName, 'codcliente', 'customer', 'codcliente', 'clientes', 'codcliente', 'nombre');
-
         $users = $this->codeModel->all('users', 'nick', 'nick');
-        $this->addFilterSelect($viewName, 'nick', 'admin', 'nick', $users);
 
-        $this->addFilterNumber($viewName, 'totalcompras-gt', 'total-purchases', 'totalcompras', '>=');
-        $this->addFilterNumber($viewName, 'totalcompras-lt', 'total-purchases', 'totalcompras', '<=');
-        $this->addFilterNumber($viewName, 'totalventas-gt', 'total-sales', 'totalventas', '>=');
-        $this->addFilterNumber($viewName, 'totalventas-lt', 'total-sales', 'totalventas', '<=');
+        $where = [
+            ['label' => Tools::lang()->trans('only-active'), 'where' => [new DataBaseWhere('editable', true)]],
+            ['label' => Tools::lang()->trans('only-closed'), 'where' => [new DataBaseWhere('editable', false)]],
+            ['label' => Tools::lang()->trans('all'), 'where' => []]
+        ];
+        foreach ($this->codeModel->all('proyectos_estados', 'idestado', 'nombre') as $status) {
+            $where[] = ['label' => $status->description, 'where' => [new DataBaseWhere('idestado', $status->code)]];
+        }
+
+        $this->addView($viewName, 'Proyecto', 'projects', 'fab fa-stack-overflow')
+            ->addOrderBy(['fecha', 'idproyecto'], 'date', 2)
+            ->addOrderBy(['fechainicio'], 'start-date')
+            ->addOrderBy(['fechafin'], 'end-date')
+            ->addOrderBy(['nombre'], 'name')
+            ->addOrderBy(['totalcompras'], 'total-purchases')
+            ->addOrderBy(['totalventas'], 'total-sales')
+            ->addSearchFields(['nombre', 'descripcion'])
+            ->addFilterSelectWhere('status', $where)
+            ->addFilterPeriod('fecha', 'date', 'fecha')
+            ->addFilterAutocomplete('codcliente', 'customer', 'codcliente', 'clientes', 'codcliente', 'nombre')
+            ->addFilterSelect('nick', 'admin', 'nick', $users)
+            ->addFilterNumber('totalcompras-gt', 'total-purchases', 'totalcompras', '>=')
+            ->addFilterNumber('totalcompras-lt', 'total-purchases', 'totalcompras', '<=')
+            ->addFilterNumber('totalventas-gt', 'total-sales', 'totalventas', '>=')
+            ->addFilterNumber('totalventas-lt', 'total-sales', 'totalventas', '<=');
+
+        $this->setProjectColors($viewName);
     }
 
     /**
@@ -141,6 +112,25 @@ class ListProyecto extends ListController
 
             default:
                 $view->loadData();
+        }
+    }
+
+    protected function setProjectColors(string $viewName): void
+    {
+        // asignamos colores
+        foreach (EstadoProyecto::all([], [], 0, 0) as $estado) {
+            if (empty($estado->color)) {
+                continue;
+            }
+
+            $this->views[$viewName]->getRow('status')->options[] = [
+                'tag' => 'option',
+                'children' => [],
+                'color' => $estado->color,
+                'fieldname' => 'idestado',
+                'text' => $estado->idestado,
+                'title' => $estado->nombre
+            ];
         }
     }
 }
