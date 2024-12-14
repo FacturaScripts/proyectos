@@ -25,7 +25,7 @@ class ListAlbaranCliente
 {
     public function createViews(): Closure
     {
-        return function() {
+        return function () {
             $this->addFilterAutocomplete('ListAlbaranCliente', 'idproyecto', 'project', 'idproyecto', 'proyectos', 'idproyecto', 'nombre');
         };
     }

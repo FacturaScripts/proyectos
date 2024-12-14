@@ -25,7 +25,7 @@ class ListPresupuestoProveedor
 {
     public function createViews(): Closure
     {
-        return function() {
+        return function () {
             $this->addFilterAutocomplete('ListPresupuestoProveedor', 'idproyecto', 'project', 'idproyecto', 'proyectos', 'idproyecto', 'nombre');
         };
     }

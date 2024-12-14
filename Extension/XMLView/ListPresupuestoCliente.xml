@@ -8,7 +8,7 @@
         </column>
     </columns>
     <modals>
-        <group name="link-up-PresupuestoCliente" title="link-document" icon="fas fa-link">
+        <group name="link-up-PresupuestoCliente" title="link-document" icon="fa-solid fa-link">
             <column name="linkupcode" title="code">
                 <widget type="autocomplete" fieldname="linkupcode" required="true">
                     <values source="presupuestoscli" fieldcode="idpresupuesto" fieldtitle="codigo"/>

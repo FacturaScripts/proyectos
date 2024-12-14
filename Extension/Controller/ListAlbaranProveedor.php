@@ -25,7 +25,7 @@ class ListAlbaranProveedor
 {
     public function createViews(): Closure
     {
-        return function() {
+        return function () {
             $this->addFilterAutocomplete('ListAlbaranProveedor', 'idproyecto', 'project', 'idproyecto', 'proyectos', 'idproyecto', 'nombre');
         };
     }

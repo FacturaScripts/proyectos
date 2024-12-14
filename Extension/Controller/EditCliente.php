@@ -1,7 +1,7 @@
 <?php
 /**
  * This file is part of Proyectos plugin for FacturaScripts
- * Copyright (C) 2020-2022 Carlos Garcia Gomez <carlos@facturascripts.com>
+ * Copyright (C) 2020-2024 Carlos Garcia Gomez <carlos@facturascripts.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -32,18 +32,15 @@ class EditCliente
     public function createViews(): Closure
     {
         return function () {
-            $viewName = 'ListProyecto';
-            $this->addListView($viewName, 'Proyecto', 'projects', 'fab fa-stack-overflow');
-            $this->views[$viewName]->addOrderBy(['fecha'], 'date', 2);
-            $this->views[$viewName]->addOrderBy(['fechainicio'], 'start-date');
-            $this->views[$viewName]->addOrderBy(['fechafin'], 'end-date');
-            $this->views[$viewName]->addOrderBy(['nombre'], 'name');
-            $this->views[$viewName]->addOrderBy(['totalcompras'], 'total-purchases');
-            $this->views[$viewName]->addOrderBy(['totalventas'], 'total-sales');
-            $this->views[$viewName]->searchFields = ['nombre', 'descripcion'];
-
-            // disable customer column
-            $this->views[$viewName]->disableColumn('customer');
+            $this->addListView('ListProyecto', 'Proyecto', 'projects', 'fa-brands fa-stack-overflow')
+                ->addOrderBy(['fecha'], 'date', 2)
+                ->addOrderBy(['fechainicio'], 'start-date')
+                ->addOrderBy(['fechafin'], 'end-date')
+                ->addOrderBy(['nombre'], 'name')
+                ->addOrderBy(['totalcompras'], 'total-purchases')
+                ->addOrderBy(['totalventas'], 'total-sales')
+                ->addSearchFields(['nombre', 'descripcion'])
+                ->disableColumn('customer');
         };
     }
 

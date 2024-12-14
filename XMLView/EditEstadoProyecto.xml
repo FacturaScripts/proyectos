@@ -3,10 +3,10 @@
     <columns>
         <group name="main" valign="bottom">
             <column name="code" display="none" order="100">
-                <widget type="text" fieldname="idestado" />
+                <widget type="text" fieldname="idestado"/>
             </column>
             <column name="name" order="110">
-                <widget type="text" fieldname="nombre" />
+                <widget type="text" fieldname="nombre"/>
             </column>
             <column name="color" numcolumns="3" order="120">
                 <widget type="select" fieldname="color" translate="true">
@@ -21,10 +21,10 @@
                 </widget>
             </column>
             <column name="editable" display="center" order="130">
-                <widget type="checkbox" fieldname="editable" />
+                <widget type="checkbox" fieldname="editable"/>
             </column>
             <column name="default" display="center" order="140">
-                <widget type="checkbox" fieldname="predeterminado" />
+                <widget type="checkbox" fieldname="predeterminado"/>
             </column>
         </group>
     </columns>

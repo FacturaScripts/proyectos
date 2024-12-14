@@ -37,21 +37,29 @@ class ListProyecto extends ListController
         $data = parent::getPageData();
         $data['menu'] = 'projects';
         $data['title'] = 'projects';
-        $data['icon'] = 'fab fa-stack-overflow';
+        $data['icon'] = 'fa-brands fa-stack-overflow';
         return $data;
     }
 
     protected function createViews()
     {
-        $this->createViewsProjects('ListProyecto');
-        $this->createViewsProjects('ListProyecto-private');
+        $this->createViewsProjects('ListProyecto', 'projects', 'fa-brands fa-stack-overflow');
+        $this->createViewsProjects('ListProyecto-private', 'private', 'fa-solid fa-unlock-alt');
     }
 
-    protected function createViewsProjects(string $viewName): void
+    protected function createViewsProjects(string $viewName, string $label, string $icon): void
     {
-        // filters
-        $users = $this->codeModel->all('users', 'nick', 'nick');
+        $this->addView($viewName, 'Proyecto', $label, $icon)
+            ->addOrderBy(['fecha', 'idproyecto'], 'date', 2)
+            ->addOrderBy(['fechainicio'], 'start-date')
+            ->addOrderBy(['fechafin'], 'end-date')
+            ->addOrderBy(['nombre'], 'name')
+            ->addOrderBy(['totalcompras'], 'total-purchases')
+            ->addOrderBy(['totalventas'], 'total-sales')
+            ->addSearchFields(['nombre', 'descripcion']);
 
+        // filtros
+        $users = $this->codeModel->all('users', 'nick', 'nick');
         $where = [
             ['label' => Tools::lang()->trans('only-active'), 'where' => [new DataBaseWhere('editable', true)]],
             ['label' => Tools::lang()->trans('only-closed'), 'where' => [new DataBaseWhere('editable', false)]],
@@ -61,14 +69,7 @@ class ListProyecto extends ListController
             $where[] = ['label' => $status->description, 'where' => [new DataBaseWhere('idestado', $status->code)]];
         }
 
-        $this->addView($viewName, 'Proyecto', 'projects', 'fab fa-stack-overflow')
-            ->addOrderBy(['fecha', 'idproyecto'], 'date', 2)
-            ->addOrderBy(['fechainicio'], 'start-date')
-            ->addOrderBy(['fechafin'], 'end-date')
-            ->addOrderBy(['nombre'], 'name')
-            ->addOrderBy(['totalcompras'], 'total-purchases')
-            ->addOrderBy(['totalventas'], 'total-sales')
-            ->addSearchFields(['nombre', 'descripcion'])
+        $this->listView($viewName)
             ->addFilterSelectWhere('status', $where)
             ->addFilterPeriod('fecha', 'date', 'fecha')
             ->addFilterAutocomplete('codcliente', 'customer', 'codcliente', 'clientes', 'codcliente', 'nombre')

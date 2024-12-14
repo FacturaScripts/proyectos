@@ -31,7 +31,7 @@ class Randomizer
     protected function loadButtons(): Closure
     {
         return function () {
-            $this->addButton('plugins', 'proyectos', 'generated-projects', 'projects', 'fab fa-stack-overflow', 'Random\\Proyectos', 'Proyecto');
+            $this->addButton('plugins', 'proyectos', 'generated-projects', 'projects', 'fa-brands fa-stack-overflow', 'Random\\Proyectos', 'Proyecto');
         };
     }
 }

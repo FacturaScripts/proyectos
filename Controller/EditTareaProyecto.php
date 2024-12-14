@@ -1,7 +1,7 @@
 <?php
 /**
  * This file is part of Proyectos plugin for FacturaScripts
- * Copyright (C) 2020-2022 Carlos Garcia Gomez <carlos@facturascripts.com>
+ * Copyright (C) 2020-2024 Carlos Garcia Gomez <carlos@facturascripts.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -31,7 +31,6 @@ use FacturaScripts\Core\Lib\ExtendedController\EditView;
  */
 class EditTareaProyecto extends EditController
 {
-
     public function getModelClassName(): string
     {
         return 'TareaProyecto';
@@ -42,7 +41,7 @@ class EditTareaProyecto extends EditController
         $data = parent::getPageData();
         $data['menu'] = 'projects';
         $data['title'] = 'task';
-        $data['icon'] = 'fas fa-project-diagram';
+        $data['icon'] = 'fa-solid fa-project-diagram';
         $data['showonmenu'] = false;
         return $data;
     }
@@ -56,11 +55,9 @@ class EditTareaProyecto extends EditController
 
     protected function createViewsNotes(string $viewName = 'EditNotaProyecto')
     {
-        $this->addEditListView($viewName, 'NotaProyecto', 'notes', 'fas fa-sticky-note');
-
-        // hide project and task columns
-        $this->views[$viewName]->disableColumn('project');
-        $this->views[$viewName]->disableColumn('task');
+        $this->addEditListView($viewName, 'NotaProyecto', 'notes', 'fa-solid fa-sticky-note')
+            ->disableColumn('project')
+            ->disableColumn('task');
     }
 
     /**

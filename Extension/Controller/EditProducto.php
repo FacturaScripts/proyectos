@@ -1,7 +1,7 @@
 <?php
 /**
  * This file is part of Proyectos plugin for FacturaScripts
- * Copyright (C) 2020-2022 Carlos Garcia Gomez <carlos@facturascripts.com>
+ * Copyright (C) 2020-2024 Carlos Garcia Gomez <carlos@facturascripts.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -32,22 +32,17 @@ class EditProducto
     public function createViews(): Closure
     {
         return function () {
-            $viewName = 'ListStockProyecto';
-            $this->addListView($viewName, 'StockProyecto', 'projects', 'fab fa-stack-overflow');
-            $this->views[$viewName]->addSearchFields(['referencia']);
-            $this->views[$viewName]->addOrderBy(['referencia'], 'reference');
-            $this->views[$viewName]->addOrderBy(['cantidad'], 'quantity');
-            $this->views[$viewName]->addOrderBy(['disponible'], 'available');
-            $this->views[$viewName]->addOrderBy(['reservada'], 'reserved');
-            $this->views[$viewName]->addOrderBy(['pterecibir'], 'pending-reception');
-
-            // disable description column
-            $this->views[$viewName]->disableColumn('description');
-
-            // disable buttons
-            $this->setSettings($viewName, 'btnDelete', false);
-            $this->setSettings($viewName, 'btnNew', false);
-            $this->setSettings($viewName, 'checkBoxes', false);
+            $this->addListView('ListStockProyecto', 'StockProyecto', 'projects', 'fa-brands fa-stack-overflow')
+                ->addSearchFields(['referencia'])
+                ->addOrderBy(['referencia'], 'reference')
+                ->addOrderBy(['cantidad'], 'quantity')
+                ->addOrderBy(['disponible'], 'available')
+                ->addOrderBy(['reservada'], 'reserved')
+                ->addOrderBy(['pterecibir'], 'pending-reception')
+                ->disableColumn('description')
+                ->setSettings('btnDelete', false)
+                ->setSettings('btnNew', false)
+                ->setSettings('checkBoxes', false);
         };
     }
 

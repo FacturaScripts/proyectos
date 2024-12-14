@@ -2,14 +2,14 @@
 <view>
     <columns>
         <column name="code" display="none" order="100">
-            <widget type="text" fieldname="idfase" />
+            <widget type="text" fieldname="idfase"/>
         </column>
         <column name="name" order="110">
-            <widget type="text" fieldname="nombre" required="true" />
+            <widget type="text" fieldname="nombre" required="true"/>
         </column>
         <column name="status" order="120">
             <widget type="select" fieldname="idestado">
-                <values source="proyectos_estados" fieldcode="idestado" fieldtitle="nombre" />
+                <values source="proyectos_estados" fieldcode="idestado" fieldtitle="nombre"/>
             </widget>
         </column>
         <column name="tipo" title="type" order="130">
@@ -20,7 +20,7 @@
             </widget>
         </column>
         <column name="default" display="center" numcolumns='12' order="140">
-            <widget type="checkbox" fieldname="predeterminado" />
+            <widget type="checkbox" fieldname="predeterminado"/>
         </column>
     </columns>
 </view>

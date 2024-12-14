@@ -1,14 +1,14 @@
 {
-    "burn-project-stock": "Quemar stock",
+    "burn-project-stock": "Spalić zapas",
     "canceled": "Anulowany",
-    "generated-projects": "%quantity% proyectos generados",
+    "generated-projects": "%quantity% wygenerowanych projektów",
     "import-tasks-from-another-project": "Importar tareas desde otro proyecto",
-    "link-document": "Vincular...",
+    "link-document": "Połącz...",
     "phases": "Fazy",
-    "project-stock-rebuild-error": "Error al regenerar el stock",
-    "project-stock-rebuild-ok": "Stock regenerado correctamente",
-    "show-project-stock": "Mostrar stock del proyecto",
+    "project-stock-rebuild-error": "Błąd podczas regeneracji zapasów",
+    "project-stock-rebuild-ok": "Zasoby zostały pomyślnie odtworzone",
+    "show-project-stock": "Pokaż stan magazynowy projektu",
     "tasks-imported-correctly": "Tareas importadas correctamente",
     "total-pending-invoice": "Pendiente facturar",
-    "unlink-document": "Desvincular..."
+    "unlink-document": "Odłącz..."
 }

@@ -56,7 +56,7 @@ class EditProyecto extends EditController
         $data = parent::getPageData();
         $data['menu'] = 'projects';
         $data['title'] = 'project';
-        $data['icon'] = 'fab fa-stack-overflow';
+        $data['icon'] = 'fa-brands fa-stack-overflow';
         $data['showonmenu'] = false;
         return $data;
     }
@@ -81,7 +81,7 @@ class EditProyecto extends EditController
         $this->addButton($viewName, [
             'type' => 'modal',
             'action' => 'link-up-' . $modelName,
-            'icon' => 'fas fa-link',
+            'icon' => 'fa-solid fa-link',
             'label' => 'link-document'
         ]);
 
@@ -91,9 +91,10 @@ class EditProyecto extends EditController
 
     protected function addCommonViewFilters(string $viewName, string $modelName): void
     {
-        $this->listView($viewName)->addFilterPeriod('date', 'period', 'fecha');
-        $this->listView($viewName)->addFilterNumber('min-total', 'total', 'total', '>=');
-        $this->listView($viewName)->addFilterNumber('max-total', 'total', 'total', '<=');
+        $this->listView($viewName)
+            ->addFilterPeriod('date', 'period', 'fecha')
+            ->addFilterNumber('min-total', 'total', 'total', '>=')
+            ->addFilterNumber('max-total', 'total', 'total', '<=');
 
         $where = [new DataBaseWhere('tipodoc', $modelName)];
         $statusValues = $this->codeModel->all('estados_documentos', 'idestado', 'nombre', true, $where);
@@ -140,10 +141,11 @@ class EditProyecto extends EditController
             $this->listView($viewName)->addFilterSelect('coddivisa', 'currency', 'coddivisa', $currencies);
         }
 
-        $this->listView($viewName)->addFilterCheckbox('totalrecargo', 'surcharge', 'totalrecargo', '!=', 0);
-        $this->listView($viewName)->addFilterCheckbox('totalirpf', 'retention', 'totalirpf', '!=', 0);
-        $this->listView($viewName)->addFilterCheckbox('totalsuplidos', 'supplied-amount', 'totalsuplidos', '!=', 0);
-        $this->listView($viewName)->addFilterCheckbox('numdocs', 'has-attachments', 'numdocs', '!=', 0);
+        $this->listView($viewName)
+            ->addFilterCheckbox('totalrecargo', 'surcharge', 'totalrecargo', '!=', 0)
+            ->addFilterCheckbox('totalirpf', 'retention', 'totalirpf', '!=', 0)
+            ->addFilterCheckbox('totalsuplidos', 'supplied-amount', 'totalsuplidos', '!=', 0)
+            ->addFilterCheckbox('numdocs', 'has-attachments', 'numdocs', '!=', 0);
     }
 
     protected function createViews()
@@ -173,7 +175,7 @@ class EditProyecto extends EditController
     protected function createViewPurchases(string $modelName, string $label)
     {
         $viewName = 'List' . $modelName;
-        $this->addlISTView($viewName, $modelName, $label, 'fas fa-copy')
+        $this->addlISTView($viewName, $modelName, $label, 'fa-solid fa-copy')
             ->addOrderBy(['codigo'], 'code')
             ->addOrderBy(['fecha', $this->tableColToNumber('numero')], 'date', 2)
             ->addOrderBy([$this->tableColToNumber('numero')], 'number')
@@ -185,8 +187,9 @@ class EditProyecto extends EditController
 
         // filtros
         $this->addCommonViewFilters($viewName, $modelName);
-        $this->listView($viewName)->addFilterAutocomplete('codproveedor', 'supplier', 'codproveedor', 'Proveedor');
-        $this->listView($viewName)->addFilterCheckbox('femail', 'email-not-sent', 'femail', 'IS', null);
+        $this->listView($viewName)
+            ->addFilterAutocomplete('codproveedor', 'supplier', 'codproveedor', 'Proveedor')
+            ->addFilterCheckbox('femail', 'email-not-sent', 'femail', 'IS', null);
 
         // asignamos los colores
         $this->addColorStatus($viewName, $modelName);
@@ -197,7 +200,7 @@ class EditProyecto extends EditController
     protected function createViewSales(string $modelName, string $label)
     {
         $viewName = 'List' . $modelName;
-        $this->addListView($viewName, $modelName, $label, 'fas fa-copy')
+        $this->addListView($viewName, $modelName, $label, 'fa-solid fa-copy')
             ->addOrderBy(['codigo'], 'code')
             ->addOrderBy(['codcliente'], 'customer-code')
             ->addOrderBy(['fecha', $this->tableColToNumber('numero')], 'date', 2)
@@ -234,9 +237,10 @@ class EditProyecto extends EditController
         }
 
         // filtramos por clientes y direcciones
-        $this->listView($viewName)->addFilterAutocomplete('codcliente', 'customer', 'codcliente', 'Cliente');
-        $this->listView($viewName)->addFilterAutocomplete('idcontactofact', 'billing-address', 'idcontactofact', 'contactos', 'idcontacto', 'direccion');
-        $this->listView($viewName)->addFilterautocomplete('idcontactoenv', 'shipping-address', 'idcontactoenv', 'contactos', 'idcontacto', 'direccion');
+        $this->listView($viewName)
+            ->addFilterAutocomplete('codcliente', 'customer', 'codcliente', 'Cliente')
+            ->addFilterAutocomplete('idcontactofact', 'billing-address', 'idcontactofact', 'contactos', 'idcontacto', 'direccion')
+            ->addFilterautocomplete('idcontactoenv', 'shipping-address', 'idcontactoenv', 'contactos', 'idcontacto', 'direccion');
 
         if ($this->permissions->onlyOwnerData === false) {
             $agents = Agentes::codeModel();
@@ -246,8 +250,9 @@ class EditProyecto extends EditController
         }
 
         $carriers = $this->codeModel->all('agenciastrans', 'codtrans', 'nombre');
-        $this->listView($viewName)->addFilterSelect('codtrans', 'carrier', 'codtrans', $carriers);
-        $this->listView($viewName)->addFilterCheckbox('femail', 'email-not-sent', 'femail', 'IS', null);
+        $this->listView($viewName)
+            ->addFilterSelect('codtrans', 'carrier', 'codtrans', $carriers)
+            ->addFilterCheckbox('femail', 'email-not-sent', 'femail', 'IS', null);
 
         // asignamos los colores
         $this->addColorStatus($viewName, $modelName);
@@ -257,7 +262,7 @@ class EditProyecto extends EditController
 
     protected function createViewsNotes(string $viewName = 'ListNotaProyecto'): void
     {
-        $this->addListView($viewName, 'NotaProyecto', 'notes', 'fas fa-sticky-note')
+        $this->addListView($viewName, 'NotaProyecto', 'notes', 'fa-solid fa-sticky-note')
             ->addOrderBy(['fecha'], 'date', 2)
             ->addSearchFields(['descripcion']);
 
@@ -271,7 +276,7 @@ class EditProyecto extends EditController
             return;
         }
 
-        $this->addListView($viewName, 'ServicioAT', 'services', 'fas fa-headset')
+        $this->addListView($viewName, 'ServicioAT', 'services', 'fa-solid fa-headset')
             ->addOrderBy(['fecha', 'hora'], 'date', 2)
             ->addOrderBy(['idprioridad'], 'priority')
             ->addOrderBy(['idservicio'], 'code')
@@ -324,7 +329,7 @@ class EditProyecto extends EditController
             return;
         }
 
-        $this->addListView($viewName, 'StockProyecto', 'stock', 'fas fa-dolly')
+        $this->addListView($viewName, 'StockProyecto', 'stock', 'fa-solid fa-dolly')
             ->addSearchFields(['referencia'])
             ->addOrderBy(['referencia'], 'reference')
             ->addOrderBy(['cantidad'], 'quantity')
@@ -351,7 +356,7 @@ class EditProyecto extends EditController
                 'action' => 'rebuild-stock',
                 'color' => 'warning',
                 'confirm' => true,
-                'icon' => 'fas fa-magic',
+                'icon' => 'fa-solid fa-magic',
                 'label' => 'rebuild-stock'
             ]);
         }
@@ -359,7 +364,7 @@ class EditProyecto extends EditController
 
     protected function createViewsTasks(string $viewName = 'ListTareaProyecto'): void
     {
-        $this->addListView($viewName, 'TareaProyecto', 'tasks', 'fas fa-project-diagram')
+        $this->addListView($viewName, 'TareaProyecto', 'tasks', 'fa-solid fa-project-diagram')
             ->addOrderBy(['fecha'], 'date')
             ->addOrderBy(['fechainicio'], 'start-date')
             ->addOrderBy(['fechafin'], 'end-date')
@@ -380,14 +385,14 @@ class EditProyecto extends EditController
         $this->addButton($viewName, [
             'type' => 'modal',
             'action' => 'import-task',
-            'icon' => 'fas fa-file-import',
+            'icon' => 'fa-solid fa-file-import',
             'label' => 'import'
         ]);
     }
 
     protected function createViewsUsers(string $viewName = 'EditUserProyecto'): void
     {
-        $this->addEditListView($viewName, 'UserProyecto', 'users', 'fas fa-users');
+        $this->addEditListView($viewName, 'UserProyecto', 'users', 'fa-solid fa-users');
 
         // disable column
         $this->views[$viewName]->disableColumn('project');
@@ -593,7 +598,7 @@ class EditProyecto extends EditController
                         'type' => 'action',
                         'action' => 'unlink-up-' . $view->model->modelClassName(),
                         'color' => 'warning',
-                        'icon' => 'fas fa-unlink',
+                        'icon' => 'fa-solid fa-unlink',
                         'label' => 'unlink-document'
                     ]);
                 }

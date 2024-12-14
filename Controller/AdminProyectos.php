@@ -1,7 +1,7 @@
 <?php
 /**
  * This file is part of Proyectos plugin for FacturaScripts
- * Copyright (C) 2020-2022 Carlos Garcia Gomez <carlos@facturascripts.com>
+ * Copyright (C) 2020-2024 Carlos Garcia Gomez <carlos@facturascripts.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -30,7 +30,6 @@ use FacturaScripts\Dinamic\Lib\ExtendedController\PanelController;
  */
 class AdminProyectos extends PanelController
 {
-
     private const VIEW_CONFIG_PROJECTS = 'ConfigProyectos';
     private const VIEW_LIST_STATUS = 'EditEstadoProyecto';
     private const VIEW_LIST_PHASES = 'EditFaseTarea';
@@ -40,7 +39,7 @@ class AdminProyectos extends PanelController
         $data = parent::getPageData();
         $data['menu'] = 'admin';
         $data['title'] = 'projects';
-        $data['icon'] = 'fab fa-stack-overflow';
+        $data['icon'] = 'fa-brands fa-stack-overflow';
         return $data;
     }
 
@@ -57,23 +56,21 @@ class AdminProyectos extends PanelController
 
     private function createViewEditConfig(string $viewName = self::VIEW_CONFIG_PROJECTS)
     {
-        $this->addEditView($viewName, 'Settings', 'general');
-
-        // disable buttons
-        $this->setSettings($viewName, 'btnDelete', false);
-        $this->setSettings($viewName, 'btnNew', false);
+        $this->addEditView($viewName, 'Settings', 'general')
+            ->setSettings('btnDelete', false)
+            ->setSettings('btnNew', false);
     }
 
     private function createViewPhases(string $viewName = self::VIEW_LIST_PHASES)
     {
-        $this->addEditListView($viewName, 'FaseTarea', 'phases', 'fas fa-hourglass-half');
-        $this->views[$viewName]->setInLine(true);
+        $this->addEditListView($viewName, 'FaseTarea', 'phases', 'fa-solid fa-hourglass-half')
+            ->setInLine(true);
     }
 
     private function createViewStatus(string $viewName = self::VIEW_LIST_STATUS)
     {
-        $this->addEditListView($viewName, 'EstadoProyecto', 'states', 'fas fa-tags');
-        $this->views[$viewName]->setInLine(true);
+        $this->addEditListView($viewName, 'EstadoProyecto', 'states', 'fa-solid fa-tags')
+            ->setInLine(true);
     }
 
     /**

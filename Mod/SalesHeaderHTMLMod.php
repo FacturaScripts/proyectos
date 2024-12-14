@@ -85,11 +85,11 @@ class SalesHeaderHTMLMod implements SalesModInterface
 
         if ($model->editable && $model->idproyecto) {
             $html .= '<button type="button" id="deleteProject" class="btn btn-warning">'
-                . '<i class="fas fa-times" aria-hidden="true"></i>'
+                . '<i class="fa-solid fa-times" aria-hidden="true"></i>'
                 . '</button>';
         } else {
             $html .= '<span id="searchProject" class="input-group-text">'
-                . '<i class="fas fa-search fa-fw"></i>'
+                . '<i class="fa-solid fa-search fa-fw"></i>'
                 . '</span>';
         }
 

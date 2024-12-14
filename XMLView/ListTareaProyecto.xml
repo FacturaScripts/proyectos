@@ -39,7 +39,7 @@
         </column>
     </columns>
     <modals>
-        <group name="import-task" title="import-tasks-from-another-project" icon="fas fa-file-import">
+        <group name="import-task" title="import-tasks-from-another-project" icon="fa-solid fa-file-import">
             <column name="project">
                 <widget type="autocomplete" fieldname="idproyecto" required="true">
                     <values source="proyectos" fieldcode="idproyecto" fieldtitle="nombre"/>

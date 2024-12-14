@@ -37,7 +37,7 @@ class ListTareaProyecto extends ListController
         $data = parent::getPageData();
         $data['menu'] = 'projects';
         $data['title'] = 'tasks';
-        $data['icon'] = 'fas fa-project-diagram';
+        $data['icon'] = 'fa-solid fa-project-diagram';
         return $data;
     }
 
@@ -47,40 +47,42 @@ class ListTareaProyecto extends ListController
         $this->createViewsPrivateTasks();
     }
 
-    protected function createViewsPrivateTasks(string $viewName = 'ListTareaProyecto-private')
+    protected function createViewsPrivateTasks(string $viewName = 'ListTareaProyecto-private'): void
     {
-        $this->addView($viewName, 'Join\TareaProyecto', 'private', 'fas fa-unlock-alt');
-        $this->addOrderBy($viewName, ['fecha'], 'date', 2);
-        $this->addOrderBy($viewName, ['fechainicio'], 'start-date');
-        $this->addOrderBy($viewName, ['fechafin'], 'end-date');
-        $this->addOrderBy($viewName, ['nombre'], 'name');
-        $this->addOrderBy($viewName, ['descripcion'], 'description');
-        $this->addSearchFields($viewName, ['tareas.nombre', 'tareas.descripcion']);
-
-        // filters
-        $this->addFilterPeriod($viewName, 'fecha', 'date', 'tareas.fecha');
-        $this->addFilterAutocomplete($viewName, 'idproyecto', 'project', 'tareas.idproyecto', 'proyectos', 'idproyecto', 'nombre');
+        $this->addView($viewName, 'Join\TareaProyecto', 'private', 'fa-solid fa-unlock-alt')
+            ->addOrderBy(['fecha'], 'date', 2)
+            ->addOrderBy(['fechainicio'], 'start-date')
+            ->addOrderBy(['fechafin'], 'end-date')
+            ->addOrderBy(['nombre'], 'name')
+            ->addOrderBy(['descripcion'], 'description')
+            ->addSearchFields(['tareas.nombre', 'tareas.descripcion']);
 
         $status = $this->codeModel->all('tareas_fases', 'idfase', 'nombre');
-        $this->addFilterSelect($viewName, 'idfase', 'phase', 'tareas.idfase', $status);
+
+        // filtros
+        $this->listView($viewName)
+            ->addFilterPeriod('fecha', 'date', 'tareas.fecha')
+            ->addFilterAutocomplete('idproyecto', 'project', 'tareas.idproyecto', 'proyectos', 'idproyecto', 'nombre')
+            ->addFilterSelect('idfase', 'phase', 'tareas.idfase', $status);
     }
 
     protected function createViewsTasks(string $viewName = 'ListTareaProyecto')
     {
-        $this->addView($viewName, 'Join\TareaProyecto', 'tasks', 'fas fa-project-diagram');
-        $this->addOrderBy($viewName, ['fecha'], 'date', 2);
-        $this->addOrderBy($viewName, ['fechainicio'], 'start-date');
-        $this->addOrderBy($viewName, ['fechafin'], 'end-date');
-        $this->addOrderBy($viewName, ['nombre'], 'title');
-        $this->addOrderBy($viewName, ['descripcion'], 'description');
-        $this->addSearchFields($viewName, ['tareas.nombre', 'tareas.descripcion']);
-
-        // filters
-        $this->addFilterPeriod($viewName, 'fecha', 'date', 'tareas.fecha');
-        $this->addFilterAutocomplete($viewName, 'idproyecto', 'project', 'tareas.idproyecto', 'proyectos', 'idproyecto', 'nombre');
+        $this->addView($viewName, 'Join\TareaProyecto', 'tasks', 'fa-solid fa-project-diagram')
+            ->addOrderBy(['fecha'], 'date', 2)
+            ->addOrderBy(['fechainicio'], 'start-date')
+            ->addOrderBy(['fechafin'], 'end-date')
+            ->addOrderBy(['nombre'], 'title')
+            ->addOrderBy(['descripcion'], 'description')
+            ->addSearchFields(['tareas.nombre', 'tareas.descripcion']);
 
         $status = $this->codeModel->all('tareas_fases', 'idfase', 'nombre');
-        $this->addFilterSelect($viewName, 'idfase', 'phase', 'tareas.idfase', $status);
+
+        // filtros
+        $this->listView($viewName)
+            ->addFilterPeriod('fecha', 'date', 'tareas.fecha')
+            ->addFilterAutocomplete('idproyecto', 'project', 'tareas.idproyecto', 'proyectos', 'idproyecto', 'nombre')
+            ->addFilterSelect('idfase', 'phase', 'tareas.idfase', $status);
     }
 
     /**
