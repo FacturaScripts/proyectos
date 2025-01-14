@@ -27,13 +27,13 @@ class FacturaProgramada
 {
     public function generate(): Closure
     {
-        return function ($invoiceProg, $invoice) {
-            if (empty($invoiceProg->idproyecto) || false === Plugins::isEnabled('Proyectos')) {
+        return function ($invoice) {
+            if (empty($this->idproyecto) || false === Plugins::isEnabled('Proyectos')) {
                 return;
             }
 
             $project = new Proyecto();
-            if ($project->loadFromCode($invoiceProg->idproyecto)) {
+            if ($project->loadFromCode($this->idproyecto)) {
                 $invoice->idproyecto = $project->idproyecto;
                 return $invoice;
             }
