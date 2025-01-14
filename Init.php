@@ -68,6 +68,7 @@ final class Init extends InitClass
         $this->loadExtension(new Extension\Controller\ListPresupuestoProveedor());
         $this->loadExtension(new Extension\Model\Base\BusinessDocument());
         $this->loadExtension(new Extension\Model\Stock());
+        $this->loadExtension(new Extension\Model\FacturaProgramada());
 
         PurchasesHeaderHTML::addMod(new Mod\PurchasesHeaderHTMLMod());
         SalesHeaderHTML::addMod(new Mod\SalesHeaderHTMLMod());
