@@ -1,7 +1,7 @@
 <?php
 /**
  * This file is part of Proyectos plugin for FacturaScripts
- * Copyright (C) 2020-2024 Carlos Garcia Gomez <carlos@facturascripts.com>
+ * Copyright (C) 2020-2025 Carlos Garcia Gomez <carlos@facturascripts.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -87,11 +87,11 @@ class FaseTarea extends Base\ModelClass
         $this->nombre = Tools::noHtml($this->nombre);
 
         if (isset($this->tipo)) {
-            $this->ResetPhaseType();
+            $this->resetPhaseType();
         }
 
         if (isset($this->predeterminado)) {
-            $this->ResetPhaseDefault();
+            $this->resetPhaseDefault();
         }
 
         return parent::save();
@@ -110,7 +110,7 @@ class FaseTarea extends Base\ModelClass
     /**
      * Set a single phase by default
      */
-    protected function ResetPhaseDefault()
+    protected function resetPhaseDefault()
     {
         $where = [
             new DataBaseWhere('predeterminado', true),
@@ -125,7 +125,7 @@ class FaseTarea extends Base\ModelClass
     /**
      * Set only one type of phase at a time
      */
-    protected function ResetPhaseType()
+    protected function resetPhaseType()
     {
         $where = [
             new DataBaseWhere('tipo', $this->tipo),

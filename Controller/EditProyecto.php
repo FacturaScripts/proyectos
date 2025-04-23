@@ -1,7 +1,7 @@
 <?php
 /**
  * This file is part of Proyectos plugin for FacturaScripts
- * Copyright (C) 2020-2024 Carlos Garcia Gomez <carlos@facturascripts.com>
+ * Copyright (C) 2020-2025 Carlos Garcia Gomez <carlos@facturascripts.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -31,13 +31,13 @@ use FacturaScripts\Core\DataSrc\Series;
 use FacturaScripts\Core\Lib\ExtendedController\EditController;
 use FacturaScripts\Core\Lib\ExtendedController\EditView;
 use FacturaScripts\Core\Lib\InvoiceOperation;
-use FacturaScripts\Core\Model\Base\ModelCore;
 use FacturaScripts\Core\Tools;
 use FacturaScripts\Dinamic\Lib\ProjectStockManager;
 use FacturaScripts\Dinamic\Lib\ProjectTotalManager;
 use FacturaScripts\Dinamic\Model\EstadoDocumento;
-use FacturaScripts\Plugins\Proyectos\Model\Proyecto;
-use FacturaScripts\Plugins\Servicios\Model\EstadoAT;
+use FacturaScripts\Dinamic\Model\FaseTarea;
+use FacturaScripts\Dinamic\Model\Proyecto;
+use FacturaScripts\Dinamic\Model\EstadoAT;
 
 /**
  * Description of EditProyecto
@@ -482,10 +482,20 @@ class EditProyecto extends EditController
             $this->dataBase->beginTransaction();
         }
 
+        // obtenemos la fase predefinida
+        $idFase = null;
+        foreach (FaseTarea::all() as $faseTarea) {
+            if ($faseTarea->predeterminado) {
+                $idFase = $faseTarea->idfase;
+                break;
+            }
+        }
+
         // obtenemos las tareas del proyecto a copiar y las insertamos en el proyecto actual
         foreach ($copyProject->getTasks() as $task) {
             $task->idtarea = null;
-            $task->fecha = date(ModelCore::DATETIME_STYLE);
+            $task->fecha = Tools::dateTime();
+            $task->idfase = $idFase;
             $task->idproyecto = $origProject->idproyecto;
             if (false === $task->save()) {
                 if ($newTransaction) {
