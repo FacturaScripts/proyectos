@@ -35,6 +35,8 @@ use FacturaScripts\Dinamic\Model\PedidoCliente;
 use FacturaScripts\Dinamic\Model\PedidoProveedor;
 use FacturaScripts\Dinamic\Model\PresupuestoCliente;
 use FacturaScripts\Dinamic\Model\PresupuestoProveedor;
+use FacturaScripts\Plugins\Proyectos\Model\Proyecto;
+use FacturaScripts\Plugins\Proyectos\Model\UserProyecto;
 
 /**
  * Description of Init
@@ -86,7 +88,8 @@ final class Init extends InitClass
     public function update(): void
     {
         // init models
-        new Model\UserProyecto();
+        new UserProyecto();
+        new Proyecto();
         new AlbaranCliente();
         new AlbaranProveedor();
         new FacturaCliente();
