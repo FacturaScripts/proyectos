@@ -616,7 +616,7 @@ class EditProyecto extends EditController
         }
     }
 
-    protected function rebuildStockAction(int $idproyecto = null): void
+    protected function rebuildStockAction(?int $idproyecto = null): void
     {
         if (empty($idproyecto)) {
             $idproyecto = (int)$this->request->query->get('code');

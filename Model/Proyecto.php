@@ -150,6 +150,7 @@ class Proyecto extends Base\ModelOnChangeClass
         // needed dependencies
         new EstadoProyecto();
         new Empresa();
+        new User();
         new Cliente();
 
         return parent::install();
