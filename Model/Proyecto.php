@@ -26,6 +26,7 @@ use FacturaScripts\Core\Session;
 use FacturaScripts\Core\Tools;
 use FacturaScripts\Dinamic\Model\Cliente;
 use FacturaScripts\Dinamic\Model\CodeModel;
+use FacturaScripts\Dinamic\Model\Empresa;
 use FacturaScripts\Plugins\Proyectos\Lib\ProjectCodeGenerator;
 
 /**
@@ -118,8 +119,7 @@ class Proyecto extends Base\ModelOnChangeClass
     public function getAvailableStatus(): array
     {
         $available = [];
-        $statusModel = new EstadoProyecto();
-        foreach ($statusModel->all([], [], 0, 0) as $status) {
+        foreach (EstadoProyecto::all([], [], 0, 0) as $status) {
             $available[] = $status;
         }
 
@@ -141,15 +141,15 @@ class Proyecto extends Base\ModelOnChangeClass
      */
     public function getTasks(): array
     {
-        $task = new TareaProyecto();
         $where = [new DataBaseWhere('idproyecto', $this->idproyecto)];
-        return $task->all($where, [], 0, 0);
+        return TareaProyecto::all($where, [], 0, 0);
     }
 
     public function install(): string
     {
         // needed dependencies
         new EstadoProyecto();
+        new Empresa();
         new Cliente();
 
         return parent::install();

@@ -20,14 +20,23 @@
 namespace FacturaScripts\Test\Plugins;
 
 use FacturaScripts\Plugins\Proyectos\Model\Proyecto;
+use FacturaScripts\Test\Traits\DefaultSettingsTrait;
 use FacturaScripts\Test\Traits\LogErrorsTrait;
 use PHPUnit\Framework\TestCase;
 
 final class ProyectoTest extends TestCase
 {
     use LogErrorsTrait;
+    use DefaultSettingsTrait;
 
-    public function testCreateProject()
+    public static function setUpBeforeClass(): void
+    {
+        self::setDefaultSettings();
+        self::installAccountingPlan();
+        self::removeTaxRegularization();
+    }
+
+    public function testCreateProject(): void
     {
         // creamos un proyecto nuevo
         $proyecto = new Proyecto();
@@ -46,7 +55,7 @@ final class ProyectoTest extends TestCase
         $this->assertTrue($proyecto->delete());
     }
 
-    public function testCloseProject()
+    public function testCloseProject(): void
     {
         // creamos un proyecto nuevo
         $proyecto = new Proyecto();
