@@ -37,110 +37,152 @@ use FacturaScripts\Plugins\Proyectos\Model\Proyecto;
  */
 class ProjectTotalManager
 {
-    public static function recalculate(int $idproyecto)
-    {
-        $project = new Proyecto();
-        if (false === $project->loadFromCode($idproyecto)) {
-            return;
-        }
+	public static function recalculate(int $idproyecto, bool $save=true, $project = null)
+	{
+		if(!$project){
+			$project = new Proyecto();
+		}
+		if (false === $project->loadFromCode($idproyecto)) {
+			return;
+		}
 
-        $where = [
-            new DataBaseWhere('idproyecto', $idproyecto),
-            new DataBaseWhere('editable', true)
-        ];
+		$where = [
+			new DataBaseWhere('idproyecto', $idproyecto),
+			new DataBaseWhere('editable', true)
+		];
 
-        $project->albaranes_compra = 0.0;
-        $project->albaranes_venta = 0.0;
-        $project->facturas_compra = 0.0;
-        $project->facturas_venta = 0.0;
-        $project->pedidos_compra = 0.0;
-        $project->pedidos_venta = 0.0;
-        $project->presupuesto_venta = 0.0;
-        $project->presupuestos_compra = 0.0;
+		$project->albaranes_compra = 0.0;
+		$project->albaranes_venta = 0.0;
+		$project->facturas_compra = 0.0;
+		$project->facturas_venta = 0.0;
+		$project->pedidos_compra = 0.0;
+		$project->pedidos_venta = 0.0;
+		$project->presupuesto_venta = 0.0;
+		$project->presupuestos_compra = 0.0;
 
-	//pedidos o albaranes de compra
-        $project->previsioncompras = 0.0;
+		//pedidos o albaranes de compra
+		$project->previsioncompras = 0.0;
 
-	//presupuestos, pedidos o albaranes de venta
-        $project->previsionventas = 0.0;
+		//presupuestos, pedidos o albaranes de venta
+		$project->previsionventas = 0.0;
 
-        $project->totalcompras = 0.0;
+		$project->totalcompras = 0.0;
 
-        $project->totalventas = 0.0;
+		$project->totalventas = 0.0;
 
-	//Presupuestos de compra
-        foreach (static::purchaseEstimations($idproyecto) as $estimation) {
-            $project->previsioncompras += $estimation->neto;
-	    $project->presupuestos_compra += $estimation->neto;
-        }
+		//Presupuestos de compra
+		foreach (static::purchaseEstimations($idproyecto) as $estimation) {
+			$project->previsioncompras += $estimation->neto;
+			$project->presupuestos_compra += $estimation->neto;
 
-	//Pedido de compra
-        foreach (static::purchaseOrders($idproyecto) as $order) {
-            $project->previsioncompras += $order->neto;
-	    $project->pedidos_compra += $order->neto;
-        }
+			$childrenEstimations = $estimation->childrenDocuments();
+			foreach($childrenEstimations as $children){
+				$project->previsioncompras -= $children->neto;
+				$project->presupuestos_compra -= $children->neto;
+			}
+		}
 
+		//Pedido de compra
+		foreach (static::purchaseOrders($idproyecto) as $order) {
+			$project->previsioncompras += $order->neto;
+			$project->pedidos_compra += $order->neto;
 
-	//Albaran de compra
-        foreach (static::purchaseDeliveryNotes($idproyecto) as $delivery) {
-            $project->previsioncompras += $delivery->neto;
-	    $project->albaranes_compra += $delivery->neto;
-        }
+			$childrenOrders = $order->childrenDocuments();
+			foreach($childrenOrders as $childrenOrder){
+				$project->previsioncompras -= $childrenOrder->neto;
+				$project->pedidos_compra -= $childrenOrder->neto;
+			}
+				
+		}
 
+		//Albaran de compra
+		foreach (static::purchaseDeliveryNotes($idproyecto) as $delivery) {
+			$project->previsioncompras += $delivery->neto;
+			$project->albaranes_compra += $delivery->neto;
 
-	//Factura de compra
-        foreach (static::purchaseInvoices($idproyecto) as $invoice) {
-            $project->totalcompras += $invoice->neto;
-	    $project->facturas_compra += $invoice->neto;
-        }
-
-        $netoPresupuestos = 0.0;
-        $netoPedidos = 0.0;
-        $netoAlbaranes = 0.0;
-        $netoFacturas = 0.0;
-
-
-	//Presupuestos de venta
-        foreach (static::salesEstimations($idproyecto) as $estimation) {
-            $project->previsionventas += $estimation->neto;
-            $netoPresupuestos += $estimation->neto;
-	    $project->presupuesto_venta += $estimation->neto;
-        }
-
-	//Pedidos de venta
-        foreach (static::salesOrders($idproyecto) as $order) {
-            $project->previsionventas += $order->neto;
-            $netoPedidos += $order->neto;
-	    $project->pedidos_venta += $order->neto;
-        }
-
-	//Albaran de venta
-        foreach (static::salesDeliveryNotes($idproyecto) as $delivery) {
-            $project->previsionventas += $delivery->neto;
-            $netoAlbaranes += $delivery->neto;
-//						if($delivery && $delivery->net)
-//										$project->albaranes_venta += $delivery->net;
-        }
-
-	//Facturas de venta
-        foreach (static::salesInvoices($idproyecto) as $invoice) {
-            $project->totalventas += $invoice->neto;
-            $netoFacturas += $invoice->neto;
-	    $project->facturas_venta += $invoice->neto;
-        }
+			$childrenDeliverys = $delivery->childrenDocuments();
+			foreach($childrenDeliverys as $children){
+				$project->previsioncompras -= $children->neto;
+				$project->albaranes_compra -= $children->neto;
+			}
+		}
 
 
-        $project->totalpendientefacturar = ($netoPresupuestos + $netoPedidos + $netoAlbaranes) - $netoFacturas;
+		//Factura de compra
+		foreach (static::purchaseInvoices($idproyecto) as $invoice) {
+			$project->totalcompras += $invoice->neto;
+			$project->facturas_compra += $invoice->neto;
+		}
 
-        if ($project->totalpendientefacturar < 0) {
-            $project->totalpendientefacturar = 0;
-        }
+		$netoPresupuestos = 0.0;
+		$netoPedidos = 0.0;
+		$netoAlbaranes = 0.0;
+		$netoFacturas = 0.0;
 
-        $project->beneficioprevisto = $project->previsionventas - $project->previsioncompras;
-        $project->beneficiobruto = $project->totalventas - $project->totalcompras;
 
-        $project->save();
-    }
+		//Presupuestos de venta
+		foreach (static::salesEstimations($idproyecto) as $estimation) {
+			$project->previsionventas += $estimation->neto;
+			$netoPresupuestos += $estimation->neto;
+			$project->presupuesto_venta += $estimation->neto;
+
+			$childrenEstimations = $estimation->childrenDocuments();
+			foreach($childrenEstimations as $children){
+				$project->previsionventas -= $children->neto;
+				$netoPresupuestos -= $children->neto;
+				$project->presupuesto_venta -= $children->neto;
+			}
+		}
+
+		//Pedidos de venta
+		foreach (static::salesOrders($idproyecto) as $order) {
+			$project->previsionventas += $order->neto;
+			$netoPedidos += $order->neto;
+			$project->pedidos_venta += $order->neto;
+
+			$childrenOrder = $order->childrenDocuments();
+			foreach($childrenOrder as $children){
+				$project->previsionventas -= $children->neto;
+				$netoPedidos -= $children->neto;
+				$project->pedidos_venta -= $children->neto;
+			}
+		}
+
+		//Albaran de venta
+		foreach (static::salesDeliveryNotes($idproyecto) as $delivery) {
+			$project->previsionventas += $delivery->neto;
+			$netoAlbaranes += $delivery->neto;
+			//						if($delivery && $delivery->net)
+			//										$project->albaranes_venta += $delivery->net;
+			
+			$childrenOrder = $delivery->childrenDocuments();
+			foreach($childrenOrder as $children){
+				$project->previsionventas -= $children->neto;
+				$netoPedidos -= $children->neto;
+				$project->pedidos_venta -= $children->neto;
+			}
+		}
+
+		//Facturas de venta
+		foreach (static::salesInvoices($idproyecto) as $invoice) {
+			$project->totalventas += $invoice->neto;
+			$netoFacturas += $invoice->neto;
+			$project->facturas_venta += $invoice->neto;
+		}
+
+		$project->totalpendientefacturar = ($netoPresupuestos + $netoPedidos + $netoAlbaranes) - $netoFacturas;
+
+		if ($project->totalpendientefacturar < 0) {
+			$project->totalpendientefacturar = 0;
+		}
+
+		$project->beneficioprevisto = $project->previsionventas - $project->previsioncompras;
+		$project->beneficiobruto = $project->totalventas - $project->totalcompras;
+
+		if($save){
+			$project->save();
+		}
+	}
     /**
      * @param int $idproyecto
      * @return AlbaranProveedor[]

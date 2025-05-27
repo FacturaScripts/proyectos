@@ -27,6 +27,7 @@ use FacturaScripts\Core\Tools;
 use FacturaScripts\Dinamic\Model\Cliente;
 use FacturaScripts\Dinamic\Model\CodeModel;
 use FacturaScripts\Plugins\Proyectos\Lib\ProjectCodeGenerator;
+use FacturaScripts\Dinamic\Lib\ProjectTotalManager;
 
 /**
  * Description of Proyecto
@@ -220,5 +221,16 @@ class Proyecto extends Base\ModelOnChangeClass
     protected function setPreviousData(array $fields = [])
     {
         parent::setPreviousData(array_merge(['idestado'], $fields));
+	}
+
+	public function parentsave()
+	{
+        return parent::save();
+	}
+
+    public function save(): bool
+    {
+		ProjectTotalManager::recalculate($this->idproyecto, false, $this);
+        return parent::save();
     }
 }

@@ -499,6 +499,10 @@ class EditProyecto extends EditController
 
         foreach (ProjectTotalManager::salesEstimations($idproyecto) as $estimation) {
             $return += $estimation->neto;
+			$childrenEstimations = $estimation->childrenDocuments();
+			foreach($childrenEstimations as $children){
+				$return -= $children->neto;
+			}
         }
 
         return $return;
@@ -510,6 +514,10 @@ class EditProyecto extends EditController
         $return = 0;
         foreach (ProjectTotalManager::salesOrders($idproyecto) as $order) {
             $return += $order->neto;
+			$childrenOrder = $order->childrenDocuments();
+			foreach($childrenOrder as $children){
+				$return -= $children->neto;
+			}
         }
 
         return $return;
@@ -521,6 +529,10 @@ class EditProyecto extends EditController
         $return = 0;
         foreach (ProjectTotalManager::salesDeliveryNotes($idproyecto) as $delivery) {
             $return += $delivery->neto;
+			$childrenOrder = $delivery->childrenDocuments();
+			foreach($childrenOrder as $children){
+				$return -= $children->neto;
+			}
         }
 
         return $return;
