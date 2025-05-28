@@ -71,7 +71,7 @@
             <datalabel icon="fas fa-copy" label="Facturado" function="facturasVenta"/>
 
             <datalabel icon="fas fa-money-bill-alt" label="Beneficio" function="beneficio"/>
-            <datalabel icon="fas fa-money-bill-alt" label="Beneficio%" function="beneficio2"/>
+            <datalabel icon="fas fa-money-bill-alt" label="Beneficio" function="beneficio2"/>
         </row>
     </rows>
 </view>
