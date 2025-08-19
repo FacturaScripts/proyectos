@@ -86,7 +86,7 @@ class ProjectStockManager
                 new DataBaseWhere('idproyecto', $idproyecto),
                 new DataBaseWhere('referencia', $referencia)
             ];
-            if (false === $stock->loadFromCode('', $where)) {
+            if (false === $stock->loadWhere($where)) {
                 $stock->idproducto = $data['idproducto'];
                 $stock->idproyecto = $idproyecto;
                 $stock->referencia = $referencia;
@@ -127,12 +127,12 @@ class ProjectStockManager
 
             $docTransformation = new DocTransformation();
             $where = [
-                new DataBaseWhere('idlinea1', $line->primaryColumnValue()),
+                new DataBaseWhere('idlinea1', $line->id()),
                 new DataBaseWhere('model1', $model1)
             ];
             foreach ($docTransformation->all($where, [], 0, 0) as $dtl) {
                 foreach ($childLines as $chLine) {
-                    if ($chLine->primaryColumnValue() == $dtl->idlinea2) {
+                    if ($chLine->id() == $dtl->idlinea2) {
                         static::setProjectStock($stockData, $chLine);
                         $childProjectLines[] = $chLine;
                     }

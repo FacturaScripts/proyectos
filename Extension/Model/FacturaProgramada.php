@@ -33,7 +33,7 @@ class FacturaProgramada
             }
 
             $project = new Proyecto();
-            if ($project->loadFromCode($this->idproyecto)) {
+            if ($project->load($this->idproyecto)) {
                 $invoice->idproyecto = $project->idproyecto;
                 return $invoice;
             }

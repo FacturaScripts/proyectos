@@ -20,7 +20,8 @@
 namespace FacturaScripts\Plugins\Proyectos\Model;
 
 use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
-use FacturaScripts\Core\Model\Base;
+use FacturaScripts\Core\Template\ModelClass;
+use FacturaScripts\Core\Template\ModelTrait;
 use FacturaScripts\Core\Tools;
 
 /**
@@ -28,9 +29,9 @@ use FacturaScripts\Core\Tools;
  *
  * @author Daniel Fernández Giménez <hola@danielfg.es>
  */
-class FaseTarea extends Base\ModelClass
+class FaseTarea extends ModelClass
 {
-    use Base\ModelTrait;
+    use ModelTrait;
 
     /**
      * @var integer
@@ -57,7 +58,7 @@ class FaseTarea extends Base\ModelClass
      */
     public $tipo;
 
-    public function clear()
+    public function clear(): void
     {
         parent::clear();
         $this->predeterminado = false;

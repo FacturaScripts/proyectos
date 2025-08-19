@@ -21,6 +21,8 @@ namespace FacturaScripts\Plugins\Proyectos\Extension\Controller;
 
 use Closure;
 use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
+use FacturaScripts\Core\Tools;
+
 
 /**
  * Description of EditCliente

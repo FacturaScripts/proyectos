@@ -20,6 +20,8 @@
 namespace FacturaScripts\Plugins\Proyectos\Lib;
 
 use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
+use FacturaScripts\Core\Tools;
+
 use FacturaScripts\Dinamic\Model\AlbaranCliente;
 use FacturaScripts\Dinamic\Model\AlbaranProveedor;
 use FacturaScripts\Dinamic\Model\FacturaCliente;
@@ -39,7 +41,7 @@ class ProjectTotalManager
     public static function recalculate(int $idproyecto)
     {
         $project = new Proyecto();
-        if (false === $project->loadFromCode($idproyecto)) {
+        if (false === $project->load($idproyecto)) {
             return;
         }
 

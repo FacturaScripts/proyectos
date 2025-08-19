@@ -20,7 +20,8 @@
 namespace FacturaScripts\Plugins\Proyectos\Model;
 
 use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
-use FacturaScripts\Core\Model\Base;
+use FacturaScripts\Core\Template\ModelClass;
+use FacturaScripts\Core\Template\ModelTrait;
 use FacturaScripts\Core\Tools;
 
 /**
@@ -29,9 +30,9 @@ use FacturaScripts\Core\Tools;
  * @author Daniel Fernández Giménez <hola@danielfg.es>
  * @author Carlos Garcia Gomez      <carlos@facturascripts.com>
  */
-class TareaProyecto extends Base\ModelOnChangeClass
+class TareaProyecto extends ModelClass
 {
-    use Base\ModelTrait;
+    use ModelTrait;
 
     const TYPE_COMPLETED = 0;
     const TYPE_PROCESSING = 2;
@@ -64,7 +65,7 @@ class TareaProyecto extends Base\ModelOnChangeClass
     /** @var string */
     public $nombre;
 
-    public function clear()
+    public function clear(): void
     {
         parent::clear();
         $this->fecha = Tools::date();
@@ -98,7 +99,7 @@ class TareaProyecto extends Base\ModelOnChangeClass
     public function getPhase()
     {
         $phase = new FaseTarea();
-        $phase->loadFromCode($this->idfase);
+        $phase->load($this->idfase);
         return $phase;
     }
 
@@ -108,7 +109,7 @@ class TareaProyecto extends Base\ModelOnChangeClass
     public function getProject()
     {
         $project = new Proyecto();
-        $project->loadFromCode($this->idproyecto);
+        $project->load($this->idproyecto);
         return $project;
     }
 
@@ -215,7 +216,7 @@ class TareaProyecto extends Base\ModelOnChangeClass
         if ($completed + $canceled === count($tasks)) {
             $phase = new FaseTarea();
             $where = [new DataBaseWhere('tipo', self::TYPE_COMPLETED)];
-            if ($phase->loadFromCode('', $where)) {
+            if ($phase->loadWhere($where)) {
                 $project->idestado = $phase->idestado;
                 $project->save();
             }
@@ -230,7 +231,7 @@ class TareaProyecto extends Base\ModelOnChangeClass
     {
         $defaultStatus = new EstadoProyecto();
         $where = [new DataBaseWhere('predeterminado', true)];
-        if ($defaultStatus->loadFromCode('', $where)) {
+        if ($defaultStatus->loadWhere($where)) {
             $project = $this->getProject();
             $project->idestado = $defaultStatus->idestado;
             $project->save();

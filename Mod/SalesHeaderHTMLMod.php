@@ -19,10 +19,12 @@
 
 namespace FacturaScripts\Plugins\Proyectos\Mod;
 
-use FacturaScripts\Core\Base\Contract\SalesModInterface;
-use FacturaScripts\Core\Base\Translator;
+use FacturaScripts\Core\Contract\SalesModInterface;
+use FacturaScripts\Core\Translator;
 use FacturaScripts\Core\Model\Base\SalesDocument;
 use FacturaScripts\Core\Model\User;
+use FacturaScripts\Core\Tools;
+
 use FacturaScripts\Dinamic\Lib\AssetManager;
 use FacturaScripts\Plugins\Proyectos\Model\Proyecto;
 
@@ -33,11 +35,11 @@ use FacturaScripts\Plugins\Proyectos\Model\Proyecto;
  */
 class SalesHeaderHTMLMod implements SalesModInterface
 {
-    public function apply(SalesDocument &$model, array $formData, User $user)
+    public function apply(SalesDocument &$model, array $formData): void
     {
     }
 
-    public function applyBefore(SalesDocument &$model, array $formData, User $user)
+    public function applyBefore(SalesDocument &$model, array $formData): void
     {
         $model->idproyecto = isset($formData['idproyecto']) && $formData['idproyecto'] ? $formData['idproyecto'] : null;
     }
@@ -62,9 +64,10 @@ class SalesHeaderHTMLMod implements SalesModInterface
         return ['proyecto'];
     }
 
-    public function renderField(Translator $i18n, SalesDocument $model, string $field): ?string
+    public function renderField(SalesDocument $model, string $field): ?string
     {
         if ($field === 'proyecto') {
+            $i18n = new Translator();
             return self::proyecto($i18n, $model);
         }
         return null;
@@ -74,14 +77,14 @@ class SalesHeaderHTMLMod implements SalesModInterface
     {
         $value = '';
         $project = new Proyecto();
-        if ($model->idproyecto && $project->loadFromCode($model->idproyecto)) {
+        if ($model->idproyecto && $project->load($model->idproyecto)) {
             $value = $project->idproyecto . ' | ' . $project->nombre;
         }
 
         $html = '<div class="col-sm-6">'
             . '<a href="' . $project->url() . '">' . $i18n->trans('project') . '</a>'
             . '<div class="input-group">'
-            . '<div class="input-group-prepend">';
+            . '';
 
         if ($model->editable && $model->idproyecto) {
             $html .= '<button type="button" id="deleteProject" class="btn btn-warning">'
@@ -94,7 +97,7 @@ class SalesHeaderHTMLMod implements SalesModInterface
         }
 
         $disabled = $model->editable ? '' : 'disabled';
-        $html .= '</div>'
+        $html .= ''
             . '<input type="hidden" name="idproyecto" value="' . $model->idproyecto . '">'
             . '<input type="text" id="findProjectInput" class="form-control" value="' . $value . '" ' . $disabled . '/>'
             . '</div>'

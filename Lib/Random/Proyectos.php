@@ -21,6 +21,8 @@ namespace FacturaScripts\Plugins\Proyectos\Lib\Random;
 
 use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
 use FacturaScripts\Core\Model\Base\BusinessDocument;
+use FacturaScripts\Core\Tools;
+
 use FacturaScripts\Dinamic\Model\AlbaranCliente;
 use FacturaScripts\Dinamic\Model\AlbaranProveedor;
 use FacturaScripts\Dinamic\Model\FacturaCliente;
@@ -161,7 +163,7 @@ class Proyectos extends NewItems
                 new DataBaseWhere('idproyecto', $project->idproyecto),
                 new DataBaseWhere('nick', $nick)
             ];
-            if ($user->loadFromCode('', $where)) {
+            if ($user->loadWhere($where)) {
                 break;
             }
 

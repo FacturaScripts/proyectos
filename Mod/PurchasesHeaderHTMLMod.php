@@ -19,10 +19,12 @@
 
 namespace FacturaScripts\Plugins\Proyectos\Mod;
 
-use FacturaScripts\Core\Base\Contract\PurchasesModInterface;
-use FacturaScripts\Core\Base\Translator;
+use FacturaScripts\Core\Contract\PurchasesModInterface;
+use FacturaScripts\Core\Translator;
 use FacturaScripts\Core\Model\Base\PurchaseDocument;
 use FacturaScripts\Core\Model\User;
+use FacturaScripts\Core\Tools;
+
 use FacturaScripts\Dinamic\Lib\AssetManager;
 use FacturaScripts\Plugins\Proyectos\Model\Proyecto;
 
@@ -33,11 +35,11 @@ use FacturaScripts\Plugins\Proyectos\Model\Proyecto;
  */
 class PurchasesHeaderHTMLMod implements PurchasesModInterface
 {
-    public function apply(PurchaseDocument &$model, array $formData, User $user)
+    public function apply(PurchaseDocument &$model, array $formData): void
     {
     }
 
-    public function applyBefore(PurchaseDocument &$model, array $formData, User $user)
+    public function applyBefore(PurchaseDocument &$model, array $formData): void
     {
         // aplicamos antes para asegurarnos de capturar el valor incluso en nuevas compras,
         // antes de seleccionar proveedor
@@ -64,9 +66,10 @@ class PurchasesHeaderHTMLMod implements PurchasesModInterface
         return ['proyecto'];
     }
 
-    public function renderField(Translator $i18n, PurchaseDocument $model, string $field): ?string
+    public function renderField(PurchaseDocument $model, string $field): ?string
     {
         if ($field === 'proyecto') {
+            $i18n = new Translator();
             return self::proyecto($i18n, $model);
         }
         return null;
@@ -76,14 +79,14 @@ class PurchasesHeaderHTMLMod implements PurchasesModInterface
     {
         $value = '';
         $project = new Proyecto();
-        if ($model->idproyecto && $project->loadFromCode($model->idproyecto)) {
+        if ($model->idproyecto && $project->load($model->idproyecto)) {
             $value = $project->idproyecto . ' | ' . $project->nombre;
         }
 
         $html = '<div class="col-sm-12">'
             . '<a href="' . $project->url() . '">' . $i18n->trans('project') . '</a>'
             . '<div class="input-group">'
-            . '<div class="input-group-prepend">';
+            . '';
 
         if ($model->editable && $model->idproyecto) {
             $html .= '<button type="button" id="deleteProject" class="btn btn-warning">'
@@ -96,7 +99,7 @@ class PurchasesHeaderHTMLMod implements PurchasesModInterface
         }
 
         $disabled = $model->editable ? '' : 'disabled';
-        $html .= '</div>'
+        $html .= ''
             . '<input type="hidden" name="idproyecto" value="' . $model->idproyecto . '">'
             . '<input type="text" id="findProjectInput" class="form-control" value="' . $value . '" ' . $disabled . '/>'
             . '</div>'

@@ -20,7 +20,8 @@
 namespace FacturaScripts\Plugins\Proyectos\Model;
 
 use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
-use FacturaScripts\Core\Model\Base;
+use FacturaScripts\Core\Template\ModelClass;
+use FacturaScripts\Core\Template\ModelTrait;
 use FacturaScripts\Core\Tools;
 
 /**
@@ -28,9 +29,9 @@ use FacturaScripts\Core\Tools;
  *
  * @author Carlos Garcia Gomez <carlos@facturascripts.com>
  */
-class EstadoProyecto extends Base\ModelClass
+class EstadoProyecto extends ModelClass
 {
-    use Base\ModelTrait;
+    use ModelTrait;
 
     /** @var string */
     public $color;
@@ -47,7 +48,7 @@ class EstadoProyecto extends Base\ModelClass
     /** @var bool */
     public $predeterminado;
 
-    public function clear()
+    public function clear(): void
     {
         parent::clear();
         $this->editable = true;

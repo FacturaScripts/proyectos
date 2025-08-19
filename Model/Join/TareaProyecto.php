@@ -20,6 +20,8 @@
 namespace FacturaScripts\Plugins\Proyectos\Model\Join;
 
 use FacturaScripts\Core\Model\Base\JoinModel;
+use FacturaScripts\Core\Tools;
+
 use FacturaScripts\Plugins\Proyectos\Model\TareaProyecto as parentTareaProyecto;
 
 /**

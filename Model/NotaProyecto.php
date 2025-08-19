@@ -19,7 +19,8 @@
 
 namespace FacturaScripts\Plugins\Proyectos\Model;
 
-use FacturaScripts\Core\Model\Base;
+use FacturaScripts\Core\Template\ModelClass;
+use FacturaScripts\Core\Template\ModelTrait;
 use FacturaScripts\Core\Session;
 use FacturaScripts\Core\Tools;
 
@@ -29,9 +30,9 @@ use FacturaScripts\Core\Tools;
  * @author Daniel Fernández Giménez <hola@danielfg.es>
  * @author Carlos Garcia Gomez      <carlos@facturascripts.com>
  */
-class NotaProyecto extends Base\ModelClass
+class NotaProyecto extends ModelClass
 {
-    use Base\ModelTrait;
+    use ModelTrait;
 
     /** @var string */
     public $descripcion;
@@ -51,7 +52,7 @@ class NotaProyecto extends Base\ModelClass
     /** @var string */
     public $nick;
 
-    public function clear()
+    public function clear(): void
     {
         parent::clear();
         $this->fecha = Tools::dateTime();
@@ -64,7 +65,7 @@ class NotaProyecto extends Base\ModelClass
     public function getProject()
     {
         $project = new Proyecto();
-        $project->loadFromCode($this->idproyecto);
+        $project->load($this->idproyecto);
         return $project;
     }
 
