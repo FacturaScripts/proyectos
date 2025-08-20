@@ -68,11 +68,6 @@ class UserProyecto extends ModelClass
         return parent::install();
     }
 
-    public static function primaryColumn(): string
-    {
-        return 'id';
-    }
-
     public static function tableName(): string
     {
         return 'proyectos_users';

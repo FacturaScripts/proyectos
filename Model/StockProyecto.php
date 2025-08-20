@@ -75,7 +75,7 @@ class StockProyecto extends ModelClass
      *
      * @return bool
      */
-    public function deleteFromProject($idproyecto)
+    public function deleteFromProject($idproyecto): bool
     {
         $sql = 'DELETE FROM ' . static::tableName() . ' WHERE idproyecto = ' . self::$dataBase->var2str($idproyecto) . ';';
         return self::$dataBase->exec($sql);
@@ -109,11 +109,6 @@ class StockProyecto extends ModelClass
         new Variante();
 
         return parent::install();
-    }
-
-    public static function primaryColumn(): string
-    {
-        return 'id';
     }
 
     public static function tableName(): string

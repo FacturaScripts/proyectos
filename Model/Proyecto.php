@@ -218,9 +218,4 @@ class Proyecto extends ModelClass
         ];
         return $userProject->loadWhere($where);
     }
-
-    protected function setPreviousData(array $fields = [])
-    {
-        parent::setPreviousData(array_merge(['idestado'], $fields));
-    }
 }

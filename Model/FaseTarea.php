@@ -111,7 +111,7 @@ class FaseTarea extends ModelClass
     /**
      * Set a single phase by default
      */
-    protected function resetPhaseDefault()
+    protected function resetPhaseDefault(): void
     {
         $where = [
             new DataBaseWhere('predeterminado', true),
@@ -126,7 +126,7 @@ class FaseTarea extends ModelClass
     /**
      * Set only one type of phase at a time
      */
-    protected function resetPhaseType()
+    protected function resetPhaseType(): void
     {
         $where = [
             new DataBaseWhere('tipo', $this->tipo),

@@ -1,7 +1,7 @@
 <?php
 /**
  * This file is part of Proyectos plugin for FacturaScripts
- * Copyright (C) 2020-2023 Carlos Garcia Gomez <carlos@facturascripts.com>
+ * Copyright (C) 2020-2025 Carlos Garcia Gomez <carlos@facturascripts.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -19,8 +19,8 @@
 
 namespace FacturaScripts\Plugins\Proyectos;
 
-use FacturaScripts\Core\Template\CronClass;
 use FacturaScripts\Core\Cache;
+use FacturaScripts\Core\Template\CronClass;
 use FacturaScripts\Core\Tools;
 use FacturaScripts\Dinamic\Lib\ProjectStockManager;
 use FacturaScripts\Dinamic\Lib\ProjectTotalManager;
@@ -38,9 +38,8 @@ class Cron extends CronClass
     {
         $this->job('project-stock-update')
             ->every('1 month')
-            ->run(function() {
-                $projectModel = new Proyecto();
-                foreach ($projectModel->all([], ['idproyecto' => 'DESC'], 0, 0) as $project) {
+            ->run(function () {
+                foreach (Proyecto::all([], ['idproyecto' => 'DESC'], 0, 0) as $project) {
                     ProjectStockManager::rebuild($project->idproyecto);
                     ProjectTotalManager::recalculate($project->idproyecto);
                 }
@@ -57,17 +56,17 @@ class Cron extends CronClass
 
     protected function updateStock(): void
     {
-        $stockModel = new Stock();
         $offset = 0;
+        $limit = 50;
 
-        $stocks = $stockModel->all([], ['idstock' => 'ASC'], $offset);
+        $stocks = Stock::all([], ['idstock' => 'ASC'], $offset, $limit);
         while (!empty($stocks)) {
             foreach ($stocks as $stock) {
                 $stock->save();
                 $offset++;
             }
 
-            $stocks = $stockModel->all([], ['idstock' => 'ASC'], $offset);
+            $stocks = Stock::all([], ['idstock' => 'ASC'], $offset, $limit);
         }
     }
 }

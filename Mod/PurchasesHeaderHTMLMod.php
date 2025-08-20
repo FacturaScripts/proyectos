@@ -20,11 +20,8 @@
 namespace FacturaScripts\Plugins\Proyectos\Mod;
 
 use FacturaScripts\Core\Contract\PurchasesModInterface;
-use FacturaScripts\Core\Translator;
 use FacturaScripts\Core\Model\Base\PurchaseDocument;
-use FacturaScripts\Core\Model\User;
 use FacturaScripts\Core\Tools;
-
 use FacturaScripts\Dinamic\Lib\AssetManager;
 use FacturaScripts\Plugins\Proyectos\Model\Proyecto;
 
@@ -48,7 +45,8 @@ class PurchasesHeaderHTMLMod implements PurchasesModInterface
 
     public function assets(): void
     {
-        AssetManager::add('js', FS_ROUTE . '/Dinamic/Assets/JS/AutocompleteProject.js');
+        $route = Tools::config('route');
+        AssetManager::add('js', $route . '/Dinamic/Assets/JS/AutocompleteProject.js');
     }
 
     public function newBtnFields(): array
@@ -69,13 +67,13 @@ class PurchasesHeaderHTMLMod implements PurchasesModInterface
     public function renderField(PurchaseDocument $model, string $field): ?string
     {
         if ($field === 'proyecto') {
-            $i18n = new Translator();
-            return self::proyecto($i18n, $model);
+            return self::proyecto($model);
         }
+
         return null;
     }
 
-    private static function proyecto(Translator $i18n, PurchaseDocument $model): string
+    private static function proyecto(PurchaseDocument $model): string
     {
         $value = '';
         $project = new Proyecto();
@@ -84,7 +82,7 @@ class PurchasesHeaderHTMLMod implements PurchasesModInterface
         }
 
         $html = '<div class="col-sm-12">'
-            . '<a href="' . $project->url() . '">' . $i18n->trans('project') . '</a>'
+            . '<a href="' . $project->url() . '">' . Tools::trans('project') . '</a>'
             . '<div class="input-group">'
             . '';
 

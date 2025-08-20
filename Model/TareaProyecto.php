@@ -178,7 +178,7 @@ class TareaProyecto extends ModelClass
      *
      * @param FaseTarea $phase
      */
-    protected function checkOtherTasks($phase)
+    protected function checkOtherTasks($phase): void
     {
         $project = $this->getProject();
         $tasks = $project->getTasks();
@@ -200,7 +200,7 @@ class TareaProyecto extends ModelClass
      * @param Proyecto $project
      * @param TareaProyecto[] $tasks
      */
-    protected function deepTaskCheck($project, $tasks)
+    protected function deepTaskCheck($project, $tasks): void
     {
         $completed = 0;
         $canceled = 0;
@@ -227,7 +227,7 @@ class TareaProyecto extends ModelClass
      * If the project is completed or canceled and a new task is added,
      * then it sets the default project status.
      */
-    protected function setDefaultProjectStatus()
+    protected function setDefaultProjectStatus(): void
     {
         $defaultStatus = new EstadoProyecto();
         $where = [new DataBaseWhere('predeterminado', true)];
