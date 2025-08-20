@@ -19,7 +19,7 @@
 
 namespace FacturaScripts\Plugins\Proyectos;
 
-use FacturaScripts\Core\Base\CronClass;
+use FacturaScripts\Core\Template\CronClass;
 use FacturaScripts\Core\Cache;
 use FacturaScripts\Core\Tools;
 use FacturaScripts\Dinamic\Lib\ProjectStockManager;
@@ -34,25 +34,25 @@ use FacturaScripts\Dinamic\Model\Stock;
  */
 class Cron extends CronClass
 {
-    public function run()
+    public function run(): void
     {
-        if ($this->isTimeForJob('project-stock-update', '1 month')) {
-            $projectModel = new Proyecto();
-            foreach ($projectModel->all([], ['idproyecto' => 'DESC'], 0, 0) as $project) {
-                ProjectStockManager::rebuild($project->idproyecto);
-                ProjectTotalManager::recalculate($project->idproyecto);
-            }
+        $this->job('project-stock-update')
+            ->every('1 month')
+            ->run(function() {
+                $projectModel = new Proyecto();
+                foreach ($projectModel->all([], ['idproyecto' => 'DESC'], 0, 0) as $project) {
+                    ProjectStockManager::rebuild($project->idproyecto);
+                    ProjectTotalManager::recalculate($project->idproyecto);
+                }
 
-            $burnStock = (bool)Tools::settings('proyectos', 'burnstock', 0);
-            if ($burnStock) {
-                $this->updateStock();
-            }
+                $burnStock = (bool)Tools::settings('proyectos', 'burnstock', 0);
+                if ($burnStock) {
+                    $this->updateStock();
+                }
 
-            // limpiamos la caché para forzar refrescar los totales de los listados
-            Cache::clear();
-
-            $this->jobDone('project-stock-update');
-        }
+                // limpiamos la caché para forzar refrescar los totales de los listados
+                Cache::clear();
+            });
     }
 
     protected function updateStock(): void

@@ -20,7 +20,8 @@
 namespace FacturaScripts\Plugins\Proyectos\Model;
 
 use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
-use FacturaScripts\Core\Model\Base;
+use FacturaScripts\Core\Template\ModelClass;
+use FacturaScripts\Core\Template\ModelTrait;
 use FacturaScripts\Core\Model\User;
 use FacturaScripts\Core\Session;
 use FacturaScripts\Core\Tools;
@@ -34,9 +35,9 @@ use FacturaScripts\Plugins\Proyectos\Lib\ProjectCodeGenerator;
  *
  * @author Carlos Garcia Gomez <carlos@facturascripts.com>
  */
-class Proyecto extends Base\ModelOnChangeClass
+class Proyecto extends ModelClass
 {
-    use Base\ModelTrait;
+    use ModelTrait;
 
     /** @var string */
     public $codcliente;
@@ -83,7 +84,7 @@ class Proyecto extends Base\ModelOnChangeClass
     /** @var float */
     public $totalventas;
 
-    public function clear()
+    public function clear(): void
     {
         parent::clear();
         $this->editable = true;
@@ -132,7 +133,7 @@ class Proyecto extends Base\ModelOnChangeClass
     public function getStatus()
     {
         $status = new EstadoProyecto();
-        $status->loadFromCode($this->idestado);
+        $status->load($this->idestado);
         return $status;
     }
 
@@ -188,7 +189,7 @@ class Proyecto extends Base\ModelOnChangeClass
      *
      * @return bool
      */
-    protected function onChange($field)
+    protected function onChange(string $field): bool
     {
         switch ($field) {
             case 'idestado':
@@ -215,7 +216,7 @@ class Proyecto extends Base\ModelOnChangeClass
             new DataBaseWhere('idproyecto', $this->idproyecto),
             new DataBaseWhere('nick', $user->nick)
         ];
-        return $userProject->loadFromCode('', $where);
+        return $userProject->loadWhere($where);
     }
 
     protected function setPreviousData(array $fields = [])

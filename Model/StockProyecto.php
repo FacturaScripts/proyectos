@@ -20,7 +20,8 @@
 namespace FacturaScripts\Plugins\Proyectos\Model;
 
 use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
-use FacturaScripts\Core\Model\Base;
+use FacturaScripts\Core\Template\ModelClass;
+use FacturaScripts\Core\Template\ModelTrait;
 use FacturaScripts\Core\Tools;
 use FacturaScripts\Dinamic\Model\Producto;
 use FacturaScripts\Dinamic\Model\Variante;
@@ -30,9 +31,9 @@ use FacturaScripts\Dinamic\Model\Variante;
  *
  * @author Carlos Garcia Gomez <carlos@facturascripts.com>
  */
-class StockProyecto extends Base\ModelClass
+class StockProyecto extends ModelClass
 {
-    use Base\ModelTrait;
+    use ModelTrait;
 
     const MAX_DECIMALS = 3;
 
@@ -60,7 +61,7 @@ class StockProyecto extends Base\ModelClass
     /** @var float */
     public $reservada;
 
-    public function clear()
+    public function clear(): void
     {
         parent::clear();
         $this->cantidad = 0.0;
@@ -87,7 +88,7 @@ class StockProyecto extends Base\ModelClass
     {
         $variant = new Variante();
         $where = [new DataBaseWhere('referencia', $this->referencia)];
-        $variant->loadFromCode('', $where);
+        $variant->loadWhere($where);
         return $variant;
     }
 
@@ -97,7 +98,7 @@ class StockProyecto extends Base\ModelClass
     public function getProduct()
     {
         $product = new Producto();
-        $product->loadFromCode($this->idproducto);
+        $product->load($this->idproducto);
         return $product;
     }
 
@@ -141,6 +142,6 @@ class StockProyecto extends Base\ModelClass
 
     public function url(string $type = 'auto', string $list = 'List'): string
     {
-        return empty($this->primaryColumnValue()) ? parent::url($type, $list) : $this->getProduct()->url();
+        return empty($this->id()) ? parent::url($type, $list) : $this->getProduct()->url();
     }
 }

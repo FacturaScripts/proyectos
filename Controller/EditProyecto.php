@@ -465,13 +465,13 @@ class EditProyecto extends EditController
 
         // cargamos el proyecto actual
         $origProject = new Proyecto();
-        if (false === $origProject->loadFromCode($this->request->get('code', ''))) {
+        if (false === $origProject->load($this->request->get('code', ''))) {
             return true;
         }
 
         // obtenemos el ID del proyecto a copiar
         $copyProject = new Proyecto();
-        if (false === $copyProject->loadFromCode($this->request->get('idproyecto', '')) ||
+        if (false === $copyProject->load($this->request->get('idproyecto', '')) ||
             $origProject->idproyecto === $copyProject->idproyecto) {
             return true;
         }
@@ -652,7 +652,7 @@ class EditProyecto extends EditController
 
         // obtenemos el proyecto
         $project = $this->getModel();
-        if (false === $project->loadFromCode($this->request->get('code', ''))) {
+        if (false === $project->load($this->request->get('code', ''))) {
             return true;
         }
 
@@ -660,7 +660,7 @@ class EditProyecto extends EditController
         $model = new $modelClass();
         $modelTable = $model->tableName();
         $modelKey = $model->primaryColumn();
-        $codes = $this->request->request->get('code', []);
+        $codes = $this->request->request->getArray('codes');
         if (empty($codes)) {
             Tools::log()->warning('no-selected-item');
             return true;

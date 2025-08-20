@@ -19,8 +19,8 @@
 
 namespace FacturaScripts\Plugins\Proyectos;
 
-use FacturaScripts\Core\Base\AjaxForms\PurchasesHeaderHTML;
-use FacturaScripts\Core\Base\AjaxForms\SalesHeaderHTML;
+use FacturaScripts\Core\Lib\AjaxForms\PurchasesHeaderHTML;
+use FacturaScripts\Core\Lib\AjaxForms\SalesHeaderHTML;
 use FacturaScripts\Core\Base\DataBase;
 use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
 use FacturaScripts\Core\Model\Role;
@@ -110,7 +110,7 @@ final class Init extends InitClass
 
         // creates the role if not exists
         $role = new Role();
-        if (false === $role->loadFromCode(self::ROLE_NAME)) {
+        if (false === $role->load(self::ROLE_NAME)) {
             $role->codrole = $role->descripcion = self::ROLE_NAME;
             if (false === $role->save()) {
                 // exit and rollback on fail
@@ -130,7 +130,7 @@ final class Init extends InitClass
                 new DataBaseWhere('codrole', self::ROLE_NAME),
                 new DataBaseWhere('pagename', $controllerName)
             ];
-            if ($roleAccess->loadFromCode('', $where)) {
+            if ($roleAccess->loadWhere($where)) {
                 // permission exists? the skip
                 continue;
             }

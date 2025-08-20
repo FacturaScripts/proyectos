@@ -19,17 +19,20 @@
 
 namespace FacturaScripts\Plugins\Proyectos\Model;
 
-use FacturaScripts\Core\Model\Base;
+use FacturaScripts\Core\Template\ModelClass;
+use FacturaScripts\Core\Template\ModelTrait;
+use FacturaScripts\Core\Tools;
+
 
 /**
  * Description of UserProyecto
  *
  * @author Carlos Garcia Gomez <carlos@facturascripts.com>
  */
-class UserProyecto extends Base\ModelClass
+class UserProyecto extends ModelClass
 {
 
-    use Base\ModelTrait;
+    use ModelTrait;
 
     /**
      * @var string
@@ -51,10 +54,10 @@ class UserProyecto extends Base\ModelClass
      */
     public $nick;
 
-    public function clear()
+    public function clear(): void
     {
         parent::clear();
-        $this->fecha = date(self::DATE_STYLE);
+        $this->fecha = Tools::date();
     }
 
     public function install(): string
