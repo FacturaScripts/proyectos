@@ -91,7 +91,7 @@ class FaseTarea extends ModelClass
             $this->resetPhaseType();
         }
 
-        if (isset($this->predeterminado)) {
+        if ($this->predeterminado) {
             $this->resetPhaseDefault();
         }
 

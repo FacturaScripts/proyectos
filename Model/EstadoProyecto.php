@@ -70,7 +70,7 @@ class EstadoProyecto extends ModelClass
         // escapamos el html
         $this->nombre = Tools::noHtml($this->nombre);
 
-        if (isset($this->predeterminado)) {
+        if ($this->predeterminado) {
             $this->resetProjectDefault();
         }
 
