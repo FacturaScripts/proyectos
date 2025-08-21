@@ -19,12 +19,13 @@
 
 namespace FacturaScripts\Test\Plugins;
 
+use FacturaScripts\Plugins\Proyectos\Model\EstadoProyecto;
 use FacturaScripts\Plugins\Proyectos\Model\Proyecto;
 use FacturaScripts\Test\Traits\DefaultSettingsTrait;
 use FacturaScripts\Test\Traits\LogErrorsTrait;
 use PHPUnit\Framework\TestCase;
 
-final class ProyectoTest extends TestCase
+final class EstadoProyectoTest extends TestCase
 {
     use LogErrorsTrait;
     use DefaultSettingsTrait;
@@ -36,47 +37,71 @@ final class ProyectoTest extends TestCase
         self::removeTaxRegularization();
     }
 
-    public function testCreateProject(): void
+    public function testCreateEstadoProyecto(): void
     {
-        // creamos un proyecto nuevo
-        $proyecto = new Proyecto();
-        $proyecto->nombre = 'Proyecto de prueba';
-        $proyecto->descripcion = 'Este es un proyecto de prueba';
-        $this->assertTrue($proyecto->save());
+        // creamos un estado nuevo
+        $estado = new EstadoProyecto();
+        $estado->nombre = 'Estado de prueba';
+        $estado->color = '#FF0000';
+        $this->assertTrue($estado->save());
 
         // comprobamos que se ha creado correctamente
-        $this->assertTrue($proyecto->exists());
+        $this->assertTrue($estado->exists());
 
-        // comprobamos que tiene un estado por defecto y es editable
-        $this->assertNotNull($proyecto->idestado);
-        $this->assertTrue($proyecto->editable);
-
-        // eliminamos el proyecto
-        $this->assertTrue($proyecto->delete());
+        // eliminamos el estado
+        $this->assertTrue($estado->delete());
     }
 
-    public function testCloseProject(): void
+    public function testAssignEstadoToProyecto(): void
     {
+        // creamos un estado nuevo
+        $estado = new EstadoProyecto();
+        $estado->nombre = 'Estado de prueba 2';
+        $estado->color = '#00FF00';
+        $this->assertTrue($estado->save());
+
         // creamos un proyecto nuevo
         $proyecto = new Proyecto();
         $proyecto->nombre = 'Proyecto de prueba';
         $proyecto->descripcion = 'Este es un proyecto de prueba';
+
+        // asignamos el estado al proyecto
+        $proyecto->idestado = $estado->idestado;
         $this->assertTrue($proyecto->save());
 
-        // cerramos el proyecto
-        foreach ($proyecto->getAvailableStatus() as $status) {
-            if (false === $status->editable) {
-                $proyecto->idestado = $status->idestado;
-                break;
-            }
-        }
-        $this->assertTrue($proyecto->save());
-
-        // comprobamos que el proyecto ya no es editable
-        $this->assertFalse($proyecto->editable);
+        // comprobamos que se ha asignado correctamente
+        $this->assertEquals($estado->idestado, $proyecto->idestado);
 
         // eliminamos el proyecto
         $this->assertTrue($proyecto->delete());
+
+        // eliminamos el estado
+        $this->assertTrue($estado->delete());
+    }
+
+    public function testDeleteEstadoProyecto(): void
+    {
+        // creamos un estado nuevo
+        $estado = new EstadoProyecto();
+        $estado->nombre = 'Estado de prueba 3';
+        $estado->color = '#0000FF';
+        $this->assertTrue($estado->save());
+
+        // creamos un proyecto nuevo
+        $proyecto = new Proyecto();
+        $proyecto->nombre = 'Proyecto de prueba 2';
+        $proyecto->descripcion = 'Este es un proyecto de prueba 2';
+        $proyecto->idestado = $estado->idestado;
+        $this->assertTrue($proyecto->save());
+
+        // intentamos eliminar el estado (no debe poderse eliminar)
+        $this->assertFalse($estado->delete());
+
+        // eliminamos el proyecto
+        $this->assertTrue($proyecto->delete());
+
+        // eliminamos el estado
+        $this->assertTrue($estado->delete());
     }
 
     protected function tearDown(): void
