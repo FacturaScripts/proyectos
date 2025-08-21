@@ -47,4 +47,8 @@
         <name>ca_proyectos_notas_users</name>
         <type>FOREIGN KEY (nick) REFERENCES users (nick) ON DELETE CASCADE ON UPDATE CASCADE</type>
     </constraint>
+    <constraint>
+        <name>ca_proyectos_notas_proyectos</name>
+        <type>FOREIGN KEY (idproyecto) REFERENCES proyectos (idproyecto) ON DELETE CASCADE ON UPDATE CASCADE</type>
+    </constraint>
 </table>
