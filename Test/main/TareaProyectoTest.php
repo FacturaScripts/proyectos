@@ -1,7 +1,7 @@
 <?php
 /**
  * This file is part of Proyectos plugin for FacturaScripts
- * Copyright (C) 2025 Carlos Garcia Gomez <carlos@facturascripts.com>
+ * Copyright (C) 2022-2025 Carlos Garcia Gomez <carlos@facturascripts.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -20,11 +20,12 @@
 namespace FacturaScripts\Test\Plugins;
 
 use FacturaScripts\Plugins\Proyectos\Model\Proyecto;
+use FacturaScripts\Plugins\Proyectos\Model\TareaProyecto;
 use FacturaScripts\Test\Traits\DefaultSettingsTrait;
 use FacturaScripts\Test\Traits\LogErrorsTrait;
 use PHPUnit\Framework\TestCase;
 
-final class ProyectoTest extends TestCase
+final class TareaProyectoTest extends TestCase
 {
     use LogErrorsTrait;
     use DefaultSettingsTrait;
@@ -36,47 +37,61 @@ final class ProyectoTest extends TestCase
         self::removeTaxRegularization();
     }
 
-    public function testCreateProject(): void
+    public function testCreateTareaProyecto(): void
     {
-        // creamos un proyecto nuevo
+        // creamos un proyecto
         $proyecto = new Proyecto();
-        $proyecto->nombre = 'Proyecto de prueba';
-        $proyecto->descripcion = 'Este es un proyecto de prueba';
+        $proyecto->nombre = 'Proyecto para tareas';
         $this->assertTrue($proyecto->save());
 
-        // comprobamos que se ha creado correctamente
-        $this->assertTrue($proyecto->exists());
+        // creamos una tarea nueva
+        $tarea = new TareaProyecto();
+        $tarea->idproyecto = $proyecto->idproyecto;
+        $tarea->cantidad = 1;
+        $tarea->nombre = 'Tarea de prueba';
+        $this->assertTrue($tarea->save());
 
-        // comprobamos que tiene un estado por defecto y es editable
-        $this->assertNotNull($proyecto->idestado);
-        $this->assertTrue($proyecto->editable);
+        // comprobamos que se ha creado correctamente
+        $this->assertTrue($tarea->exists());
+
+        // eliminamos la tarea
+        $this->assertTrue($tarea->delete());
 
         // eliminamos el proyecto
         $this->assertTrue($proyecto->delete());
     }
 
-    public function testCloseProject(): void
+    public function testCannotCreateWithoutProject(): void
     {
-        // creamos un proyecto nuevo
+        // creamos una tarea sin proyecto
+        $tarea = new TareaProyecto();
+        $tarea->nombre = 'Esta tarea no debería guardarse';
+        $tarea->cantidad = 1;
+        $this->assertFalse($tarea->save());
+    }
+
+    public function testDeleteProjectDeletesTareas(): void
+    {
+        // creamos un proyecto
         $proyecto = new Proyecto();
-        $proyecto->nombre = 'Proyecto de prueba';
-        $proyecto->descripcion = 'Este es un proyecto de prueba';
+        $proyecto->nombre = 'Proyecto para tareas 2';
         $this->assertTrue($proyecto->save());
 
-        // cerramos el proyecto
-        foreach ($proyecto->getAvailableStatus() as $status) {
-            if (false === $status->editable) {
-                $proyecto->idestado = $status->idestado;
-                break;
-            }
-        }
-        $this->assertTrue($proyecto->save());
+        // creamos una tarea nueva
+        $tarea = new TareaProyecto();
+        $tarea->idproyecto = $proyecto->idproyecto;
+        $tarea->nombre = 'Tarea para probar borrado en cascada';
+        $tarea->cantidad = 1;
+        $this->assertTrue($tarea->save());
 
-        // comprobamos que el proyecto ya no es editable
-        $this->assertFalse($proyecto->editable);
+        // comprobamos que la tarea existe
+        $this->assertTrue($tarea->exists());
 
         // eliminamos el proyecto
         $this->assertTrue($proyecto->delete());
+
+        // comprobamos que la tarea ya no existe
+        $this->assertFalse($tarea->exists());
     }
 
     protected function tearDown(): void

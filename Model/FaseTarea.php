@@ -64,6 +64,16 @@ class FaseTarea extends ModelClass
         $this->predeterminado = false;
     }
 
+    public function delete(): bool
+    {
+        if($this->predeterminado) {
+            Tools::log()->error('cannot-delete-default-state');
+            return false;
+        }
+
+        return parent::delete();
+    }
+
     public function install(): string
     {
         // needed dependencies
@@ -91,7 +101,7 @@ class FaseTarea extends ModelClass
             $this->resetPhaseType();
         }
 
-        if (isset($this->predeterminado)) {
+        if ($this->predeterminado) {
             $this->resetPhaseDefault();
         }
 
