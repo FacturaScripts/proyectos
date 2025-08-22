@@ -104,6 +104,36 @@ final class EstadoProyectoTest extends TestCase
         $this->assertTrue($estado->delete());
     }
 
+    public function testCannotDeleteDefaultEstadoProyecto(): void
+    {
+        // recogemos el estado preterminado
+        $defaultStatus = null;
+        foreach ((new Proyecto())->getAvailableStatus() as $status) {
+            if ($status->predeterminado) {
+                $defaultStatus = $status;
+                break;
+            }
+        }
+
+        // creamos un estado nuevo
+        $estado = new EstadoProyecto();
+        $estado->nombre = 'Estado predeterminado';
+        $estado->color = '#0000FF';
+        $estado->predeterminado = true;
+        $this->assertTrue($estado->save());
+
+        // intentamos eliminar el estado (no debe poderse eliminar)
+        $this->assertFalse($estado->delete());
+
+        // marcamos como preterminado al original
+        $defaultStatus->predeterminado = true;
+        $this->assertTrue($defaultStatus->save());
+
+        // actualizamos el objeto y eliminamos el estado
+        $this->assertTrue($estado->reload());
+        $this->assertTrue($estado->delete());
+    }
+
     protected function tearDown(): void
     {
         $this->logErrors();

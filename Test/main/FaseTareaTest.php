@@ -87,6 +87,35 @@ final class FaseTareaTest extends TestCase
         $this->assertTrue($proyecto->delete());
     }
 
+    public function testCannotDeleteDefaultFaseTarea(): void
+    {
+        // recogermos la fase predeterminada
+        $defaultFase = null;
+        foreach ((new TareaProyecto())->getAvailablePhases() as $status) {
+            if ($status->predeterminado) {
+                $defaultFase = $status;
+                break;
+            }
+        }
+
+        // creamos una fase nueva
+        $fase = new FaseTarea();
+        $fase->nombre = 'Fase predeterminada';
+        $fase->predeterminado = true;
+        $this->assertTrue($fase->save());
+
+        // intentamos eliminar la fase (no debe poderse eliminar)
+        $this->assertFalse($fase->delete());
+
+        // volvemos a colocar como preterminada a la original
+        $defaultFase->predeterminado = true;
+        $this->assertTrue($defaultFase->save());
+
+        // eliminamos la fase
+        $this->assertTrue($fase->reload());
+        $this->assertTrue($fase->delete());
+    }
+
     protected function tearDown(): void
     {
         $this->logErrors();

@@ -55,6 +55,16 @@ class EstadoProyecto extends ModelClass
         $this->predeterminado = false;
     }
 
+    public function delete(): bool
+    {
+        if($this->predeterminado) {
+            Tools::log()->error('cannot-delete-default-state');
+            return false;
+        }
+
+        return parent::delete();
+    }
+
     public static function primaryColumn(): string
     {
         return 'idestado';
