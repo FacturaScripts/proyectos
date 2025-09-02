@@ -47,17 +47,10 @@ class BusinessDocument
                 ProjectStockManager::rebuild($this->idproyecto);
                 ProjectTotalManager::recalculate($this->idproyecto);
             }
-            if ($this->previousData['idproyecto'] && $this->previousData['idproyecto'] != $this->idproyecto) {
-                ProjectStockManager::rebuild($this->previousData['idproyecto']);
-                ProjectTotalManager::recalculate($this->previousData['idproyecto']);
+            if ($this->getOriginal('idproyecto') && $this->getOriginal('idproyecto') != $this->idproyecto) {
+                ProjectStockManager::rebuild($this->getOriginal('idproyecto'));
+                ProjectTotalManager::recalculate($this->getOriginal('idproyecto'));
             }
-        };
-    }
-
-    public function setPreviousData(): Closure
-    {
-        return function () {
-            $this->previousData['idproyecto'] = $this->idproyecto ?? null;
         };
     }
 }
