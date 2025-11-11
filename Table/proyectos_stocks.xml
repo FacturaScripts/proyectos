@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Document   : proyectos_stocks.xml
+    Author     : Carlos Garcia Gomez
+    Description:
+        Structure for the proyectos_stocks table.
+-->
+<table>
+    <column>
+        <name>cantidad</name>
+        <type>double precision</type>
+        <default>0</default>
+    </column>
+    <column>
+        <name>disponible</name>
+        <type>double precision</type>
+        <default>0</default>
+    </column>
+    <column>
+        <name>id</name>
+        <type>serial</type>
+        <null>NO</null>
+    </column>
+    <column>
+        <name>idproducto</name>
+        <type>integer</type>
+        <null>NO</null>
+    </column>
+    <column>
+        <name>idproyecto</name>
+        <type>integer</type>
+        <null>NO</null>
+    </column>
+    <column>
+        <name>pterecibir</name>
+        <type>double precision</type>
+        <default>0</default>
+    </column>
+    <column>
+        <name>referencia</name>
+        <type>character varying(30)</type>
+        <null>NO</null>
+    </column>
+    <column>
+        <name>reservada</name>
+        <type>double precision</type>
+        <default>0</default>
+    </column>
+    <constraint>
+        <name>proyectos_stocks_pkey</name>
+        <type>PRIMARY KEY (id)</type>
+    </constraint>
+    <constraint>
+        <name>ca_proyectos_stocks_productos</name>
+        <type>FOREIGN KEY (idproducto) REFERENCES productos (idproducto) ON DELETE CASCADE ON UPDATE CASCADE</type>
+    </constraint>
+    <constraint>
+        <name>ca_proyectos_stocks_proyecto</name>
+        <type>FOREIGN KEY (idproyecto) REFERENCES proyectos (idproyecto) ON DELETE CASCADE ON UPDATE CASCADE</type>
+    </constraint>
+    <constraint>
+        <name>uniq_proyectos_stocks_referencia</name>
+        <type>UNIQUE (idproyecto, referencia)</type>
+    </constraint>
+</table>

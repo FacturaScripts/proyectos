@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Document   : proyectos_estados.xml
+    Author     : Carlos Garcia Gomez
+    Description:
+        Structure for the proyectos_estados table.
+-->
+<table>
+    <column>
+        <name>editable</name>
+        <type>boolean</type>
+    </column>
+    <column>
+        <name>idestado</name>
+        <type>serial</type>
+        <null>NO</null>
+    </column>
+    <column>
+        <name>nombre</name>
+        <type>character varying(100)</type>
+    </column>
+    <column>
+        <name>predeterminado</name>
+        <type>boolean</type>
+    </column>
+    <constraint>
+        <name>proyectos_estados_pkey</name>
+        <type>PRIMARY KEY (idestado)</type>
+    </constraint>
+</table>

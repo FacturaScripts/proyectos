@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Document   : proyectos_users.xml
+    Author     : Carlos Garcia Gomez
+    Description:
+        Structure for the proyectos_users table.
+-->
+<table>
+    <column>
+        <name>fecha</name>
+        <type>date</type>
+        <null>NO</null>
+    </column>
+    <column>
+        <name>id</name>
+        <type>serial</type>
+        <null>NO</null>
+    </column>
+    <column>
+        <name>idproyecto</name>
+        <type>integer</type>
+        <null>NO</null>
+    </column>
+    <column>
+        <name>nick</name>
+        <type>character varying(50)</type>
+        <null>NO</null>
+    </column>
+    <constraint>
+        <name>proyectos_users_pkey</name>
+        <type>PRIMARY KEY (id)</type>
+    </constraint>
+    <constraint>
+        <name>ca_proyectos_users_proyectos</name>
+        <type>FOREIGN KEY (idproyecto) REFERENCES proyectos (idproyecto) ON DELETE CASCADE ON UPDATE CASCADE</type>
+    </constraint>
+    <constraint>
+        <name>ca_proyectos_users_users</name>
+        <type>FOREIGN KEY (nick) REFERENCES users (nick) ON DELETE CASCADE ON UPDATE CASCADE</type>
+    </constraint>
+    <constraint>
+        <name>unique_projects_users</name>
+        <type>UNIQUE (idproyecto,nick)</type>
+    </constraint>
+</table>

@@ -1,0 +1,14 @@
+{
+    "burn-project-stock": "Burn project stock",
+    "canceled": "Canceled",
+    "generated-projects": "%quantity% projects generated",
+    "import-tasks-from-another-project": "Import tasks from another project",
+    "link-document": "Link document",
+    "phases": "Phases",
+    "project-stock-rebuild-error": "Error rebuilding project stock",
+    "project-stock-rebuild-ok": "Project stock rebuilt successfully",
+    "show-project-stock": "Show project stock",
+    "tasks-imported-correctly": "Tasks imported correctly",
+    "total-pending-invoice": "Pending invoice",
+    "unlink-document": "Unlink..."
+}

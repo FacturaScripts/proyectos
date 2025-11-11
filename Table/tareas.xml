@@ -1,0 +1,63 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+    Document   : tareas.xml
+    Author     : Daniel Fernández Giménez
+    Description:
+        Structure for the tareas table.
+-->
+<table>
+    <column>
+        <name>cantidad</name>
+        <type>integer</type>
+        <null>NO</null>
+    </column>
+    <column>
+        <name>descripcion</name>
+        <type>text</type>
+    </column>
+    <column>
+        <name>fecha</name>
+        <type>date</type>
+        <null>NO</null>
+    </column>
+    <column>
+        <name>fechafin</name>
+        <type>date</type>
+    </column>
+    <column>
+        <name>fechainicio</name>
+        <type>date</type>
+    </column>
+    <column>
+        <name>idfase</name>
+        <type>integer</type>
+        <null>NO</null>
+    </column>
+    <column>
+        <name>idproyecto</name>
+        <type>integer</type>
+        <null>NO</null>
+    </column>
+    <column>
+        <name>idtarea</name>
+        <type>serial</type>
+        <null>NO</null>
+    </column>
+    <column>
+        <name>nombre</name>
+        <type>character varying(100)</type>
+        <null>NO</null>
+    </column>
+    <constraint>
+        <name>tareas_pkey</name>
+        <type>PRIMARY KEY (idtarea)</type>
+    </constraint>
+    <constraint>
+        <name>ca_tareas_proyectos2</name>
+        <type>FOREIGN KEY (idproyecto) REFERENCES proyectos (idproyecto) ON DELETE CASCADE ON UPDATE CASCADE</type>
+    </constraint>
+    <constraint>
+        <name>ca_tareas_tareas_fases</name>
+        <type>FOREIGN KEY (idfase) REFERENCES tareas_fases (idfase) ON DELETE RESTRICT ON UPDATE CASCADE</type>
+    </constraint>
+</table>

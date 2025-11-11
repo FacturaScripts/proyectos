@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Document   : proyectos.xml
+    Author     : Carlos Garcia Gomez
+    Description:
+        Structure for the proyectos table.
+-->
+<table>
+    <column>
+        <name>codcliente</name>
+        <type>character varying(10)</type>
+    </column>
+    <column>
+        <name>descripcion</name>
+        <type>text</type>
+    </column>
+    <column>
+        <name>editable</name>
+        <type>boolean</type>
+    </column>
+    <column>
+        <name>fecha</name>
+        <type>date</type>
+        <null>NO</null>
+    </column>
+    <column>
+        <name>fechafin</name>
+        <type>date</type>
+    </column>
+    <column>
+        <name>fechainicio</name>
+        <type>date</type>
+    </column>
+    <column>
+        <name>idempresa</name>
+        <type>integer</type>
+        <null>NO</null>
+    </column>
+    <column>
+        <name>idestado</name>
+        <type>integer</type>
+        <null>NO</null>
+    </column>
+    <column>
+        <name>idproyecto</name>
+        <type>serial</type>
+        <null>NO</null>
+    </column>
+    <column>
+        <name>nick</name>
+        <type>character varying(50)</type>
+    </column>
+    <column>
+        <name>nombre</name>
+        <type>character varying(100)</type>
+    </column>
+    <column>
+        <name>privado</name>
+        <type>boolean</type>
+    </column>
+    <column>
+        <name>totalcompras</name>
+        <type>double precision</type>
+        <default>0</default>
+    </column>
+    <column>
+        <name>totalpendientefacturar</name>
+        <type>double precision</type>
+        <default>0</default>
+    </column>
+    <column>
+        <name>totalventas</name>
+        <type>double precision</type>
+        <default>0</default>
+    </column>
+
+
+
+    <column>
+        <name>albaranes_compra</name>
+        <type>double precision</type>
+        <default>0</default>
+    </column>
+
+    <column>
+        <name>albaranes_venta</name>
+        <type>double precision</type>
+        <default>0</default>
+    </column>
+
+    <column>
+        <name>facturas_compra</name>
+        <type>double precision</type>
+        <default>0</default>
+    </column>
+
+    <column>
+        <name>facturas_venta</name>
+        <type>double precision</type>
+        <default>0</default>
+    </column>
+
+    <column>
+        <name>pedidos_compra</name>
+        <type>double precision</type>
+        <default>0</default>
+    </column>
+
+    <column>
+        <name>pedidos_venta</name>
+        <type>double precision</type>
+        <default>0</default>
+    </column>
+
+
+    <column>
+        <name>presupuestos_compra</name>
+        <type>double precision</type>
+        <default>0</default>
+    </column>
+
+    <column>
+        <name>presupuesto_venta</name>
+        <type>double precision</type>
+        <default>0</default>
+    </column>
+
+    <column>
+        <name>previsioncompras</name>
+        <type>double precision</type>
+        <default>0</default>
+    </column>
+    <column>
+        <name>previsionventas</name>
+        <type>double precision</type>
+        <default>0</default>
+    </column>
+    <column>
+        <name>beneficioprevisto</name>
+        <type>double precision</type>
+        <default>0</default>
+    </column>
+    <column>
+        <name>beneficiobruto</name>
+        <type>double precision</type>
+        <default>0</default>
+    </column>
+    <column>
+        <name>fernando</name>
+        <type>double precision</type>
+        <default>0</default>
+    </column>
+
+    <constraint>
+        <name>proyectos_pkey</name>
+        <type>PRIMARY KEY (idproyecto)</type>
+    </constraint>
+    <constraint>
+        <name>ca_proyectos_clientes</name>
+        <type>FOREIGN KEY (codcliente) REFERENCES clientes (codcliente) ON DELETE RESTRICT ON UPDATE CASCADE</type>
+    </constraint>
+    <constraint>
+        <name>ca_proyectos_empresas</name>
+        <type>FOREIGN KEY (idempresa) REFERENCES empresas (idempresa) ON DELETE CASCADE ON UPDATE CASCADE</type>
+    </constraint>
+    <constraint>
+        <name>ca_proyectos_estados</name>
+        <type>FOREIGN KEY (idestado) REFERENCES proyectos_estados (idestado) ON DELETE RESTRICT ON UPDATE CASCADE</type>
+    </constraint>
+    <constraint>
+        <name>ca_proyectos_users</name>
+        <type>FOREIGN KEY (nick) REFERENCES users (nick) ON DELETE SET NULL ON UPDATE CASCADE</type>
+    </constraint>
+</table>

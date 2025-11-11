@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view>
+    <rows>
+        <row type="business">
+            <column name="project" display="none" order="100">
+                <widget type="text" fieldname="idproyecto" />
+            </column>
+        </row>
+    </rows>
+</view>

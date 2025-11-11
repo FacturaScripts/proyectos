@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view>
+    <columns>
+        <group name="main">
+            <column name="code" display="none" order="100">
+                <widget type="text" fieldname="idnota" />
+            </column>
+            <column name="description" numcolumns="12" order="110">
+                <widget type="textarea" fieldname="descripcion" />
+            </column>
+            <column name="task" order="120">
+                <widget type="autocomplete" fieldname="idtarea">
+                    <values source="tareas" fieldcode="idtarea" fieldtitle="nombre" />
+                </widget>
+            </column>
+            <column name="user" order="130">
+                <widget type="text" fieldname="nick" />
+            </column>
+            <column name="date" display="right" order="140">
+                <widget type="datetime" fieldname="fecha" readonly="true" />
+            </column>
+        </group>
+    </columns>
+</view>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view>
+    <columns>
+        <group name="main">
+            <column name="code" display="none" order="100">
+                <widget type="text" fieldname="id" />
+            </column>
+            <column name="project" order="110">
+                <widget type="select" fieldname="idproyecto" required="true">
+                    <values source="proyectos" fieldcode="idproyecto" fieldtitle="nombre" />
+                </widget>
+            </column>
+            <column name="user" order="120">
+                <widget type="select" fieldname="nick" required="true">
+                    <values source="users" fieldcode="nick" fieldtitle="nick" />
+                </widget>
+            </column>
+        </group>
+    </columns>
+</view>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Document   : proyectos_notas.xml
+    Author     : Daniel Fernández Giménez
+    Description:
+        Structure for the proyectos_notas table.
+-->
+<table>
+    <column>
+        <name>descripcion</name>
+        <type>text</type>
+        <null>NO</null>
+    </column>
+    <column>
+        <name>fecha</name>
+        <type>timestamp</type>
+        <null>NO</null>
+    </column>
+    <column>
+        <name>idproyecto</name>
+        <type>integer</type>
+        <null>NO</null>
+    </column>
+    <column>
+        <name>idtarea</name>
+        <type>integer</type>
+    </column>
+    <column>
+        <name>idnota</name>
+        <type>serial</type>
+        <null>NO</null>
+    </column>
+    <column>
+        <name>nick</name>
+        <type>character varying(50)</type>
+        <null>NO</null>
+    </column>
+    <constraint>
+        <name>proyectos_notas_pkey</name>
+        <type>PRIMARY KEY (idnota)</type>
+    </constraint>
+    <constraint>
+        <name>ca_proyectos_notas_tareas</name>
+        <type>FOREIGN KEY (idtarea) REFERENCES tareas (idtarea) ON DELETE CASCADE ON UPDATE CASCADE</type>
+    </constraint>
+    <constraint>
+        <name>ca_proyectos_notas_users</name>
+        <type>FOREIGN KEY (nick) REFERENCES users (nick) ON DELETE CASCADE ON UPDATE CASCADE</type>
+    </constraint>
+</table>

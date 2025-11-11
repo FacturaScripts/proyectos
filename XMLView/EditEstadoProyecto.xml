@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view>
+    <columns>
+        <group name="main" valign="bottom">
+            <column name="code" display="none" order="100">
+                <widget type="text" fieldname="idestado" />
+            </column>
+            <column name="name" order="110">
+                <widget type="text" fieldname="nombre" />
+            </column>
+            <column name="editable" display="center" order="120">
+                <widget type="checkbox" fieldname="editable" />
+            </column>
+            <column name="default" display="center" order="130">
+                <widget type="checkbox" fieldname="predeterminado" />
+            </column>
+        </group>
+    </columns>
+</view>
