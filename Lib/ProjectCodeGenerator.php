@@ -58,11 +58,16 @@ class ProjectCodeGenerator
 
             $prefix = strtr($patron, $replacements);
 
-            // find projects that start with the same prefix
-            $where = [new \FacturaScripts\Core\Base\DataBase\DataBaseWhere('nombre', $prefix . '%', 'LIKE')];
+            // find projects that start with the same prefix and belong to the same company, limited to current year
+            $year = date('Y');
+            $where = [
+                new DataBaseWhere('nombre', $prefix . '%', 'LIKE'),
+                new DataBaseWhere('idempresa', $project->idempresa),
+                new DataBaseWhere('fecha', $year . '-01-01', '>='),
+                new DataBaseWhere('fecha', $year . '-12-31', '<=')
+            ];
             $projects = Proyecto::all($where, [], 0, 0);
 
-            $year = date('Y');
             $max = 0;
             foreach ($projects as $p) {
                 if (empty($p->fecha)) {
