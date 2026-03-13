@@ -66,6 +66,12 @@ class ListTareaProyecto extends ListController
             ->addFilterPeriod('fecha', 'date', 'tareas.fecha')
             ->addFilterAutocomplete('idproyecto', 'project', 'tareas.idproyecto', 'proyectos', 'idproyecto', 'nombre')
             ->addFilterSelect('idfase', 'phase', 'tareas.idfase', $status);
+
+        // filtro por usuario asignado
+        $users = $this->codeModel->all('users', 'nick', 'nick');
+        if (count($users) > 1) {
+            $this->listView($viewName)->addFilterSelect('nick', 'user', 'tareas.nick', $users);
+        }
     }
 
     protected function createViewsTasks(string $viewName = 'ListTareaProyecto')
@@ -85,6 +91,12 @@ class ListTareaProyecto extends ListController
             ->addFilterPeriod('fecha', 'date', 'tareas.fecha')
             ->addFilterAutocomplete('idproyecto', 'project', 'tareas.idproyecto', 'proyectos', 'idproyecto', 'nombre')
             ->addFilterSelect('idfase', 'phase', 'tareas.idfase', $status);
+
+        // filtro por usuario asignado
+        $users = $this->codeModel->all('users', 'nick', 'nick');
+        if (count($users) > 1) {
+            $this->listView($viewName)->addFilterSelect('nick', 'user', 'tareas.nick', $users);
+        }
     }
 
     /**
