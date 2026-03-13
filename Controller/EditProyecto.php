@@ -30,6 +30,7 @@ use FacturaScripts\Core\DataSrc\GruposClientes;
 use FacturaScripts\Core\DataSrc\Series;
 use FacturaScripts\Core\Lib\ExtendedController\EditController;
 use FacturaScripts\Core\Lib\ExtendedController\EditView;
+use FacturaScripts\Core\Lib\ExtendedController\DocFilesTrait;
 use FacturaScripts\Core\Lib\InvoiceOperation;
 use FacturaScripts\Core\Tools;
 use FacturaScripts\Dinamic\Lib\ProjectStockManager;
@@ -46,6 +47,8 @@ use FacturaScripts\Dinamic\Model\EstadoAT;
  */
 class EditProyecto extends EditController
 {
+    use DocFilesTrait;
+
     public function getModelClassName(): string
     {
         return 'Proyecto';
@@ -169,6 +172,7 @@ class EditProyecto extends EditController
         $this->createViewSales('PedidoCliente', 'customer-orders');
         $this->createViewSales('AlbaranCliente', 'customer-delivery-notes');
         $this->createViewSales('FacturaCliente', 'customer-invoices');
+        $this->createViewDocFiles();
         $this->createViewsUsers();
     }
 
@@ -457,6 +461,21 @@ class EditProyecto extends EditController
                 $parts = explode('-', $action);
                 return $this->unlinkUpAction(end($parts));
 
+            case 'add-file':
+                return $this->addFileAction();
+
+            case 'delete-file':
+                return $this->deleteFileAction();
+
+            case 'edit-file':
+                return $this->editFileAction();
+
+            case 'unlink-file':
+                return $this->unlinkFileAction();
+
+            case 'sort-files':
+                return $this->sortFilesAction();
+
             default:
                 return parent::execPreviousAction($action);
         }
@@ -581,6 +600,7 @@ class EditProyecto extends EditController
             case 'ListStockProyecto':
             case 'ListTareaProyecto':
             case 'ListServicioAT':
+            case 'docfiles':
                 $where = [new DataBaseWhere('idproyecto', $idproyecto)];
                 $view->loadData('', $where);
                 break;
