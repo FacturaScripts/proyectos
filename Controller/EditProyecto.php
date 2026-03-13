@@ -161,10 +161,23 @@ class EditProyecto extends EditController
         $this->createViewsNotes();
         $this->createViewsStock();
         $this->createViewsServices();
-        $this->createViewPurchases('PresupuestoProveedor', 'supplier-estimations');
-        $this->createViewPurchases('PedidoProveedor', 'supplier-orders');
-        $this->createViewPurchases('AlbaranProveedor', 'supplier-delivery-notes');
-        $this->createViewPurchases('FacturaProveedor', 'supplier-invoices');
+        // Purchases (supplier) views - add only if user has permissions (mirror EditProveedor)
+        if ($this->user->can('EditFacturaProveedor')) {
+            $this->createInvoiceView('ListFacturaProveedor');
+            $this->createLineView('ListLineaFacturaProveedor', 'LineaFacturaProveedor');
+        }
+        if ($this->user->can('EditAlbaranProveedor')) {
+            $this->createDocumentView('ListAlbaranProveedor', 'AlbaranProveedor', 'delivery-notes');
+        }
+        if ($this->user->can('EditPedidoProveedor')) {
+            $this->createDocumentView('ListPedidoProveedor', 'PedidoProveedor', 'orders');
+        }
+        if ($this->user->can('EditPresupuestoProveedor')) {
+            $this->createDocumentView('ListPresupuestoProveedor', 'PresupuestoProveedor', 'estimations');
+        }
+        if ($this->user->can('EditReciboProveedor')) {
+            $this->createReceiptView('ListReciboProveedor', 'ReciboProveedor');
+        }
         // Sales (customer) views - add only if user has permissions (mirror EditCliente)
         if ($this->user->can('EditFacturaCliente')) {
             $this->createInvoiceView('ListFacturaCliente');
