@@ -39,8 +39,6 @@ class EditTareaProyecto extends EditController
     public function __construct(string $className = '', string $uri = '')
     {
         parent::__construct($className, $uri);
-        // Keep tabs visible when creating a new task so user can add files/notes
-        $this->hasData = true;
     }
 
     public function getModelClassName(): string
