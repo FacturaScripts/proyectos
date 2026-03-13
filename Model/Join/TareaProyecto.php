@@ -50,6 +50,7 @@ class TareaProyecto extends JoinModel
             'fechafin' => 'tareas.fechafin',
             'fechainicio' => 'tareas.fechainicio',
             'nombre' => 'tareas.nombre',
+            'nick' => 'tareas.nick',
             'idempresa' => 'proyectos.idempresa',
             'privado' => 'proyectos.privado',
             'editable' => 'proyectos.editable',

@@ -65,6 +65,9 @@ class TareaProyecto extends ModelClass
     /** @var string */
     public $nombre;
 
+    /** @var string */
+    public $nick;
+
     public function clear(): void
     {
         parent::clear();
