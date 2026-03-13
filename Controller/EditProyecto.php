@@ -165,10 +165,23 @@ class EditProyecto extends EditController
         $this->createViewPurchases('PedidoProveedor', 'supplier-orders');
         $this->createViewPurchases('AlbaranProveedor', 'supplier-delivery-notes');
         $this->createViewPurchases('FacturaProveedor', 'supplier-invoices');
-        $this->createViewSales('PresupuestoCliente', 'customer-estimations');
-        $this->createViewSales('PedidoCliente', 'customer-orders');
-        $this->createViewSales('AlbaranCliente', 'customer-delivery-notes');
-        $this->createViewSales('FacturaCliente', 'customer-invoices');
+        // Sales (customer) views - add only if user has permissions (mirror EditCliente)
+        if ($this->user->can('EditFacturaCliente')) {
+            $this->createInvoiceView('ListFacturaCliente');
+            $this->createLineView('ListLineaFacturaCliente', 'LineaFacturaCliente');
+        }
+        if ($this->user->can('EditAlbaranCliente')) {
+            $this->createDocumentView('ListAlbaranCliente', 'AlbaranCliente', 'delivery-notes');
+        }
+        if ($this->user->can('EditPedidoCliente')) {
+            $this->createDocumentView('ListPedidoCliente', 'PedidoCliente', 'orders');
+        }
+        if ($this->user->can('EditPresupuestoCliente')) {
+            $this->createDocumentView('ListPresupuestoCliente', 'PresupuestoCliente', 'estimations');
+        }
+        if ($this->user->can('EditReciboCliente')) {
+            $this->createReceiptView('ListReciboCliente', 'ReciboCliente');
+        }
         $this->createViewsUsers();
     }
 
