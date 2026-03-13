@@ -53,6 +53,18 @@ class EditTareaProyecto extends EditController
         parent::createViews();
         $this->setTabsPosition('bottom');
         $this->createViewsNotes();
+
+        $idproyecto = $this->request->get('code', '')
+            ? $this->getModel()->idproyecto
+            : $this->request->get('idproyecto', '');
+
+        $this->addButton($this->getMainViewName(), [
+            'type' => 'link',
+            'action' => 'KanbanProyectos?idproyecto=' . $idproyecto,
+            'icon' => 'fa-brands fa-trello',
+            'label' => 'kanban',
+            'color' => 'info',
+        ]);
     }
 
     protected function createViewsNotes(string $viewName = 'EditNotaProyecto')

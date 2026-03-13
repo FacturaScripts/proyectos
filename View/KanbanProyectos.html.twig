@@ -1,0 +1,157 @@
+{% extends "Master/MenuBgTemplate.html.twig" %}
+
+{% block body %}
+    {{ parent() }}
+
+    <div class="container-fluid">
+        <div class="row p-3 mb-3 align-items-end">
+            <div class="col-md-4">
+                <label class="form-label">{{ trans('project') }}</label>
+                <select class="form-select" id="projectSelector"
+                        onchange="window.location.href='KanbanProyectos?idproyecto=' + this.value">
+                    {% for project in fsc.projects %}
+                        <option value="{{ project.idproyecto }}"
+                                {{ project.idproyecto == fsc.project.idproyecto ? 'selected' : '' }}>
+                            {{ project.nombre }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            {% if fsc.project.idproyecto %}
+                <div class="col-auto">
+                    <a href="EditProyecto?code={{ fsc.project.idproyecto }}" class="btn btn-outline-primary">
+                        <i class="fa-solid fa-eye"></i> {{ trans('project') }}
+                    </a>
+                </div>
+                <div class="col-auto">
+                    <a href="EditTareaProyecto?idproyecto={{ fsc.project.idproyecto }}" class="btn btn-success">
+                        <i class="fa-solid fa-plus"></i> {{ trans('task') }}
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+
+        {% if fsc.project.idproyecto %}
+            <div class="row flex-nowrap kanban-board pb-3">
+                {% for phase in fsc.phases %}
+                    {% set tasks = fsc.tasksByPhase[phase.idfase] ?? [] %}
+                    <div class="col kanban-col">
+                        <div class="card h-100">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <strong>{{ phase.nombre }}</strong>
+                                <span class="badge bg-secondary">{{ tasks | length }}</span>
+                            </div>
+                            <div class="card-body kanban-column p-2"
+                                 data-phase-id="{{ phase.idfase }}"
+                                 style="min-height: 150px; overflow-y: auto;">
+                                {% for task in tasks %}
+                                    <div class="card mb-2 kanban-task shadow-sm" data-task-id="{{ task.idtarea }}">
+                                        <div class="card-body p-2">
+                                            <a href="EditTareaProyecto?code={{ task.idtarea }}"
+                                               class="fw-bold text-decoration-none">
+                                                {{ task.nombre }}
+                                            </a>
+                                            {% if task.descripcion %}
+                                                <p class="text-muted small mb-0 mt-1">
+                                                    {{ task.descripcion | length > 100 ? task.descripcion | slice(0, 100) ~ '...' : task.descripcion }}
+                                                </p>
+                                            {% endif %}
+                                            {% if task.fechafin %}
+                                                <div class="mt-1">
+                                                    <small class="text-muted">
+                                                        <i class="fa-solid fa-calendar-check"></i> {{ task.fechafin }}
+                                                    </small>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                {{ trans('no-data') }}
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block css %}
+    {{ parent() }}
+
+    <style>
+        .kanban-board {
+            overflow-x: auto;
+        }
+        .kanban-col {
+            min-width: 260px;
+            max-width: 320px;
+        }
+        .kanban-task {
+            cursor: grab;
+            transition: box-shadow 0.2s;
+        }
+        .kanban-task:active {
+            cursor: grabbing;
+        }
+        .kanban-task.sortable-ghost {
+            opacity: 0.4;
+            background-color: #e9ecef;
+        }
+        .kanban-task.sortable-chosen {
+            box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.2);
+        }
+    </style>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+
+    <script src="{{ asset('Plugins/Proyectos/node_modules/sortablejs/Sortable.min.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var editable = {{ fsc.project.editable and fsc.permissions.allowUpdate ? 'true' : 'false' }};
+
+            document.querySelectorAll('.kanban-column').forEach(function (column) {
+                new Sortable(column, {
+                    group: 'kanban',
+                    animation: 150,
+                    ghostClass: 'sortable-ghost',
+                    chosenClass: 'sortable-chosen',
+                    disabled: !editable,
+                    onEnd: function (evt) {
+                        if (evt.from === evt.to && evt.oldIndex === evt.newIndex) {
+                            return;
+                        }
+
+                        var taskId = evt.item.dataset.taskId;
+                        var newPhaseId = evt.to.dataset.phaseId;
+
+                        // update badge counts
+                        var fromBadge = evt.from.closest('.card').querySelector('.badge');
+                        var toBadge = evt.to.closest('.card').querySelector('.badge');
+                        fromBadge.textContent = evt.from.children.length;
+                        toBadge.textContent = evt.to.children.length;
+
+                        fetch('KanbanProyectos?action=move-task', {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                            body: 'idtarea=' + taskId + '&idfase=' + newPhaseId
+                        }).then(function (response) {
+                            return response.json();
+                        }).then(function (data) {
+                            if (!data.ok) {
+                                location.reload();
+                            }
+                        }).catch(function () {
+                            location.reload();
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}
