@@ -19,6 +19,11 @@
                     <values source="tareas_fases" fieldcode="idfase" fieldtitle="nombre"/>
                 </widget>
             </column>
+            <column name="user" order="135">
+                <widget type="select" fieldname="nick">
+                    <values source="users" fieldcode="nick" fieldtitle="nick"/>
+                </widget>
+            </column>
             <column name="description" numcolumns="12" order="140">
                 <widget type="textarea" fieldname="descripcion" rows="8"/>
             </column>

@@ -48,6 +48,11 @@
         <type>character varying(100)</type>
         <null>NO</null>
     </column>
+    <column>
+        <name>nick</name>
+        <type>character varying(50)</type>
+        <null>YES</null>
+    </column>
     <constraint>
         <name>tareas_pkey</name>
         <type>PRIMARY KEY (idtarea)</type>
@@ -59,5 +64,9 @@
     <constraint>
         <name>ca_tareas_tareas_fases</name>
         <type>FOREIGN KEY (idfase) REFERENCES tareas_fases (idfase) ON DELETE RESTRICT ON UPDATE CASCADE</type>
+    </constraint>
+    <constraint>
+        <name>ca_tareas_users</name>
+        <type>FOREIGN KEY (nick) REFERENCES users (nick) ON DELETE SET NULL ON UPDATE CASCADE</type>
     </constraint>
 </table>
