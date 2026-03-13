@@ -46,7 +46,27 @@ class ListTareaProyecto extends ListController
     protected function createViews()
     {
         $this->createViewsTasks();
+        $this->createViewsMine();
         $this->createViewsPrivateTasks();
+    }
+
+    protected function createViewsMine(string $viewName = 'ListTareaProyecto-mine')
+    {
+        $this->addView($viewName, 'Join\\TareaProyecto', 'Mis tareas', 'fa-solid fa-list-check')
+            ->addOrderBy(['fecha'], 'date', 2)
+            ->addOrderBy(['fechainicio'], 'start-date')
+            ->addOrderBy(['fechafin'], 'end-date')
+            ->addOrderBy(['nombre'], 'title')
+            ->addOrderBy(['descripcion'], 'description')
+            ->addSearchFields(['tareas.nombre', 'tareas.descripcion']);
+
+        $status = $this->codeModel->all('tareas_fases', 'idfase', 'nombre');
+
+        // filtros
+        $this->listView($viewName)
+            ->addFilterPeriod('fecha', 'date', 'tareas.fecha')
+            ->addFilterAutocomplete('idproyecto', 'project', 'tareas.idproyecto', 'proyectos', 'idproyecto', 'nombre')
+            ->addFilterSelect('idfase', 'phase', 'tareas.idfase', $status);
     }
 
     protected function createViewsPrivateTasks(string $viewName = 'ListTareaProyecto-private'): void
@@ -114,6 +134,18 @@ class ListTareaProyecto extends ListController
                 $where = [
                     new DataBaseWhere('proyectos.idempresa', $this->user->idempresa),
                     new DataBaseWhere('proyectos.privado', false)
+                ];
+                $view->loadData('', $where);
+                break;
+
+            case 'ListTareaProyecto-mine':
+                // projects accessible to the user (public in same company OR owned by user OR user assigned)
+                $sql = 'SELECT idproyecto FROM proyectos WHERE idempresa = ' . $this->dataBase->var2str($this->user->idempresa)
+                    . ' UNION SELECT idproyecto FROM proyectos WHERE nick = ' . $this->dataBase->var2str($this->user->nick)
+                    . ' UNION SELECT idproyecto FROM proyectos_users WHERE nick = ' . $this->dataBase->var2str($this->user->nick);
+                $where = [
+                    new DataBaseWhere('tareas.nick', $this->user->nick),
+                    new DataBaseWhere('tareas.idproyecto', $sql, 'IN')
                 ];
                 $view->loadData('', $where);
                 break;
