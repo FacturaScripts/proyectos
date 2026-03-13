@@ -162,34 +162,31 @@ class EditProyecto extends EditController
         $this->createViewsStock();
         $this->createViewsServices();
         // Purchases (supplier) views - add only if user has permissions (mirror EditProveedor)
-        if ($this->user->can('EditFacturaProveedor')) {
-            $this->createInvoiceView('ListFacturaProveedor');
-            $this->createLineView('ListLineaFacturaProveedor', 'LineaFacturaProveedor');
-        }
-        if ($this->user->can('EditAlbaranProveedor')) {
-            $this->createDocumentView('ListAlbaranProveedor', 'AlbaranProveedor', 'delivery-notes');
+        if ($this->user->can('EditPresupuestoProveedor')) {
+            $this->createViewPurchases('PresupuestoProveedor', 'supplier-estimations');
         }
         if ($this->user->can('EditPedidoProveedor')) {
-            $this->createDocumentView('ListPedidoProveedor', 'PedidoProveedor', 'orders');
+            $this->createViewPurchases('PedidoProveedor', 'supplier-orders');
         }
-        if ($this->user->can('EditPresupuestoProveedor')) {
-            $this->createDocumentView('ListPresupuestoProveedor', 'PresupuestoProveedor', 'estimations');
+        if ($this->user->can('EditAlbaranProveedor')) {
+            $this->createViewPurchases('AlbaranProveedor', 'supplier-delivery-notes');
         }
-        if ($this->user->can('EditReciboProveedor')) {
-            $this->createReceiptView('ListReciboProveedor', 'ReciboProveedor');
+        if ($this->user->can('EditFacturaProveedor')) {
+            $this->createViewPurchases('FacturaProveedor', 'supplier-invoices');
         }
         // Sales (customer) views - add only if user has permissions (mirror EditCliente)
-        if ($this->user->can('EditFacturaCliente')) {
-            $this->createInvoiceView('ListFacturaCliente');
-            $this->createLineView('ListLineaFacturaCliente', 'LineaFacturaCliente');
-        }
-        if ($this->user->can('EditAlbaranCliente')) {
-            $this->createDocumentView('ListAlbaranCliente', 'AlbaranCliente', 'delivery-notes');
+        if ($this->user->can('EditPresupuestoCliente')) {
+            $this->createViewSales('PresupuestoCliente', 'customer-estimations');
         }
         if ($this->user->can('EditPedidoCliente')) {
-            $this->createDocumentView('ListPedidoCliente', 'PedidoCliente', 'orders');
+            $this->createViewSales('PedidoCliente', 'customer-orders');
         }
-        if ($this->user->can('EditPresupuestoCliente')) {
+        if ($this->user->can('EditAlbaranCliente')) {
+            $this->createViewSales('AlbaranCliente', 'customer-delivery-notes');
+        }
+        if ($this->user->can('EditFacturaCliente')) {
+            $this->createViewSales('FacturaCliente', 'customer-invoices');
+        }
             $this->createDocumentView('ListPresupuestoCliente', 'PresupuestoCliente', 'estimations');
         }
         if ($this->user->can('EditReciboCliente')) {
