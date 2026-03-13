@@ -187,8 +187,6 @@ class EditProyecto extends EditController
         if ($this->user->can('EditFacturaCliente')) {
             $this->createViewSales('FacturaCliente', 'customer-invoices');
         }
-            $this->createDocumentView('ListPresupuestoCliente', 'PresupuestoCliente', 'estimations');
-        }
         if ($this->user->can('EditReciboCliente')) {
             $this->createReceiptView('ListReciboCliente', 'ReciboCliente');
         }
@@ -198,7 +196,7 @@ class EditProyecto extends EditController
     protected function createViewPurchases(string $modelName, string $label)
     {
         $viewName = 'List' . $modelName;
-        $this->addlISTView($viewName, $modelName, $label, 'fa-solid fa-copy')
+        $this->addListView($viewName, $modelName, $label, 'fa-solid fa-copy')
             ->addOrderBy(['codigo'], 'code')
             ->addOrderBy(['fecha', $this->tableColToNumber('numero')], 'date', 2)
             ->addOrderBy([$this->tableColToNumber('numero')], 'number')
