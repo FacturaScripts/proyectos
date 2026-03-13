@@ -63,7 +63,8 @@ class ListTareaProyecto extends ListController
 
         // filtros
         $this->listView($viewName)
-            ->addFilterPeriod('fecha', 'date', 'tareas.fecha')
+            ->addFilterPeriod('fecha', 'start-date', 'tareas.fecha')
+            ->addFilterPeriod('fechafin', 'end-date', 'tareas.fechafin')
             ->addFilterAutocomplete('idproyecto', 'project', 'tareas.idproyecto', 'proyectos', 'idproyecto', 'nombre')
             ->addFilterSelect('idfase', 'phase', 'tareas.idfase', $status);
     }
@@ -82,7 +83,8 @@ class ListTareaProyecto extends ListController
 
         // filtros
         $this->listView($viewName)
-            ->addFilterPeriod('fecha', 'date', 'tareas.fecha')
+            ->addFilterPeriod('fecha', 'start-date', 'tareas.fecha')
+            ->addFilterPeriod('fechafin', 'end-date', 'tareas.fechafin')
             ->addFilterAutocomplete('idproyecto', 'project', 'tareas.idproyecto', 'proyectos', 'idproyecto', 'nombre')
             ->addFilterSelect('idfase', 'phase', 'tareas.idfase', $status);
     }
