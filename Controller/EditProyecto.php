@@ -310,7 +310,7 @@ class EditProyecto extends EditController
             ->setSettings('btnDelete', false)
             ->disableColumn('customer')
             ->disableColumn('supplier');
-
+    }
 
     protected function createViewsNotes(string $viewName = 'ListNotaProyecto'): void
     {
