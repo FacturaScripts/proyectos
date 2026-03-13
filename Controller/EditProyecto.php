@@ -236,38 +236,7 @@ class EditProyecto extends EditController
         }
 
         $this->addCommonViewFilters($viewName, $modelName);
-    }
 
-    /**
-     * Add a receipt list view (copied from ComercialContactController to be available in this controller).
-     *
-     * @param string $viewName
-     * @param string $model
-     */
-    protected function createReceiptView(string $viewName, string $model)
-    {
-        return $this->addListView($viewName, $model, 'receipts', 'fa-solid fa-dollar-sign')
-            ->addOrderBy(['fecha'], 'date')
-            ->addOrderBy(['fechapago'], 'payment-date')
-            ->addOrderBy(['vencimiento'], 'expiration', 2)
-            ->addOrderBy(['importe'], 'amount')
-            ->addSearchFields(['codigofactura', 'observaciones'])
-            ->addFilterPeriod('period-f', 'fecha', 'fecha')
-            ->addFilterPeriod('period-v', 'expiration', 'vencimiento')
-            ->addButton([
-                'action' => 'pay-receipt',
-                'color' => 'outline-success',
-                'confirm' => 'true',
-                'icon' => 'fa-solid fa-check',
-                'label' => 'paid',
-                'type' => 'action'
-            ])
-            ->setSettings('btnPrint', true)
-            ->setSettings('btnNew', false)
-            ->setSettings('btnDelete', false)
-            ->disableColumn('customer')
-            ->disableColumn('supplier');
-    }
         // filtramos por grupos de clientes
         $optionsGroup = [
             ['label' => Tools::lang()->trans('any-group'), 'where' => []],
@@ -311,6 +280,37 @@ class EditProyecto extends EditController
 
         $this->addCommonSalesPurchases($viewName, $modelName);
     }
+
+    /**
+     * Add a receipt list view (copied from ComercialContactController to be available in this controller).
+     *
+     * @param string $viewName
+     * @param string $model
+     */
+    protected function createReceiptView(string $viewName, string $model)
+    {
+        return $this->addListView($viewName, $model, 'receipts', 'fa-solid fa-dollar-sign')
+            ->addOrderBy(['fecha'], 'date')
+            ->addOrderBy(['fechapago'], 'payment-date')
+            ->addOrderBy(['vencimiento'], 'expiration', 2)
+            ->addOrderBy(['importe'], 'amount')
+            ->addSearchFields(['codigofactura', 'observaciones'])
+            ->addFilterPeriod('period-f', 'fecha', 'fecha')
+            ->addFilterPeriod('period-v', 'expiration', 'vencimiento')
+            ->addButton([
+                'action' => 'pay-receipt',
+                'color' => 'outline-success',
+                'confirm' => 'true',
+                'icon' => 'fa-solid fa-check',
+                'label' => 'paid',
+                'type' => 'action'
+            ])
+            ->setSettings('btnPrint', true)
+            ->setSettings('btnNew', false)
+            ->setSettings('btnDelete', false)
+            ->disableColumn('customer')
+            ->disableColumn('supplier');
+
 
     protected function createViewsNotes(string $viewName = 'ListNotaProyecto'): void
     {
