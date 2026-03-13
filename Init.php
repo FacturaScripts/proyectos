@@ -1,7 +1,7 @@
 <?php
 /**
  * This file is part of Proyectos plugin for FacturaScripts
- * Copyright (C) 2020-2025 Carlos Garcia Gomez <carlos@facturascripts.com>
+ * Copyright (C) 2020-2026 Carlos Garcia Gomez <carlos@facturascripts.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -27,6 +27,7 @@ use FacturaScripts\Core\Model\Role;
 use FacturaScripts\Core\Model\RoleAccess;
 use FacturaScripts\Core\Template\InitClass;
 use FacturaScripts\Core\Tools;
+use FacturaScripts\Core\Where;
 use FacturaScripts\Dinamic\Model\AlbaranCliente;
 use FacturaScripts\Dinamic\Model\AlbaranProveedor;
 use FacturaScripts\Dinamic\Model\FacturaCliente;
@@ -105,16 +106,19 @@ final class Init extends InitClass
 
     private function createRoleForPlugin(): void
     {
-        $dataBase = new DataBase();
-        $dataBase->beginTransaction();
+        // init models before transaction
+        $role = new Role();
+        new RoleAccess();
+
+        $db = new DataBase();
+        $db->beginTransaction();
 
         // creates the role if not exists
-        $role = new Role();
         if (false === $role->load(self::ROLE_NAME)) {
             $role->codrole = $role->descripcion = self::ROLE_NAME;
             if (false === $role->save()) {
                 // exit and rollback on fail
-                $dataBase->rollback();
+                $db->rollback();
                 return;
             }
         }
@@ -127,8 +131,8 @@ final class Init extends InitClass
         foreach ($controllerNames as $controllerName) {
             $roleAccess = new RoleAccess();
             $where = [
-                new DataBaseWhere('codrole', self::ROLE_NAME),
-                new DataBaseWhere('pagename', $controllerName)
+                Where::eq('codrole', self::ROLE_NAME),
+                Where::eq('pagename', $controllerName)
             ];
             if ($roleAccess->loadWhere($where)) {
                 // permission exists? the skip
@@ -143,13 +147,13 @@ final class Init extends InitClass
             $roleAccess->onlyownerdata = false;
             if (false === $roleAccess->save()) {
                 // exit and rollback on fail
-                $dataBase->rollback();
+                $db->rollback();
                 return;
             }
         }
 
         // without problems = Commit
-        $dataBase->commit();
+        $db->commit();
     }
 
     private function setupSettings(): void

@@ -392,6 +392,14 @@ class EditProyecto extends EditController
             'icon' => 'fa-solid fa-file-import',
             'label' => 'import'
         ]);
+
+        $this->addButton($viewName, [
+            'type' => 'link',
+            'action' => 'KanbanProyectos?idproyecto=' . $this->request->get('code', ''),
+            'icon' => 'fa-brands fa-trello',
+            'label' => 'kanban',
+            'color' => 'info',
+        ]);
     }
 
     protected function createViewsUsers(string $viewName = 'EditUserProyecto'): void
