@@ -425,7 +425,8 @@ class EditProyecto extends EditController
             ->addSearchFields(['descripcion', 'nombre']);
 
         // filters
-        $this->views[$viewName]->addFilterPeriod('fecha', 'date', 'fecha');
+        $this->views[$viewName]->addFilterPeriod('fecha', 'start-date', 'fecha');
+        $this->views[$viewName]->addFilterPeriod('fechafin', 'end-date', 'fechafin');
 
         $status = $this->codeModel->all('tareas_fases', 'idfase', 'nombre');
         $this->views[$viewName]->addFilterSelect('idfase', 'phase', 'idfase', $status);
