@@ -32,6 +32,7 @@ use FacturaScripts\Core\Lib\ExtendedController\EditController;
 use FacturaScripts\Core\Lib\ExtendedController\EditView;
 use FacturaScripts\Core\Lib\ExtendedController\DocFilesTrait;
 use FacturaScripts\Core\Lib\InvoiceOperation;
+use FacturaScripts\Core\Model\Asiento;
 use FacturaScripts\Core\Tools;
 use FacturaScripts\Dinamic\Lib\ProjectStockManager;
 use FacturaScripts\Dinamic\Lib\ProjectTotalManager;
@@ -75,7 +76,7 @@ class EditProyecto extends EditController
         }
     }
 
-    protected function addCommonSalesPurchases(string $viewName, string $modelName)
+    protected function addCommonSalesPurchases(string $viewName, string $modelName): void
     {
         // desactivamos la columna de proyecto
         $this->listView($viewName)->disableColumn('project');
@@ -155,7 +156,7 @@ class EditProyecto extends EditController
     {
         // recogemos los datos
         $data = $this->requestGet(['field', 'fieldcode', 'fieldfilter', 'fieldtitle', 'formname', 'source', 'strict', 'term']);
-        
+
         // si no es una vinculación de documentos de compra o venta, ejecutamos el parent
         if ($data['field'] !== 'linkupcode') {
             return parent::autocompleteAction();
@@ -181,20 +182,22 @@ class EditProyecto extends EditController
             $results[] = ['key' => Tools::fixHtml($value->code), 'value' => Tools::fixHtml($value->description)];
         }
 
-        // buscamos también por numproveedor o numero2 según el tipo de documento
-        $additionalField = str_ends_with($data['source'], 'prov') ? 'numproveedor' : 'numero2';
-        foreach ($this->codeModel->search($data['source'], $data['fieldcode'], $additionalField, $data['term'], $where) as $value) {
-            $key = Tools::fixHtml($value->code);
-            // evitamos duplicados
-            $found = false;
-            foreach ($results as $result) {
-                if ($result['key'] === $key) {
-                    $found = true;
-                    break;
+        // en documentos, buscamos también por numproveedor o numero2 según el tipo
+        if (str_ends_with($data['source'], 'prov') || str_ends_with($data['source'], 'clie')) {
+            $additionalField = str_ends_with($data['source'], 'prov') ? 'numproveedor' : 'numero2';
+            foreach ($this->codeModel->search($data['source'], $data['fieldcode'], $additionalField, $data['term'], $where) as $value) {
+                $key = Tools::fixHtml($value->code);
+                // evitamos duplicados
+                $found = false;
+                foreach ($results as $result) {
+                    if ($result['key'] === $key) {
+                        $found = true;
+                        break;
+                    }
                 }
-            }
-            if (false === $found) {
-                $results[] = ['key' => $key, 'value' => Tools::fixHtml($value->description)];
+                if (false === $found) {
+                    $results[] = ['key' => $key, 'value' => Tools::fixHtml($value->description)];
+                }
             }
         }
 
@@ -220,7 +223,7 @@ class EditProyecto extends EditController
         $this->createViewsNotes();
         $this->createViewsStock();
         $this->createViewsServices();
-      
+
         // Purchases (supplier) views - add only if user has permissions (mirror EditProveedor)
         if ($this->user->can('EditPresupuestoProveedor')) {
             $this->createViewPurchases('PresupuestoProveedor', 'supplier-estimations');
@@ -250,9 +253,60 @@ class EditProyecto extends EditController
         if ($this->user->can('EditReciboCliente')) {
             $this->createReceiptView('ListReciboCliente', 'ReciboCliente');
         }
-      
+
+        $this->createViewsAccountEntries();
         $this->createViewDocFiles();
         $this->createViewsUsers();
+    }
+
+    protected function createViewsAccountEntries(string $viewName = 'ListAsiento'): void
+    {
+        $operaciones = [
+            '' => '------',
+            Asiento::OPERATION_OPENING => Tools::trans('opening-operation'),
+            Asiento::OPERATION_CLOSING => Tools::trans('closing-operation'),
+            Asiento::OPERATION_REGULARIZATION => Tools::trans('regularization-operation')
+        ];
+
+        $this->addListView($viewName, 'Asiento', 'accounting-entries', 'fa-solid fa-balance-scale')
+            ->addSearchFields(['concepto', 'documento', 'CAST(numero AS char(255))'])
+            ->addOrderBy(['fecha', 'numero'], 'date', 2)
+            ->addOrderBy(['numero', 'idasiento'], 'number')
+            ->addOrderBy(['importe', 'idasiento'], 'amount')
+            ->addFilterPeriod('date', 'period', 'fecha')
+            ->addFilterNumber('min-total', 'amount', 'importe', '>=')
+            ->addFilterNumber('max-total', 'amount', 'importe', '<=')
+            ->addFilterCheckbox('editable')
+            ->addFilterSelect('operacion', 'operation', 'operacion', $operaciones)
+            ->addButton([
+                'type' => 'modal',
+                'action' => 'link-up-Asiento',
+                'icon' => 'fa-solid fa-link',
+                'label' => 'link-document'
+            ])
+            ->setSettings('btnDelete', false)
+            ->setSettings('btnNew', false);
+
+        // desactivamos la columna de proyecto
+        $this->listView($viewName)->disableColumn('project');
+
+        $selectCompany = Empresas::codeModel();
+        if (count($selectCompany) > 2) {
+            $this->tab($viewName)->addFilterSelect('idempresa', 'company', 'idempresa', $selectCompany);
+        }
+
+        $selectExercise = $this->getSelectExercise();
+        if (count($selectExercise) > 2) {
+            $this->tab($viewName)->addFilterSelect('codejercicio', 'exercise', 'codejercicio', $selectExercise);
+        }
+
+        $selectJournals = $this->codeModel->all('diarios', 'iddiario', 'descripcion');
+        $this->tab($viewName)->addFilterSelect('iddiario', 'journals', 'iddiario', $selectJournals);
+
+        $selectChannel = $this->codeModel->all('asientos', 'canal', 'canal');
+        if (count($selectChannel) > 1) {
+            $this->tab($viewName)->addFilterSelect('canal', 'channel', 'canal', $selectChannel);
+        }
     }
 
     protected function createViewPurchases(string $modelName, string $label)
@@ -554,7 +608,7 @@ class EditProyecto extends EditController
                 $results = $this->autocompleteAction();
                 $this->response->json($results);
                 return false;
-                
+
             case 'import-task':
                 return $this->importTaskAction();
 
@@ -566,6 +620,7 @@ class EditProyecto extends EditController
             case 'link-up-PedidoProveedor':
             case 'link-up-AlbaranProveedor':
             case 'link-up-FacturaProveedor':
+            case 'link-up-Asiento':
                 $parts = explode('-', $action);
                 return $this->linkUpAction(end($parts));
 
@@ -581,6 +636,7 @@ class EditProyecto extends EditController
             case 'unlink-up-PedidoProveedor':
             case 'unlink-up-AlbaranProveedor':
             case 'unlink-up-FacturaProveedor':
+            case 'unlink-up-Asiento':
                 $parts = explode('-', $action);
                 return $this->unlinkUpAction(end($parts));
 
@@ -602,6 +658,28 @@ class EditProyecto extends EditController
             default:
                 return parent::execPreviousAction($action);
         }
+    }
+
+    private function getSelectExercise(): array
+    {
+        $companyFilter = $this->request->input('filteridempresa', 0);
+        $exerciseFilter = $this->request->input('filtercodejercicio', '');
+        $where = empty($companyFilter) ? [] : [new DataBaseWhere('idempresa', $companyFilter)];
+        $result = $this->codeModel->all('ejercicios', 'codejercicio', 'nombre', true, $where);
+        if (empty($exerciseFilter)) {
+            return $result;
+        }
+
+        // check if the selected exercise is in the list
+        foreach ($result as $exercise) {
+            if ($exerciseFilter === $exercise->code) {
+                return $result;
+            }
+        }
+
+        // remove exercise filter if it is not in the list
+        $this->request->request->set('filtercodejercicio', '');
+        return $result;
     }
 
     protected function importTaskAction(): bool
@@ -740,22 +818,25 @@ class EditProyecto extends EditController
             case 'ListPedidoProveedor':
             case 'ListPresupuestoCliente':
             case 'ListPresupuestoProveedor':
+            case 'ListAsiento':
                 $where = [new DataBaseWhere('idproyecto', $idproyecto)];
                 $view->loadData('', $where);
 
-                // añadimos el botón de nuevo documento
-                $codcliente = $this->getViewModelValue($mainViewName, 'codcliente');
-                $url = $view->model->url('edit') . '?idproyecto=' . $idproyecto;
-                if (false === empty($codcliente)
-                    && in_array($view->model->modelClassName(), ['PresupuestoCliente', 'PedidoCliente', 'AlbaranCliente', 'FacturaCliente'])) {
-                    $url .= '&codcliente=' . $codcliente;
+                // añadimos el botón de nuevo documento, no para asientos
+                if ($viewName !== 'ListAsiento') {
+                    $codcliente = $this->getViewModelValue($mainViewName, 'codcliente');
+                    $url = $view->model->url('edit') . '?idproyecto=' . $idproyecto;
+                    if (false === empty($codcliente)
+                        && in_array($view->model->modelClassName(), ['PresupuestoCliente', 'PedidoCliente', 'AlbaranCliente', 'FacturaCliente'])) {
+                        $url .= '&codcliente=' . $codcliente;
+                    }
+                    $this->addButton($viewName, [
+                        'type' => 'link',
+                        'action' => $url,
+                        'color' => 'success',
+                        'icon' => 'fa-solid fa-plus',
+                    ]);
                 }
-                $this->addButton($viewName, [
-                    'type' => 'link',
-                    'action' => $url,
-                    'color' => 'success',
-                    'icon' => 'fa-solid fa-plus',
-                ]);
 
                 // si hay documentos añadimos el botón de desvincular
                 if ($view->count > 0) {
