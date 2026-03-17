@@ -164,14 +164,37 @@ class EditProyecto extends EditController
         $this->createViewsNotes();
         $this->createViewsStock();
         $this->createViewsServices();
-        $this->createViewPurchases('PresupuestoProveedor', 'supplier-estimations');
-        $this->createViewPurchases('PedidoProveedor', 'supplier-orders');
-        $this->createViewPurchases('AlbaranProveedor', 'supplier-delivery-notes');
-        $this->createViewPurchases('FacturaProveedor', 'supplier-invoices');
-        $this->createViewSales('PresupuestoCliente', 'customer-estimations');
-        $this->createViewSales('PedidoCliente', 'customer-orders');
-        $this->createViewSales('AlbaranCliente', 'customer-delivery-notes');
-        $this->createViewSales('FacturaCliente', 'customer-invoices');
+      
+        // Purchases (supplier) views - add only if user has permissions (mirror EditProveedor)
+        if ($this->user->can('EditPresupuestoProveedor')) {
+            $this->createViewPurchases('PresupuestoProveedor', 'supplier-estimations');
+        }
+        if ($this->user->can('EditPedidoProveedor')) {
+            $this->createViewPurchases('PedidoProveedor', 'supplier-orders');
+        }
+        if ($this->user->can('EditAlbaranProveedor')) {
+            $this->createViewPurchases('AlbaranProveedor', 'supplier-delivery-notes');
+        }
+        if ($this->user->can('EditFacturaProveedor')) {
+            $this->createViewPurchases('FacturaProveedor', 'supplier-invoices');
+        }
+        // Sales (customer) views - add only if user has permissions (mirror EditCliente)
+        if ($this->user->can('EditPresupuestoCliente')) {
+            $this->createViewSales('PresupuestoCliente', 'customer-estimations');
+        }
+        if ($this->user->can('EditPedidoCliente')) {
+            $this->createViewSales('PedidoCliente', 'customer-orders');
+        }
+        if ($this->user->can('EditAlbaranCliente')) {
+            $this->createViewSales('AlbaranCliente', 'customer-delivery-notes');
+        }
+        if ($this->user->can('EditFacturaCliente')) {
+            $this->createViewSales('FacturaCliente', 'customer-invoices');
+        }
+        if ($this->user->can('EditReciboCliente')) {
+            $this->createReceiptView('ListReciboCliente', 'ReciboCliente');
+        }
+      
         $this->createViewDocFiles();
         $this->createViewsUsers();
     }
@@ -179,7 +202,7 @@ class EditProyecto extends EditController
     protected function createViewPurchases(string $modelName, string $label)
     {
         $viewName = 'List' . $modelName;
-        $this->addlISTView($viewName, $modelName, $label, 'fa-solid fa-copy')
+        $this->addListView($viewName, $modelName, $label, 'fa-solid fa-copy')
             ->addOrderBy(['codigo'], 'code')
             ->addOrderBy(['fecha', $this->tableColToNumber('numero')], 'date', 2)
             ->addOrderBy([$this->tableColToNumber('numero')], 'number')
@@ -262,6 +285,37 @@ class EditProyecto extends EditController
         $this->addColorStatus($viewName, $modelName);
 
         $this->addCommonSalesPurchases($viewName, $modelName);
+    }
+
+    /**
+     * Add a receipt list view (copied from ComercialContactController to be available in this controller).
+     *
+     * @param string $viewName
+     * @param string $model
+     */
+    protected function createReceiptView(string $viewName, string $model)
+    {
+        return $this->addListView($viewName, $model, 'receipts', 'fa-solid fa-dollar-sign')
+            ->addOrderBy(['fecha'], 'date')
+            ->addOrderBy(['fechapago'], 'payment-date')
+            ->addOrderBy(['vencimiento'], 'expiration', 2)
+            ->addOrderBy(['importe'], 'amount')
+            ->addSearchFields(['codigofactura', 'observaciones'])
+            ->addFilterPeriod('period-f', 'fecha', 'fecha')
+            ->addFilterPeriod('period-v', 'expiration', 'vencimiento')
+            ->addButton([
+                'action' => 'pay-receipt',
+                'color' => 'outline-success',
+                'confirm' => 'true',
+                'icon' => 'fa-solid fa-check',
+                'label' => 'paid',
+                'type' => 'action'
+            ])
+            ->setSettings('btnPrint', true)
+            ->setSettings('btnNew', false)
+            ->setSettings('btnDelete', false)
+            ->disableColumn('customer')
+            ->disableColumn('supplier');
     }
 
     protected function createViewsNotes(string $viewName = 'ListNotaProyecto'): void
@@ -377,10 +431,17 @@ class EditProyecto extends EditController
             ->addSearchFields(['descripcion', 'nombre']);
 
         // filters
-        $this->views[$viewName]->addFilterPeriod('fecha', 'date', 'fecha');
+        $this->views[$viewName]->addFilterPeriod('fecha', 'start-date', 'fecha');
+        $this->views[$viewName]->addFilterPeriod('fechafin', 'end-date', 'fechafin');
 
         $status = $this->codeModel->all('tareas_fases', 'idfase', 'nombre');
         $this->views[$viewName]->addFilterSelect('idfase', 'phase', 'idfase', $status);
+
+        // filtro por usuario asignado
+        $users = $this->codeModel->all('users', 'nick', 'nick');
+        if (count($users) > 1) {
+            $this->views[$viewName]->addFilterSelect('nick', 'user', 'nick', $users);
+        }
 
         // disable columns
         $this->views[$viewName]->disableColumn('project');

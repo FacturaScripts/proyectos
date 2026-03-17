@@ -23,6 +23,8 @@ use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
 use FacturaScripts\Core\Template\ModelClass;
 use FacturaScripts\Core\Template\ModelTrait;
 use FacturaScripts\Core\Tools;
+use FacturaScripts\Dinamic\Lib\Email\MailNotifier;
+use FacturaScripts\Dinamic\Model\User;
 
 /**
  * Description of TareaProyecto
@@ -65,6 +67,9 @@ class TareaProyecto extends ModelClass
     /** @var string */
     public $nombre;
 
+    /** @var string */
+    public $nick;
+
     public function clear(): void
     {
         parent::clear();
@@ -79,9 +84,6 @@ class TareaProyecto extends ModelClass
         }
     }
 
-    /**
-     * @return FaseTarea[]
-     */
     public function getAvailablePhases(): array
     {
         $available = [];
@@ -93,24 +95,26 @@ class TareaProyecto extends ModelClass
         return $available;
     }
 
-    /**
-     * @return FaseTarea
-     */
-    public function getPhase()
+    public function getPhase(): FaseTarea
     {
         $phase = new FaseTarea();
         $phase->load($this->idfase);
         return $phase;
     }
 
-    /**
-     * @return Proyecto
-     */
-    public function getProject()
+    public function getProject(): Proyecto
     {
         $project = new Proyecto();
         $project->load($this->idproyecto);
         return $project;
+    }
+
+    public function getUser(?string $nick = null): User
+    {
+        $nick = is_null($nick) ? $this->nick : $nick;
+        $user = new User();
+        $user->load($nick);
+        return $user;
     }
 
     public function install(): string
@@ -193,6 +197,24 @@ class TareaProyecto extends ModelClass
         $project->save();
     }
 
+    protected function notifyUser(string $notification): void
+    {
+        $user = new User();
+        if (false === $user->load($this->nick)) {
+            return;
+        }
+
+        MailNotifier::send($notification, $user->email, $user->nick, [
+            'project' => $this->getProject()->nombre,
+            'task' => $this->nombre,
+            'date' => $this->fecha,
+            'date_start' => $this->fechainicio,
+            'date_end' => $this->fechafin,
+            'status' => $this->getPhase()->nombre,
+            'url' => Tools::siteUrl() . '/EditTareaProyecto?code=' . $this->id()
+        ]);
+    }
+
     /**
      * We ask if the sum of the completed and canceled tasks is
      * equal to the total project tasks to complete it.
@@ -221,6 +243,28 @@ class TareaProyecto extends ModelClass
                 $project->save();
             }
         }
+    }
+
+    protected function onInsert(): void
+    {
+        if ($this->nick) {
+            $this->notifyUser('new-task-user');
+        }
+
+        parent::onInsert();
+    }
+
+    protected function onUpdate(): void
+    {
+        if ($this->nick != $this->getOriginal('nick')) {
+            $this->notifyUser('new-task-user');
+        }
+
+        if ($this->idfase != $this->getOriginal('idfase')) {
+            $this->notifyUser('new-task-status');
+        }
+
+        parent::onUpdate();
     }
 
     /**

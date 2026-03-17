@@ -30,6 +30,7 @@ use FacturaScripts\Core\Tools;
 use FacturaScripts\Core\Where;
 use FacturaScripts\Dinamic\Model\AlbaranCliente;
 use FacturaScripts\Dinamic\Model\AlbaranProveedor;
+use FacturaScripts\Dinamic\Model\EmailNotification;
 use FacturaScripts\Dinamic\Model\FacturaCliente;
 use FacturaScripts\Dinamic\Model\FacturaProveedor;
 use FacturaScripts\Dinamic\Model\PedidoCliente;
@@ -102,6 +103,7 @@ final class Init extends InitClass
 
         $this->setupSettings();
         $this->createRoleForPlugin();
+        $this->updateEmailNotifications();
     }
 
     private function createRoleForPlugin(): void
@@ -161,5 +163,22 @@ final class Init extends InitClass
         Tools::settings('proyectos', 'patron', 'PR-{ANYO}-{NUM}');
         Tools::settings('proyectos', 'longnumero', 6);
         Tools::settingsSave();
+    }
+
+    private function updateEmailNotifications(): void
+    {
+        $notificationModel = new EmailNotification();
+        $keys = ['new-task-user', 'new-task-status'];
+        foreach ($keys as $key) {
+            if ($notificationModel->load($key)) {
+                continue;
+            }
+
+            $notificationModel->name = $key;
+            $notificationModel->body = Tools::trans($key . '-body');
+            $notificationModel->subject = Tools::trans($key);
+            $notificationModel->enabled = false;
+            $notificationModel->save();
+        }
     }
 }

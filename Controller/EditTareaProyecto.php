@@ -59,6 +59,9 @@ class EditTareaProyecto extends EditController
     protected function createViews()
     {
         parent::createViews();
+
+        // the 'nick' field is defined in Table/tareas.xml and will be loaded automatically
+        // set tabs position and create notes view
         $this->setTabsPosition('bottom');
         $this->createViewsNotes();
 
@@ -85,7 +88,7 @@ class EditTareaProyecto extends EditController
     /**
      * @param EditView $view
      */
-    protected function disableTaskColumns(&$view)
+    protected function disableTaskColumns(&$view): void
     {
         foreach ($view->getColumns() as $group) {
             foreach ($group->columns as $col) {
