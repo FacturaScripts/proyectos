@@ -9,7 +9,7 @@
                 <widget type="text" fieldname="patron" required="true"/>
             </column>
             <column name="reset-pattern" numcolumns="12" order="115" title="reiniciar-patron-anualmente">
-                <widget type="checkbox" fieldname="reiniciarpatronanualmente"/>
+                <widget type="checkbox" fieldname="reiniciar_patron_anualmente"/>
             </column>
             <column name="number-length" numcolumns="3" order="110">
                 <widget type="number" fieldname="longnumero" decimal="0" min="1" required="true"/>

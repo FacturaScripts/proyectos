@@ -4,62 +4,86 @@ namespace FacturaScripts\Test\Plugins;
 
 use FacturaScripts\Plugins\Proyectos\Model\Proyecto;
 use FacturaScripts\Core\Tools;
-use FacturaScripts\Test\Traits\DefaultSettingsTrait;
 use FacturaScripts\Test\Traits\LogErrorsTrait;
 use PHPUnit\Framework\TestCase;
 
 final class ProyectoPatternResetTest extends TestCase
 {
     use LogErrorsTrait;
-    use DefaultSettingsTrait;
 
-    public static function setUpBeforeClass(): void
+    private $projects = [];
+
+    public function testAnnualPatternResetDisabled(): void
     {
-        self::setDefaultSettings();
-        self::installAccountingPlan();
-        self::removeTaxRegularization();
+        Tools::settingsSet('proyectos', 'patron', 'PR-{ANYO}-{NUM}');
+        Tools::settingsSet('proyectos', 'longnumero', 1);
+        Tools::settingsSet('proyectos', 'reiniciar_patron_anualmente', 0);
+
+        // obtenemos el año anterior
+        $prevYear = date('Y') - 1;
+
+        // obtenemos el año actual
+        $currentYear = date('Y');
+
+        // Crear 3 proyectos en año anterior
+        for ($i = 1; $i <= 3; $i++) {
+            $p = new Proyecto();
+            $p->descripcion = "Proyecto $i año anterior";
+            $p->fecha = "$prevYear-01-01";
+            $this->assertTrue($p->save(), "No se pudo guardar el proyecto $i del año anterior");
+            $this->projects[] = $p;
+            $this->assertEquals("PR-$prevYear-$i", $p->nombre, "El patrón del proyecto $i del año anterior es incorrecto");
+        }
+
+        // Crear 3 proyectos en año actual
+        for ($i = 4; $i <= 6; $i++) {
+            $p = new Proyecto();
+            $p->descripcion = "Proyecto $i año actual";
+            $p->fecha = "$currentYear-01-01";
+            $this->assertTrue($p->save(), "No se pudo guardar el proyecto $i del año actual");
+            $this->projects[] = $p;
+            $this->assertEquals("PR-$currentYear-$i", $p->nombre, "El patrón del proyecto $i del año actual es incorrecto");
+        }
     }
 
-    public function testAnnualPatternReset(): void
+    public function testAnnualPatternResetEnabled(): void
     {
-        // activar ajuste
-        Tools::settings('proyectos', 'reiniciarpatronanualmente', 1);
-        Tools::settingsSave();
+        Tools::settingsSet('proyectos', 'patron', 'PR-{ANYO}-{NUM}');
+        Tools::settingsSet('proyectos', 'longnumero', 1);
+        Tools::settingsSet('proyectos', 'reiniciar_patron_anualmente', 1);
 
+        // obtenemos el año anterior
         $prevYear = date('Y') - 1;
-        $patron = Tools::settings('proyectos', 'patron', 'PR-{ANYO}-{NUM}');
-        $long = Tools::settings('proyectos', 'longnumero', 6);
 
-        // crear proyecto del año anterior
-        $old = new Proyecto();
-        $old->nombre = strtr($patron, [
-            '{ANYO}' => (string)$prevYear,
-            '{ANYO2}' => substr((string)$prevYear, 2),
-            '{MES}' => '01',
-            '{DIA}' => '01',
-            '{NUM}' => '5',
-            '{0NUM}' => str_pad('5', $long, '0', STR_PAD_LEFT)
-        ]);
-        $old->fecha = $prevYear . '-01-01';
-        $old->descripcion = 'old';
-        $this->assertTrue($old->save());
+        // obtenemos el año actual
+        $currentYear = date('Y');
 
-        // crear proyecto nuevo (debe generarse y empezar en 1)
-        $new = new Proyecto();
-        $new->descripcion = 'nuevo';
-        $this->assertTrue($new->save());
+        // Crear 3 proyectos para el año anterior
+        for ($i = 1; $i <= 3; $i++) {
+            $p = new Proyecto();
+            $p->descripcion = "Proyecto $i año anterior (reset on)";
+            $p->fecha = "$prevYear-01-01";
+            $this->assertTrue($p->save(), "No se pudo guardar el proyecto $i del año anterior con reset");
+            $this->projects[] = $p;
+            $this->assertEquals("PR-$prevYear-$i", $p->nombre, "El patrón del proyecto $i del año anterior es incorrecto con reset");
+        }
 
-        $this->assertMatchesRegularExpression('/(\\d+)$/', $new->nombre, 'El nombre generado debe terminar en dígitos');
-        preg_match('/(\\d+)$/', $new->nombre, $m);
-        $this->assertEquals(1, intval($m[1]), 'Se esperaba que la numeración empiece en 1 para el ejercicio actual');
-
-        // limpieza
-        $this->assertTrue($new->delete());
-        $this->assertTrue($old->delete());
+        // Crear 3 proyectos para el año actual
+        for ($i = 1; $i <= 3; $i++) {
+            $p = new Proyecto();
+            $p->descripcion = "Proyecto $i año actual (reset on)";
+            $p->fecha = "$currentYear-01-01";
+            $this->assertTrue($p->save(), "No se pudo guardar el proyecto $i del año actual con reset");
+            $this->projects[] = $p;
+            $this->assertEquals("PR-$currentYear-$i", $p->nombre, "El patrón del proyecto $i del año actual debe reiniciarse a $i");
+        }
     }
 
     protected function tearDown(): void
     {
+        foreach ($this->projects as $p) {
+            $p->delete();
+        }
         $this->logErrors();
     }
 }

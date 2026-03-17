@@ -31,16 +31,20 @@ use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
  */
 class ProjectCodeGenerator
 {
-    /**
-     * @param Proyecto $project
-     */
-    public static function new(&$project)
+    public static function new(Proyecto &$project)
     {
         $patron = Tools::settings('proyectos', 'patron', 'PR-{ANYO}-{NUM}');
         $long_numero = Tools::settings('proyectos', 'longnumero', 6);
-        $reset = (bool) Tools::settings('proyectos', 'reiniciarpatronanualmente', 0);
+        $reset = (bool)Tools::settings('proyectos', 'reiniciar_patron_anualmente', 0);
 
         $proyecto = new Proyecto();
+
+        $fecha = empty($project->fecha) ? date('Y-m-d') : $project->fecha;
+        $timestamp = strtotime($fecha);
+        $year = date('Y', $timestamp);
+        $year2 = date('y', $timestamp);
+        $month = date('m', $timestamp);
+        $day = date('d', $timestamp);
 
         if (!$reset) {
             // default behaviour: keep existing global counting
@@ -48,10 +52,10 @@ class ProjectCodeGenerator
         } else {
             // build prefix replacing date placeholders but leaving numeric placeholders empty
             $replacements = [
-                '{ANYO}' => date('Y'),
-                '{ANYO2}' => date('y'),
-                '{MES}' => date('m'),
-                '{DIA}' => date('d'),
+                '{ANYO}' => $year,
+                '{ANYO2}' => $year2,
+                '{MES}' => $month,
+                '{DIA}' => $day,
                 '{NUM}' => '',
                 '{0NUM}' => ''
             ];
@@ -59,7 +63,6 @@ class ProjectCodeGenerator
             $prefix = strtr($patron, $replacements);
 
             // find projects that start with the same prefix and belong to the same company, limited to current year
-            $year = date('Y');
             $where = [
                 new DataBaseWhere('nombre', $prefix . '%', 'LIKE'),
                 new DataBaseWhere('idempresa', $project->idempresa),
@@ -89,10 +92,10 @@ class ProjectCodeGenerator
         }
 
         $project->nombre = strtr($patron, [
-            '{ANYO}' => date('Y'),
-            '{ANYO2}' => date('y'),
-            '{MES}' => date('m'),
-            '{DIA}' => date('d'),
+            '{ANYO}' => $year,
+            '{ANYO2}' => $year2,
+            '{MES}' => $month,
+            '{DIA}' => $day,
             '{NUM}' => (string)$numero,
             '{0NUM}' => str_pad((string)$numero, $long_numero, '0', STR_PAD_LEFT)
         ]);

@@ -162,7 +162,7 @@ final class Init extends InitClass
     {
         Tools::settings('proyectos', 'patron', 'PR-{ANYO}-{NUM}');
         Tools::settings('proyectos', 'longnumero', 6);
-        Tools::settings('proyectos', 'reiniciarpatronanualmente', 0);
+        Tools::settings('proyectos', 'reiniciar_patron_anualmente', 0);
         Tools::settingsSave();
     }
 
