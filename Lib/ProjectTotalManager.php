@@ -19,9 +19,7 @@
 
 namespace FacturaScripts\Plugins\Proyectos\Lib;
 
-use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
-use FacturaScripts\Core\Tools;
-
+use FacturaScripts\Core\Where;
 use FacturaScripts\Dinamic\Model\AlbaranCliente;
 use FacturaScripts\Dinamic\Model\AlbaranProveedor;
 use FacturaScripts\Dinamic\Model\FacturaCliente;
@@ -29,7 +27,7 @@ use FacturaScripts\Dinamic\Model\FacturaProveedor;
 use FacturaScripts\Dinamic\Model\PedidoCliente;
 use FacturaScripts\Dinamic\Model\PedidoProveedor;
 use FacturaScripts\Dinamic\Model\PresupuestoCliente;
-use FacturaScripts\Plugins\Proyectos\Model\Proyecto;
+use FacturaScripts\Dinamic\Model\Proyecto;
 
 /**
  * Description of ProjectTotalManager
@@ -38,47 +36,32 @@ use FacturaScripts\Plugins\Proyectos\Model\Proyecto;
  */
 class ProjectTotalManager
 {
-    public static function recalculate(int $idproyecto)
+    public static function recalculate(int $idproyecto): void
     {
         $project = new Proyecto();
         if (false === $project->load($idproyecto)) {
             return;
         }
 
+        // Compras
         $project->totalcompras = 0.0;
-        foreach (static::purchaseInvoices($idproyecto) as $invoice) {
-            $project->totalcompras += $invoice->total;
-        }
-        foreach (static::purchaseDeliveryNotes($idproyecto) as $delivery) {
-            $project->totalcompras += $delivery->total;
-        }
-        foreach (static::purchaseOrders($idproyecto) as $order) {
-            $project->totalcompras += $order->total;
-        }
+        $project->totalcompras += static::purchaseInvoices($idproyecto);
+        $project->totalcompras += static::purchaseDeliveryNotes($idproyecto);
+        $project->totalcompras += static::purchaseOrders($idproyecto);
 
+        // Ventas
         $netoPresupuestos = 0.0;
         $netoPedidos = 0.0;
         $netoAlbaranes = 0.0;
         $netoFacturas = 0.0;
-        $project->totalventas = 0.0;
-        foreach (static::salesEstimations($idproyecto) as $estimation) {
-            $project->totalventas += $estimation->total;
-            $netoPresupuestos += $estimation->neto;
-        }
-        foreach (static::salesInvoices($idproyecto) as $invoice) {
-            $project->totalventas += $invoice->total;
-            $netoFacturas += $invoice->neto;
-        }
-        foreach (static::salesDeliveryNotes($idproyecto) as $delivery) {
-            $project->totalventas += $delivery->total;
-            $netoAlbaranes += $delivery->neto;
-        }
-        foreach (static::salesOrders($idproyecto) as $order) {
-            $project->totalventas += $order->total;
-            $netoPedidos += $order->neto;
-        }
 
-        $project->totalpendientefacturar = ($netoPresupuestos + $netoPedidos + $netoAlbaranes) - $netoFacturas;
+        $project->totalventas = 0.0;
+        $project->totalventas += static::salesEstimations($idproyecto, $netoPresupuestos);
+        $project->totalventas += static::salesOrders($idproyecto, $netoPedidos);
+        $project->totalventas += static::salesDeliveryNotes($idproyecto, $netoAlbaranes);
+        $project->totalventas += static::salesInvoices($idproyecto, $netoFacturas);
+
+        $project->totalpendientefacturar = $netoPresupuestos + $netoPedidos + $netoAlbaranes;
         if ($project->totalpendientefacturar < 0) {
             $project->totalpendientefacturar = 0;
         }
@@ -86,137 +69,161 @@ class ProjectTotalManager
         $project->save();
     }
 
-    /**
-     * @param int $idproyecto
-     *
-     * @return AlbaranProveedor[]
-     */
-    protected static function purchaseDeliveryNotes($idproyecto): array
+    protected static function purchaseDeliveryNotes(int $idproyecto): float
     {
-        $delivery = new AlbaranProveedor();
-        $where = [
-            new DataBaseWhere('idproyecto', $idproyecto),
-            new DataBaseWhere('editable', true)
-        ];
-        $results = $delivery->all($where, [], 0, 0);
+        $total = 0.0;
+        $where = [Where::eq('idproyecto', $idproyecto)];
+        foreach (AlbaranProveedor::all($where) as $delivery) {
+            $childrens = $delivery->childrenDocuments();
+            if (empty($childrens)) {
+                $total += $delivery->total;
+                continue;
+            }
 
-        // Also include non-editable delivery notes that are invoiced but whose invoice is not part of the project
-        $whereNonEditable = [
-            new DataBaseWhere('idproyecto', $idproyecto),
-            new DataBaseWhere('editable', false)
-        ];
-        $nonEditables = $delivery->all($whereNonEditable, [], 0, 0);
-        foreach ($nonEditables as $del) {
-            $children = $del->childrenDocuments();
-            $hasInvoiceInProject = false;
-            foreach ($children as $child) {
-                if ($child instanceof FacturaProveedor && $child->idproyecto == $idproyecto) {
-                    $hasInvoiceInProject = true;
-                    break;
+            $totalHijos = 0.0;
+            foreach ($childrens as $child) {
+                if ($child->idproyecto == $idproyecto) {
+                    $totalHijos += $child->total;
                 }
             }
-            if (! $hasInvoiceInProject) {
-                $results[] = $del;
-            }
+
+            $total += ($delivery->total - $totalHijos);
         }
 
-        return $results;
+        return $total;
     }
 
-    /**
-     * @param int $idproyecto
-     * @return FacturaProveedor[]
-     */
-    protected static function purchaseInvoices(int $idproyecto): array
+    protected static function purchaseInvoices(int $idproyecto): float
     {
-        $invoice = new FacturaProveedor();
-        $where = [new DataBaseWhere('idproyecto', $idproyecto)];
-        return $invoice->all($where, [], 0, 0);
+        $total = 0.0;
+        $where = [Where::eq('idproyecto', $idproyecto)];
+        foreach (FacturaProveedor::all($where) as $invoice) {
+            $total += $invoice->total;
+        }
+        return $total;
     }
 
-    /**
-     * @param int $idproyecto
-     * @return PedidoProveedor[]
-     */
-    protected static function purchaseOrders(int $idproyecto): array
+    protected static function purchaseOrders(int $idproyecto): float
     {
-        $order = new PedidoProveedor();
-        $where = [
-            new DataBaseWhere('idproyecto', $idproyecto),
-            new DataBaseWhere('editable', true)
-        ];
-        return $order->all($where, [], 0, 0);
-    }
+        $total = 0.0;
+        $where = [Where::eq('idproyecto', $idproyecto)];
+        foreach (PedidoProveedor::all($where) as $order) {
+            $childrens = $order->childrenDocuments();
+            if (empty($childrens)) {
+                $total += $order->total;
+                continue;
+            }
 
-    /**
-     * @param int $idproyecto
-     * @return AlbaranCliente[]
-     */
-    protected static function salesDeliveryNotes(int $idproyecto): array
-    {
-        $delivery = new AlbaranCliente();
-        $where = [
-            new DataBaseWhere('idproyecto', $idproyecto),
-            new DataBaseWhere('editable', true)
-        ];
-        $results = $delivery->all($where, [], 0, 0);
-
-        // Also include non-editable delivery notes that are invoiced but whose invoice is not part of the project
-        $whereNonEditable = [
-            new DataBaseWhere('idproyecto', $idproyecto),
-            new DataBaseWhere('editable', false)
-        ];
-        $nonEditables = $delivery->all($whereNonEditable, [], 0, 0);
-        foreach ($nonEditables as $del) {
-            $children = $del->childrenDocuments();
-            $hasInvoiceInProject = false;
-            foreach ($children as $child) {
-                if ($child instanceof FacturaCliente && $child->idproyecto == $idproyecto) {
-                    $hasInvoiceInProject = true;
-                    break;
+            $totalHijos = 0.0;
+            foreach ($childrens as $child) {
+                if ($child->idproyecto == $idproyecto) {
+                    $totalHijos += $child->total;
                 }
             }
-            if (! $hasInvoiceInProject) {
-                $results[] = $del;
-            }
+
+            $total += ($order->total - $totalHijos);
         }
 
-        return $results;
+        return $total;
     }
 
-    /**
-     * @param int $idproyecto
-     * @return PresupuestoCliente[]
-     */
-    protected static function salesEstimations(int $idproyecto): array
+    protected static function salesDeliveryNotes(int $idproyecto, float &$neto): float
     {
-        $estimation = new PresupuestoCliente();
-        $where = [new DataBaseWhere('idproyecto', $idproyecto)];
-        return $estimation->all($where, [], 0, 0);
+        $total = 0.0;
+        $neto = 0.0;
+        $where = [Where::eq('idproyecto', $idproyecto)];
+        foreach (AlbaranCliente::all($where) as $delivery) {
+            $childrens = $delivery->childrenDocuments();
+            if (empty($childrens)) {
+                $total += $delivery->total;
+                $neto += $delivery->neto;
+                continue;
+            }
+
+            $totalHijos = 0.0;
+            $netoHijos = 0.0;
+            foreach ($childrens as $child) {
+                if ($child->idproyecto == $idproyecto) {
+                    $totalHijos += $child->total;
+                    $netoHijos += $child->neto;
+                }
+            }
+
+            $total += ($delivery->total - $totalHijos);
+            $neto += ($delivery->neto - $netoHijos);
+        }
+
+        return $total;
     }
 
-    /**
-     * @param int $idproyecto
-     * @return FacturaCliente[]
-     */
-    protected static function salesInvoices(int $idproyecto): array
+    protected static function salesEstimations(int $idproyecto, float &$neto): float
     {
-        $invoice = new FacturaCliente();
-        $where = [new DataBaseWhere('idproyecto', $idproyecto)];
-        return $invoice->all($where, [], 0, 0);
+        $total = 0.0;
+        $neto = 0.0;
+        $where = [Where::eq('idproyecto', $idproyecto)];
+        foreach (PresupuestoCliente::all($where) as $estimation) {
+            $childrens = $estimation->childrenDocuments();
+            if (empty($childrens)) {
+                $total += $estimation->total;
+                $neto += $estimation->neto;
+                continue;
+            }
+
+            $totalHijos = 0.0;
+            $netoHijos = 0.0;
+            foreach ($childrens as $child) {
+                if ($child->idproyecto == $idproyecto) {
+                    $totalHijos += $child->total;
+                    $netoHijos += $child->neto;
+                }
+            }
+
+            $total += ($estimation->total - $totalHijos);
+            $neto += ($estimation->neto - $netoHijos);
+        }
+
+        return $total;
     }
 
-    /**
-     * @param int $idproyecto
-     * @return PedidoCliente[]
-     */
-    protected static function salesOrders(int $idproyecto): array
+    protected static function salesInvoices(int $idproyecto, float &$neto): float
     {
-        $order = new PedidoCliente();
-        $where = [
-            new DataBaseWhere('idproyecto', $idproyecto),
-            new DataBaseWhere('editable', true)
-        ];
-        return $order->all($where, [], 0, 0);
+        $total = 0.0;
+        $neto = 0.0;
+        $where = [Where::eq('idproyecto', $idproyecto)];
+        foreach (FacturaCliente::all($where) as $invoice) {
+            $total += $invoice->total;
+            $neto += $invoice->neto;
+        }
+
+        return $total;
+    }
+
+    protected static function salesOrders(int $idproyecto, float &$neto): float
+    {
+        $total = 0.0;
+        $neto = 0.0;
+        $where = [Where::eq('idproyecto', $idproyecto)];
+        foreach (PedidoCliente::all($where) as $order) {
+            $childrens = $order->childrenDocuments();
+            if (empty($childrens)) {
+                $total += $order->total;
+                $neto += $order->neto;
+                continue;
+            }
+
+            $totalHijos = 0.0;
+            $netoHijos = 0.0;
+            foreach ($childrens as $child) {
+                if ($child->idproyecto == $idproyecto) {
+                    $totalHijos += $child->total;
+                    $netoHijos += $child->neto;
+                }
+            }
+
+            $total += ($order->total - $totalHijos);
+            $neto += ($order->neto - $netoHijos);
+        }
+
+        return $total;
     }
 }
