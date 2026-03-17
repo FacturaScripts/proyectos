@@ -151,6 +151,62 @@ class EditProyecto extends EditController
             ->addFilterCheckbox('numdocs', 'has-attachments', 'numdocs', '!=', 0);
     }
 
+    protected function autocompleteAction(): array
+    {
+        // recogemos los datos
+        $data = $this->requestGet(['field', 'fieldcode', 'fieldfilter', 'fieldtitle', 'formname', 'source', 'strict', 'term']);
+        
+        // si no es una vinculación de documentos de compra o venta, ejecutamos el parent
+        if ($data['field'] !== 'linkupcode') {
+            return parent::autocompleteAction();
+        }
+
+        if ($data['source'] == '') {
+            return $this->getAutocompleteValues($data['formname'], $data['field']);
+        }
+
+        $where = [];
+        foreach (DataBaseWhere::applyOperation($data['fieldfilter'] ?? '') as $field => $operation) {
+            // validar nombre de campo para prevenir SQL injection
+            if (1 !== preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*(?:\.[a-zA-Z_][a-zA-Z0-9_]*)?$/', $field)) {
+                Tools::log()->warning('autocomplete: invalid field filter name');
+                return [];
+            }
+            $value = $this->request->queryOrInput($field);
+            $where[] = new DataBaseWhere($field, $value, '=', $operation);
+        }
+
+        $results = [];
+        foreach ($this->codeModel->search($data['source'], $data['fieldcode'], $data['fieldtitle'], $data['term'], $where) as $value) {
+            $results[] = ['key' => Tools::fixHtml($value->code), 'value' => Tools::fixHtml($value->description)];
+        }
+
+        // buscamos también por numproveedor o numero2 según el tipo de documento
+        $additionalField = str_ends_with($data['source'], 'prov') ? 'numproveedor' : 'numero2';
+        foreach ($this->codeModel->search($data['source'], $data['fieldcode'], $additionalField, $data['term'], $where) as $value) {
+            $key = Tools::fixHtml($value->code);
+            // evitamos duplicados
+            $found = false;
+            foreach ($results as $result) {
+                if ($result['key'] === $key) {
+                    $found = true;
+                    break;
+                }
+            }
+            if (false === $found) {
+                $results[] = ['key' => $key, 'value' => Tools::fixHtml($value->description)];
+            }
+        }
+
+        if (empty($results) && '0' == $data['strict']) {
+            $results[] = ['key' => $data['term'], 'value' => $data['term']];
+        } elseif (empty($results)) {
+            $results[] = ['key' => null, 'value' => Tools::trans('no-data')];
+        }
+
+        return $results;
+    }
+
     protected function createViews()
     {
         parent::createViews();
@@ -474,7 +530,7 @@ class EditProyecto extends EditController
     /**
      * @param EditView $view
      */
-    protected function disableProjectColumns(&$view)
+    protected function disableProjectColumns(&$view): void
     {
         foreach ($view->getColumns() as $group) {
             foreach ($group->columns as $col) {
@@ -493,6 +549,12 @@ class EditProyecto extends EditController
     protected function execPreviousAction($action)
     {
         switch ($action) {
+            case 'autocomplete':
+                $this->setTemplate(false);
+                $results = $this->autocompleteAction();
+                $this->response->json($results);
+                return false;
+                
             case 'import-task':
                 return $this->importTaskAction();
 
