@@ -22,6 +22,7 @@ namespace FacturaScripts\Plugins\Proyectos\Controller;
 use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
 use FacturaScripts\Core\Lib\ExtendedController\EditController;
 use FacturaScripts\Core\Lib\ExtendedController\EditView;
+use FacturaScripts\Core\Lib\ExtendedController\DocFilesTrait;
 use FacturaScripts\Core\Tools;
 
 
@@ -33,6 +34,13 @@ use FacturaScripts\Core\Tools;
  */
 class EditTareaProyecto extends EditController
 {
+    use DocFilesTrait;
+
+    public function __construct(string $className = '', string $uri = '')
+    {
+        parent::__construct($className, $uri);
+    }
+
     public function getModelClassName(): string
     {
         return 'TareaProyecto';
@@ -92,6 +100,34 @@ class EditTareaProyecto extends EditController
     }
 
     /**
+     * @param string $action
+     *
+     * @return bool
+     */
+    protected function execPreviousAction($action)
+    {
+        switch ($action) {
+            case 'add-file':
+                return $this->addFileAction();
+
+            case 'delete-file':
+                return $this->deleteFileAction();
+
+            case 'edit-file':
+                return $this->editFileAction();
+
+            case 'unlink-file':
+                return $this->unlinkFileAction();
+
+            case 'sort-files':
+                return $this->sortFilesAction();
+
+            default:
+                return parent::execPreviousAction($action);
+        }
+    }
+
+    /**
      * @param string $viewName
      * @param EditView $view
      */
@@ -107,6 +143,12 @@ class EditTareaProyecto extends EditController
                     $this->disableTaskColumns($view);
                     $this->views['EditTareaProyecto']->disableColumn('code');
                 }
+
+                // If it is a new task (no model exists yet) keep the files tab active so user can add files
+                if (false === $view->model->exists()) {
+                    $this->setSettings('docfiles', 'active', true);
+                }
+
                 break;
 
             case 'EditNotaProyecto':
@@ -115,6 +157,10 @@ class EditTareaProyecto extends EditController
                 if (false === $view->model->exists()) {
                     $view->model->idproyecto = $this->getViewModelValue($mainViewName, 'idproyecto');
                 }
+                break;
+
+            case 'docfiles':
+                $this->loadDataDocFiles($view, $this->getModelClassName(), $this->getViewModelValue($mainViewName, 'idtarea'));
                 break;
         }
     }
