@@ -36,11 +36,6 @@ class EditTareaProyecto extends EditController
 {
     use DocFilesTrait;
 
-    public function __construct(string $className = '', string $uri = '')
-    {
-        parent::__construct($className, $uri);
-    }
-
     public function getModelClassName(): string
     {
         return 'TareaProyecto';
@@ -60,10 +55,9 @@ class EditTareaProyecto extends EditController
     {
         parent::createViews();
 
-        // the 'nick' field is defined in Table/tareas.xml and will be loaded automatically
-        // set tabs position and create notes view
         $this->setTabsPosition('bottom');
         $this->createViewsNotes();
+        $this->createViewDocFiles();
 
         $idproyecto = $this->request->get('code', '')
             ? $this->getModel()->idproyecto
@@ -144,7 +138,7 @@ class EditTareaProyecto extends EditController
                     $this->views['EditTareaProyecto']->disableColumn('code');
                 }
 
-                // If it is a new task (no model exists yet) keep the files tab active so user can add files
+                // Si el modelo no existe, desactivamos la pestaña de archivos
                 if (false === $view->model->exists()) {
                     $this->setSettings('docfiles', 'active', true);
                 }

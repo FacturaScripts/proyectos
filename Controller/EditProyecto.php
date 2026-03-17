@@ -646,6 +646,7 @@ class EditProyecto extends EditController
                 parent::loadData($viewName, $view);
                 if (false === $view->model->exists()) {
                     $view->model->idempresa = $this->user->idempresa;
+                    $this->setSettings('docfiles', 'active', true);
                 } elseif (false === $view->model->userCanSee($this->user)) {
                     $this->setTemplate('Error/AccessDenied');
                 } elseif (false === $view->model->editable) {
@@ -656,12 +657,15 @@ class EditProyecto extends EditController
                 }
                 break;
 
+            case 'docfiles':
+                $this->loadDataDocFiles($view, $this->getModelClassName(), $this->getModel()->primaryColumnValue());
+                break;
+
             case 'EditUserProyecto':
             case 'ListNotaProyecto':
             case 'ListStockProyecto':
             case 'ListTareaProyecto':
             case 'ListServicioAT':
-            case 'docfiles':
                 $where = [new DataBaseWhere('idproyecto', $idproyecto)];
                 $view->loadData('', $where);
                 break;
