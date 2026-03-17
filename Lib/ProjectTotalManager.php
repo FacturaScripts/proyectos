@@ -98,7 +98,29 @@ class ProjectTotalManager
             new DataBaseWhere('idproyecto', $idproyecto),
             new DataBaseWhere('editable', true)
         ];
-        return $delivery->all($where, [], 0, 0);
+        $results = $delivery->all($where, [], 0, 0);
+
+        // Also include non-editable delivery notes that are invoiced but whose invoice is not part of the project
+        $whereNonEditable = [
+            new DataBaseWhere('idproyecto', $idproyecto),
+            new DataBaseWhere('editable', false)
+        ];
+        $nonEditables = $delivery->all($whereNonEditable, [], 0, 0);
+        foreach ($nonEditables as $del) {
+            $children = $del->childrenDocuments();
+            $hasInvoiceInProject = false;
+            foreach ($children as $child) {
+                if ($child instanceof FacturaProveedor && $child->idproyecto == $idproyecto) {
+                    $hasInvoiceInProject = true;
+                    break;
+                }
+            }
+            if (! $hasInvoiceInProject) {
+                $results[] = $del;
+            }
+        }
+
+        return $results;
     }
 
     /**
@@ -137,7 +159,29 @@ class ProjectTotalManager
             new DataBaseWhere('idproyecto', $idproyecto),
             new DataBaseWhere('editable', true)
         ];
-        return $delivery->all($where, [], 0, 0);
+        $results = $delivery->all($where, [], 0, 0);
+
+        // Also include non-editable delivery notes that are invoiced but whose invoice is not part of the project
+        $whereNonEditable = [
+            new DataBaseWhere('idproyecto', $idproyecto),
+            new DataBaseWhere('editable', false)
+        ];
+        $nonEditables = $delivery->all($whereNonEditable, [], 0, 0);
+        foreach ($nonEditables as $del) {
+            $children = $del->childrenDocuments();
+            $hasInvoiceInProject = false;
+            foreach ($children as $child) {
+                if ($child instanceof FacturaCliente && $child->idproyecto == $idproyecto) {
+                    $hasInvoiceInProject = true;
+                    break;
+                }
+            }
+            if (! $hasInvoiceInProject) {
+                $results[] = $del;
+            }
+        }
+
+        return $results;
     }
 
     /**
