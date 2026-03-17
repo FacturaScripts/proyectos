@@ -7,6 +7,7 @@
     "phases": "Phases",
     "project-stock-rebuild-error": "Error rebuilding project stock",
     "project-stock-rebuild-ok": "Project stock rebuilt successfully",
+    "reiniciar-patron-anualmente": "Reset pattern annually",
     "show-project-stock": "Show project stock",
     "tasks-imported-correctly": "Tasks imported correctly",
     "total-pending-invoice": "Pending invoice",

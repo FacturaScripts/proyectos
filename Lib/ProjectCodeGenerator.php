@@ -21,6 +21,7 @@ namespace FacturaScripts\Plugins\Proyectos\Lib;
 
 use FacturaScripts\Core\Tools;
 use FacturaScripts\Plugins\Proyectos\Model\Proyecto;
+use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
 
 /**
  * Description of ProjectCodeGenerator
@@ -37,9 +38,55 @@ class ProjectCodeGenerator
     {
         $patron = Tools::settings('proyectos', 'patron', 'PR-{ANYO}-{NUM}');
         $long_numero = Tools::settings('proyectos', 'longnumero', 6);
+        $reset = (bool) Tools::settings('proyectos', 'reiniciarpatronanualmente', 0);
 
         $proyecto = new Proyecto();
-        $numero = 1 + $proyecto->count();
+
+        if (!$reset) {
+            // default behaviour: keep existing global counting
+            $numero = 1 + $proyecto->count();
+        } else {
+            // build prefix replacing date placeholders but leaving numeric placeholders empty
+            $replacements = [
+                '{ANYO}' => date('Y'),
+                '{ANYO2}' => date('y'),
+                '{MES}' => date('m'),
+                '{DIA}' => date('d'),
+                '{NUM}' => '',
+                '{0NUM}' => ''
+            ];
+
+            $prefix = strtr($patron, $replacements);
+
+            // find projects that start with the same prefix and belong to the same company, limited to current year
+            $year = date('Y');
+            $where = [
+                new DataBaseWhere('nombre', $prefix . '%', 'LIKE'),
+                new DataBaseWhere('idempresa', $project->idempresa),
+                new DataBaseWhere('fecha', $year . '-01-01', '>='),
+                new DataBaseWhere('fecha', $year . '-12-31', '<=')
+            ];
+            $projects = Proyecto::all($where, [], 0, 0);
+
+            $max = 0;
+            foreach ($projects as $p) {
+                if (empty($p->fecha)) {
+                    continue;
+                }
+                $pYear = date('Y', strtotime($p->fecha));
+                if ($pYear !== $year) {
+                    continue;
+                }
+                if (preg_match('/(\\d+)$/', $p->nombre, $m)) {
+                    $num = intval($m[1]);
+                    if ($num > $max) {
+                        $max = $num;
+                    }
+                }
+            }
+
+            $numero = $max + 1;
+        }
 
         $project->nombre = strtr($patron, [
             '{ANYO}' => date('Y'),
