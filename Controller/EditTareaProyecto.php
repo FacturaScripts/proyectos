@@ -80,7 +80,7 @@ class EditTareaProyecto extends EditController
     /**
      * @param EditView $view
      */
-    protected function disableTaskColumns(&$view)
+    protected function disableTaskColumns(&$view): void
     {
         foreach ($view->getColumns() as $group) {
             foreach ($group->columns as $col) {

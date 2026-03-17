@@ -430,6 +430,12 @@ class EditProyecto extends EditController
         $status = $this->codeModel->all('tareas_fases', 'idfase', 'nombre');
         $this->views[$viewName]->addFilterSelect('idfase', 'phase', 'idfase', $status);
 
+        // filtro por usuario asignado
+        $users = $this->codeModel->all('users', 'nick', 'nick');
+        if (count($users) > 1) {
+            $this->views[$viewName]->addFilterSelect('nick', 'user', 'nick', $users);
+        }
+
         // disable columns
         $this->views[$viewName]->disableColumn('project');
         $this->views[$viewName]->disableColumn('company');
