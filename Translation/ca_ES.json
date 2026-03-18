@@ -7,6 +7,7 @@
     "phases": "Fases",
     "project-stock-rebuild-error": "Error al regenerar l'estoc",
     "project-stock-rebuild-ok": "Estoc regenerat correctament",
+    "reiniciar-patron-anualmente": "Reiniciar patró anualment",
     "show-project-stock": "Mostrar l'estoc del projecte",
     "tasks-imported-correctly": "Tasques importades correctament",
     "total-pending-invoice": "Pendent facturar",

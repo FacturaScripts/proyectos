@@ -7,6 +7,7 @@
     "phases": "phases",
     "project-stock-rebuild-error": "project-stock-rebuild-error",
     "project-stock-rebuild-ok": "project-stock-rebuild-ok",
+    "reiniciar-patron-anualmente": "Reiniciar patrón anualmente",
     "show-project-stock": "show-project-stock",
     "tasks-imported-correctly": "Tasques importades correctament",
     "total-pending-invoice": "Pendent de facturar",
