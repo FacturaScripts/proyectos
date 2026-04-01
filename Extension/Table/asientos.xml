@@ -5,7 +5,7 @@
         <type>integer</type>
     </column>
     <constraint>
-        <name>ca_asientos_proyectos</name>
-        <type>FOREIGN KEY (idproyecto) REFERENCES asientos (idproyecto) ON DELETE SET NULL ON UPDATE CASCADE</type>
+        <name>ca_asientos_proyectos_2</name>
+        <type>FOREIGN KEY (idproyecto) REFERENCES proyectos (idproyecto) ON DELETE SET NULL ON UPDATE CASCADE</type>
     </constraint>
 </table>
