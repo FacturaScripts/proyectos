@@ -1,0 +1,15 @@
+{
+    "burn-project-stock": "Stok yak",
+    "canceled": "İptal edildi",
+    "generated-projects": "%quantity% üretilen proje",
+    "import-tasks-from-another-project": "Başka bir projeden görevleri içe aktar",
+    "link-document": "Bağla...",
+    "phases": "Aşamalar",
+    "project-stock-rebuild-error": "Stokun yeniden oluşturulmasında hata",
+    "project-stock-rebuild-ok": "Stok başarıyla yeniden oluşturuldu",
+    "reiniciar-patron-anualmente": "Deseni yıllık olarak sıfırla",
+    "show-project-stock": "Proje stokunu göster",
+    "tasks-imported-correctly": "Görevler başarıyla içe aktarıldı",
+    "total-pending-invoice": "Faturalandırılacak toplam",
+    "unlink-document": "Bağlantıyı kaldır..."
+}
