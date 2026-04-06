@@ -9,6 +9,7 @@ use Exception;
 use FacturaScripts\Core\Lib\Calculator;
 use FacturaScripts\Core\Model\AlbaranCliente;
 use FacturaScripts\Core\Model\FacturaCliente;
+use FacturaScripts\Dinamic\Model\DocTransformation;
 use FacturaScripts\Core\Where;
 use FacturaScripts\Dinamic\Lib\BusinessDocumentGenerator;
 use FacturaScripts\Dinamic\Model\AlbaranProveedor;
@@ -18,7 +19,7 @@ use FacturaScripts\Dinamic\Model\PedidoCliente;
 use FacturaScripts\Dinamic\Model\PedidoProveedor;
 use FacturaScripts\Dinamic\Model\PresupuestoCliente;
 use FacturaScripts\Dinamic\Model\Proveedor;
-use FacturaScripts\Plugins\Proyectos\Model\Proyecto;
+use FacturaScripts\Dinamic\Model\Proyecto;
 use FacturaScripts\Test\Traits\DefaultSettingsTrait;
 use FacturaScripts\Test\Traits\LogErrorsTrait;
 use PHPUnit\Framework\TestCase;
@@ -568,6 +569,109 @@ final class ProjectTotalManagerTest extends TestCase
     protected function trackSupplier(Proveedor $supplier): void
     {
         $this->createdSuppliers[] = $supplier;
+    }
+
+    public function testGroupedEstimationsToDeliveryNote(): void
+    {
+        // creamos un proyecto
+        $project = new Proyecto();
+        $this->assertTrue($project->save(), 'No se pudo guardar el proyecto');
+        $this->trackProject($project);
+
+        // creamos un cliente
+        $customer = $this->getRandomCustomer();
+        $this->assertTrue($customer->save(), 'No se pudo guardar el cliente');
+        $this->trackCustomer($customer);
+
+        // creamos el presupuesto 1 y lo vinculamos al proyecto
+        $estimation1 = $this->getRandomCustomerEstimation($customer);
+        $estimation1->idproyecto = $project->id();
+        $this->assertTrue($estimation1->save(), 'No se pudo guardar el presupuesto 1');
+
+        // creamos el presupuesto 2 y lo vinculamos al proyecto
+        $estimation2 = $this->getRandomCustomerEstimation($customer);
+        $estimation2->idproyecto = $project->id();
+        $this->assertTrue($estimation2->save(), 'No se pudo guardar el presupuesto 2');
+
+        // con ambos presupuestos sin facturar, el proyecto debe reflejar la suma de los dos
+        // total = 181.5 * 2 = 363, pendiente (neto) = 150 * 2 = 300
+        $this->checkProject($project, 0, 363, 300);
+
+        // generamos un único albarán a partir del presupuesto 1 (todas sus líneas)
+        $generator = new BusinessDocumentGenerator();
+        $lines1 = $estimation1->getLines();
+        $qty1 = [];
+        foreach ($lines1 as $line) {
+            $qty1[$line->idlinea] = $line->cantidad;
+        }
+        $this->assertTrue($generator->generate(
+            $estimation1,
+            'AlbaranCliente',
+            $lines1,
+            $qty1,
+            ['idproyecto' => $project->id()]
+        ), 'No se pudo generar el albarán desde el presupuesto 1');
+
+        /** @var AlbaranCliente $deliveryNote */
+        $deliveryNote = $generator->getLastDocs()[0];
+
+        // añadimos las líneas del presupuesto 2 al mismo albarán, simulando la agrupación
+        $docTrans = new DocTransformation();
+        $lines2 = $estimation2->getLines();
+        foreach ($lines2 as $line2) {
+            $arrayLine = [
+                'cantidad' => $line2->cantidad,
+                'pvpunitario' => $line2->pvpunitario,
+                'codimpuesto' => $line2->codimpuesto,
+                'iva' => $line2->iva,
+                'recargo' => $line2->recargo,
+                'descripcion' => $line2->descripcion,
+            ];
+            $newLine = $deliveryNote->getNewLine($arrayLine);
+            $this->assertTrue($newLine->save(), 'No se pudo guardar línea de albarán desde presupuesto 2');
+
+            // registramos la relación entre presupuesto 2 y el albarán
+            $docTrans->clear();
+            $docTrans->cantidad = $newLine->cantidad;
+            $docTrans->model1 = $estimation2->modelClassName();
+            $docTrans->iddoc1 = $estimation2->id();
+            $docTrans->idlinea1 = $line2->idlinea;
+            $docTrans->model2 = $deliveryNote->modelClassName();
+            $docTrans->iddoc2 = $deliveryNote->id();
+            $docTrans->idlinea2 = $newLine->idlinea;
+            $this->assertTrue($docTrans->save(), 'No se pudo guardar la relación DocTransformation');
+        }
+
+        // recalculamos el albarán para que actualice sus totales y dispare el recálculo del proyecto
+        $deliveryNoteLines = $deliveryNote->getLines();
+        $this->assertTrue(
+            Calculator::calculate($deliveryNote, $deliveryNoteLines, true),
+            'No se pudo recalcular el albarán'
+        );
+
+        // el albarán agrupa ambos presupuestos: total = 363, neto = 300
+        // con el fix: cada presupuesto contribuye 0 a totalventas (el hijo tiene más que el padre)
+        // el albarán sin hijos contribuye 363 → totalventas = 363, pendiente = 300
+        $this->checkProject($project, 0, 363, 300);
+
+        // generamos una factura a partir del albarán completo
+        $deliveryNoteLines = $deliveryNote->getLines();
+        $qtyDn = [];
+        foreach ($deliveryNoteLines as $line) {
+            $qtyDn[$line->idlinea] = $line->cantidad;
+        }
+        $this->assertTrue($generator->generate(
+            $deliveryNote,
+            'FacturaCliente',
+            $deliveryNoteLines,
+            $qtyDn,
+            ['idproyecto' => $project->id()]
+        ), 'No se pudo generar la factura desde el albarán');
+
+        // con factura generada: totalventas = 363, pendiente = 0
+        $this->checkProject($project, 0, 363, 0);
+
+        $this->cleanupCreatedEntities();
     }
 
     protected function tearDown(): void

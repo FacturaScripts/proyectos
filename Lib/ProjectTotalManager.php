@@ -87,7 +87,8 @@ class ProjectTotalManager
                 }
             }
 
-            $total += ($delivery->total - $totalHijos);
+            // si el hijo tiene un total mayor que el padre, restamos solo el total del padre
+            $total += max(0.0, $delivery->total - $totalHijos);
         }
 
         return $total;
@@ -121,7 +122,8 @@ class ProjectTotalManager
                 }
             }
 
-            $total += ($order->total - $totalHijos);
+            // si el hijo tiene un total mayor que el padre, restamos solo el total del padre
+            $total += max(0.0, $order->total - $totalHijos);
         }
 
         return $total;
@@ -149,8 +151,9 @@ class ProjectTotalManager
                 }
             }
 
-            $total += ($delivery->total - $totalHijos);
-            $neto += ($delivery->neto - $netoHijos);
+            // si el hijo tiene un total mayor que el padre, restamos solo el total del padre
+            $total += max(0.0, $delivery->total - $totalHijos);
+            $neto += max(0.0, $delivery->neto - $netoHijos);
         }
 
         return $total;
@@ -178,8 +181,9 @@ class ProjectTotalManager
                 }
             }
 
-            $total += ($estimation->total - $totalHijos);
-            $neto += ($estimation->neto - $netoHijos);
+            // si el hijo tiene un total mayor que el padre, restamos solo el total del padre
+            $total += max(0.0, $estimation->total - $totalHijos);
+            $neto += max(0.0, $estimation->neto - $netoHijos);
         }
 
         return $total;
@@ -220,8 +224,9 @@ class ProjectTotalManager
                 }
             }
 
-            $total += ($order->total - $totalHijos);
-            $neto += ($order->neto - $netoHijos);
+            // si el hijo tiene un total mayor que el padre, restamos solo el total del padre
+            $total += max(0.0, $order->total - $totalHijos);
+            $neto += max(0.0, $order->neto - $netoHijos);
         }
 
         return $total;
