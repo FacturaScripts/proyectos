@@ -89,6 +89,13 @@
                                                     </small>
                                                 </div>
                                             {% endif %}
+                                            {% if task.nick %}
+                                                <div class="mt-1">
+                                                    <small class="text-muted">
+                                                        <i class="fa-solid fa-user"></i> {{ task.nick }}
+                                                    </small>
+                                                </div>
+                                            {% endif %}
                                         </div>
                                     </div>
                                 {% endfor %}
