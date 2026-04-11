@@ -11,7 +11,7 @@
                         <i class="fa-solid fa-triangle-exclamation fa-2x mb-2"></i>
                         <p class="mb-2">{{ trans('no-data') }}</p>
                         <a href="EditProyecto" class="btn btn-success">
-                            <i class="fa-solid fa-plus"></i> {{ trans('project') }}
+                            <i class="fa-solid fa-plus me-1"></i> {{ trans('project') }}
                         </a>
                     </div>
                 </div>
@@ -33,12 +33,12 @@
             {% if fsc.project.idproyecto %}
                 <div class="col-auto">
                     <a href="EditProyecto?code={{ fsc.project.idproyecto }}" class="btn btn-outline-primary">
-                        <i class="fa-solid fa-eye"></i> {{ trans('project') }}
+                        <i class="fa-solid fa-eye me-1"></i> {{ trans('project') }}
                     </a>
                 </div>
                 <div class="col-auto">
                     <a href="EditTareaProyecto?idproyecto={{ fsc.project.idproyecto }}" class="btn btn-success">
-                        <i class="fa-solid fa-plus"></i> {{ trans('task') }}
+                        <i class="fa-solid fa-plus me-1"></i> {{ trans('task') }}
                     </a>
                 </div>
             {% endif %}
