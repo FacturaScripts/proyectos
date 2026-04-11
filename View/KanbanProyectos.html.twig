@@ -4,6 +4,19 @@
     {{ parent() }}
 
     <div class="container-fluid">
+        {% if fsc.projects is empty %}
+            <div class="row p-3">
+                <div class="col">
+                    <div class="alert alert-warning text-center mb-0">
+                        <i class="fa-solid fa-triangle-exclamation fa-2x mb-2"></i>
+                        <p class="mb-2">{{ trans('no-data') }}</p>
+                        <a href="EditProyecto" class="btn btn-success">
+                            <i class="fa-solid fa-plus"></i> {{ trans('project') }}
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% else %}
         <div class="row p-3 mb-3 align-items-end">
             <div class="col-md-4">
                 <label class="form-label">{{ trans('project') }}</label>
@@ -35,11 +48,24 @@
             <div class="row flex-nowrap kanban-board pb-3">
                 {% for phase in fsc.phases %}
                     {% set tasks = fsc.tasksByPhase[phase.idfase] ?? [] %}
+                    {% if phase.tipo is same as(0) %}
+                        {% set phaseColor = 'bg-success text-white' %}
+                        {% set badgeColor = 'bg-light text-success' %}
+                    {% elseif phase.tipo is same as(1) %}
+                        {% set phaseColor = 'bg-danger text-white' %}
+                        {% set badgeColor = 'bg-light text-danger' %}
+                    {% elseif phase.tipo is same as(2) %}
+                        {% set phaseColor = 'bg-info text-white' %}
+                        {% set badgeColor = 'bg-light text-info' %}
+                    {% else %}
+                        {% set phaseColor = '' %}
+                        {% set badgeColor = 'bg-secondary' %}
+                    {% endif %}
                     <div class="col kanban-col">
                         <div class="card h-100">
-                            <div class="card-header d-flex justify-content-between align-items-center">
+                            <div class="card-header d-flex justify-content-between align-items-center {{ phaseColor }}">
                                 <strong>{{ phase.nombre }}</strong>
-                                <span class="badge bg-secondary">{{ tasks | length }}</span>
+                                <span class="badge {{ badgeColor }}">{{ tasks | length }}</span>
                             </div>
                             <div class="card-body kanban-column p-2"
                                  data-phase-id="{{ phase.idfase }}"
@@ -75,6 +101,7 @@
             <div class="alert alert-info">
                 {{ trans('no-data') }}
             </div>
+        {% endif %}
         {% endif %}
     </div>
 {% endblock %}
