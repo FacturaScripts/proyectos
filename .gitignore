@@ -18,6 +18,10 @@ package-lock.json
 # phpstorm
 /.idea/
 
-# sscode
+# vscode
 .vscode
 *.code-workspace
+
+# ia
+.codex
+.claude

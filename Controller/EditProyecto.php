@@ -1,7 +1,7 @@
 <?php
 /**
  * This file is part of Proyectos plugin for FacturaScripts
- * Copyright (C) 2020-2025 Carlos Garcia Gomez <carlos@facturascripts.com>
+ * Copyright (C) 2020-2026 Carlos Garcia Gomez <carlos@facturascripts.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -28,18 +28,18 @@ use FacturaScripts\Core\DataSrc\Empresas;
 use FacturaScripts\Core\DataSrc\FormasPago;
 use FacturaScripts\Core\DataSrc\GruposClientes;
 use FacturaScripts\Core\DataSrc\Series;
+use FacturaScripts\Core\Lib\ExtendedController\DocFilesTrait;
 use FacturaScripts\Core\Lib\ExtendedController\EditController;
 use FacturaScripts\Core\Lib\ExtendedController\EditView;
-use FacturaScripts\Core\Lib\ExtendedController\DocFilesTrait;
 use FacturaScripts\Core\Lib\InvoiceOperation;
 use FacturaScripts\Core\Model\Asiento;
 use FacturaScripts\Core\Tools;
 use FacturaScripts\Dinamic\Lib\ProjectStockManager;
 use FacturaScripts\Dinamic\Lib\ProjectTotalManager;
+use FacturaScripts\Dinamic\Model\EstadoAT;
 use FacturaScripts\Dinamic\Model\EstadoDocumento;
 use FacturaScripts\Dinamic\Model\FaseTarea;
 use FacturaScripts\Dinamic\Model\Proyecto;
-use FacturaScripts\Dinamic\Model\EstadoAT;
 
 /**
  * Description of EditProyecto
@@ -309,10 +309,10 @@ class EditProyecto extends EditController
         }
     }
 
-    protected function createViewPurchases(string $modelName, string $label)
+    protected function createViewPurchases(string $modelName, string $label): void
     {
         $viewName = 'List' . $modelName;
-        $this->addListView($viewName, $modelName, $label, 'fa-solid fa-copy')
+        $this->addListView($viewName, $modelName, $label, 'fa-regular fa-file')
             ->addOrderBy(['codigo'], 'code')
             ->addOrderBy(['fecha', $this->tableColToNumber('numero')], 'date', 2)
             ->addOrderBy([$this->tableColToNumber('numero')], 'number')
@@ -334,10 +334,10 @@ class EditProyecto extends EditController
         $this->addCommonSalesPurchases($viewName, $modelName);
     }
 
-    protected function createViewSales(string $modelName, string $label)
+    protected function createViewSales(string $modelName, string $label): void
     {
         $viewName = 'List' . $modelName;
-        $this->addListView($viewName, $modelName, $label, 'fa-solid fa-copy')
+        $this->addListView($viewName, $modelName, $label, 'fa-regular fa-file')
             ->addOrderBy(['codigo'], 'code')
             ->addOrderBy(['codcliente'], 'customer-code')
             ->addOrderBy(['fecha', $this->tableColToNumber('numero')], 'date', 2)
