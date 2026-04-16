@@ -28,7 +28,7 @@ use FacturaScripts\Plugins\Proyectos\Model\Proyecto;
 /**
  * Description of PurchasesHeaderHTMLMod
  *
- * @author Daniel Fernández Giménez <hola@danielfg.es>
+ * @author Daniel Fernández Giménez <contacto@danielfg.es>
  */
 class PurchasesHeaderHTMLMod implements PurchasesModInterface
 {

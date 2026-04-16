@@ -28,7 +28,7 @@ use FacturaScripts\Core\Tools;
 /**
  * Description of ListTarea
  *
- * @author Daniel Fernández Giménez <hola@danielfg.es>
+ * @author Daniel Fernández Giménez <contacto@danielfg.es>
  * @author Carlos Garcia Gomez      <carlos@facturascripts.com>
  */
 class ListTareaProyecto extends ListController

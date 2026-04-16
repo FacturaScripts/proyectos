@@ -27,7 +27,7 @@ use FacturaScripts\Core\Tools;
 /**
  * Description of FaseTarea
  *
- * @author Daniel Fernández Giménez <hola@danielfg.es>
+ * @author Daniel Fernández Giménez <contacto@danielfg.es>
  */
 class FaseTarea extends ModelClass
 {

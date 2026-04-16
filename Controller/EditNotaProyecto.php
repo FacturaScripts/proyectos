@@ -25,7 +25,7 @@ use FacturaScripts\Core\Lib\ExtendedController\EditController;
 /**
  * Description of EditNotaProyecto
  *
- * @author Daniel Fernández Giménez <hola@danielfg.es>
+ * @author Daniel Fernández Giménez <contacto@danielfg.es>
  */
 class EditNotaProyecto extends EditController
 {
