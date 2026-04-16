@@ -25,3 +25,7 @@ package-lock.json
 # ia
 .codex
 .claude
+# IA
+CLAUDE.md
+/.claude
+.codex
