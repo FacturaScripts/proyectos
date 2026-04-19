@@ -4,6 +4,7 @@
     "generated-projects": "%quantity% üretilen proje",
     "import-tasks-from-another-project": "Başka bir projeden görevleri içe aktar",
     "link-document": "Bağla...",
+    "no-projects": "No hay proyectos",
     "phases": "Aşamalar",
     "project-stock-rebuild-error": "Stokun yeniden oluşturulmasında hata",
     "project-stock-rebuild-ok": "Stok başarıyla yeniden oluşturuldu",

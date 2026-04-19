@@ -4,6 +4,7 @@
     "generated-projects": "%quantity% wygenerowanych projektów",
     "import-tasks-from-another-project": "Importar tareas desde otro proyecto",
     "link-document": "Połącz...",
+    "no-projects": "No hay proyectos",
     "phases": "Fazy",
     "project-stock-rebuild-error": "Błąd podczas regeneracji zapasów",
     "project-stock-rebuild-ok": "Zasoby zostały pomyślnie odtworzone",

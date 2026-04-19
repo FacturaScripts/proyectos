@@ -4,6 +4,7 @@
     "generated-projects": "%quantity% proyectos generados",
     "import-tasks-from-another-project": "Importovat úkoly z jiného projektu",
     "link-document": "Vincular...",
+    "no-projects": "No hay proyectos",
     "phases": "Fases",
     "project-stock-rebuild-error": "Error al regenerar el stock",
     "project-stock-rebuild-ok": "Stock regenerado correctamente",
