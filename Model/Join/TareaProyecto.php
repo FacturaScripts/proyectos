@@ -27,7 +27,7 @@ use FacturaScripts\Plugins\Proyectos\Model\TareaProyecto as parentTareaProyecto;
 /**
  * Description of Tarea
  *
- * @author Daniel Fernández Giménez <hola@danielfg.es>
+ * @author Daniel Fernández Giménez <contacto@danielfg.es>
  */
 class TareaProyecto extends JoinModel
 {
