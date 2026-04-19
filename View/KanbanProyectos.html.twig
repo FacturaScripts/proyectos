@@ -5,43 +5,96 @@
 
     <div class="container-fluid">
         {% if fsc.projects is empty %}
-            <div class="row p-3">
-                <div class="col">
-                    <div class="alert alert-warning text-center mb-0">
-                        <i class="fa-solid fa-triangle-exclamation fa-2x mb-2"></i>
-                        <p class="mb-2">{{ trans('no-data') }}</p>
-                        <a href="EditProyecto" class="btn btn-success">
-                            <i class="fa-solid fa-plus me-1"></i> {{ trans('project') }}
-                        </a>
+            <div class="row p-3 mt-md-5">
+                <div class="col text-center">
+                    <div class="mb-3">
+                        <i class="fa-solid fa-inbox fa-3x text-secondary"></i>
                     </div>
+                    <p class="mb-3">{{ trans('no-projects') }}</p>
+                    <a href="EditProyecto" class="btn btn-success">
+                        <i class="fa-solid fa-plus me-1"></i> {{ trans('project') }}
+                    </a>
                 </div>
             </div>
         {% else %}
-        <div class="row p-3 mb-3 align-items-end">
-            <div class="col-md-4">
-                <label class="form-label">{{ trans('project') }}</label>
-                <select class="form-select" id="projectSelector"
-                        onchange="window.location.href='KanbanProyectos?idproyecto=' + this.value">
-                    {% for project in fsc.projects %}
-                        <option value="{{ project.idproyecto }}"
-                                {{ project.idproyecto == fsc.project.idproyecto ? 'selected' : '' }}>
-                            {{ project.nombre }}
-                        </option>
-                    {% endfor %}
-                </select>
+        <div class="py-3">
+            <div class="project-header card shadow-sm mb-3">
+                <div class="card-body">
+                    <div class="d-flex gap-3 align-items-start flex-wrap flex-md-nowrap">
+                        <div class="project-header-icon text-secondary">
+                            {% if fsc.project.privado %}
+                                <i class="fa-solid fa-lock"></i>
+                            {% else %}
+                                <i class="fa-brands fa-stack-overflow"></i>
+                            {% endif %}
+                        </div>
+                        <div class="flex-grow-1 w-100">
+                            <div class="row g-2 align-items-end">
+                                <div class="col-md">
+                                    <label class="form-label small mb-1 text-muted">{{ trans('project') }}</label>
+                                    <select class="form-select" id="projectSelector"
+                                            onchange="window.location.href='KanbanProyectos?idproyecto=' + this.value">
+                                        {% for project in fsc.projects %}
+                                            <option value="{{ project.idproyecto }}"
+                                                    {{ project.idproyecto == fsc.project.idproyecto ? 'selected' : '' }}>
+                                                {{ project.privado ? '🔒 ' : '' }}{{ project.nombre }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                {% if fsc.project.idproyecto %}
+                                    <div class="col-auto">
+                                        <a href="EditTareaProyecto?idproyecto={{ fsc.project.idproyecto }}" class="btn btn-success">
+                                            <i class="fa-solid fa-plus me-1"></i> {{ trans('task') }}
+                                        </a>
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            {% if fsc.project.idproyecto %}
+                                <hr class="my-3">
+                                <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+                                    <h5 class="mb-0">
+                                        <a href="EditProyecto?code={{ fsc.project.idproyecto }}" class="text-decoration-none">
+                                            {{ fsc.project.nombre }}
+                                        </a>
+                                    </h5>
+                                    {% if fsc.projectStatus and fsc.projectStatus.nombre %}
+                                        <span class="badge" style="background-color: {{ fsc.projectStatus.color ?: '#6c757d' }};">
+                                            {{ fsc.projectStatus.nombre }}
+                                        </span>
+                                    {% endif %}
+                                </div>
+                                {% if fsc.project.descripcion %}
+                                    <p class="text-muted small mb-2 mt-2">{{ fsc.project.descripcion | nl2br }}</p>
+                                {% endif %}
+                                <div class="d-flex flex-wrap gap-3 small text-muted mt-2">
+                                    {% if fsc.project.fechainicio or fsc.project.fechafin %}
+                                        <span>
+                                            <i class="fa-solid fa-calendar-days me-1"></i>
+                                            {{ fsc.project.fechainicio ?: '—' }}
+                                            <i class="fa-solid fa-arrow-right-long mx-1"></i>
+                                            {{ fsc.project.fechafin ?: '—' }}
+                                        </span>
+                                    {% endif %}
+                                    {% if fsc.project.codcliente %}
+                                        <span>
+                                            <i class="fa-solid fa-building me-1"></i>
+                                            {{ fsc.project.codcliente }}
+                                        </span>
+                                    {% endif %}
+                                    {% if fsc.project.nick %}
+                                        <span>
+                                            <i class="fa-solid fa-user me-1"></i>
+                                            {{ fsc.project.nick }}
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
             </div>
-            {% if fsc.project.idproyecto %}
-                <div class="col-auto">
-                    <a href="EditProyecto?code={{ fsc.project.idproyecto }}" class="btn btn-outline-primary">
-                        <i class="fa-solid fa-eye me-1"></i> {{ trans('project') }}
-                    </a>
-                </div>
-                <div class="col-auto">
-                    <a href="EditTareaProyecto?idproyecto={{ fsc.project.idproyecto }}" class="btn btn-success">
-                        <i class="fa-solid fa-plus me-1"></i> {{ trans('task') }}
-                    </a>
-                </div>
-            {% endif %}
         </div>
 
         {% if fsc.project.idproyecto %}
@@ -117,6 +170,12 @@
     {{ parent() }}
 
     <style>
+        .project-header-icon {
+            font-size: 3.5rem;
+            line-height: 1;
+            min-width: 3.5rem;
+            text-align: center;
+        }
         .kanban-board {
             overflow-x: auto;
         }

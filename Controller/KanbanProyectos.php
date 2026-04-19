@@ -21,6 +21,7 @@ namespace FacturaScripts\Plugins\Proyectos\Controller;
 
 use FacturaScripts\Core\Template\Controller;
 use FacturaScripts\Core\Where;
+use FacturaScripts\Dinamic\Model\EstadoProyecto;
 use FacturaScripts\Dinamic\Model\FaseTarea;
 use FacturaScripts\Dinamic\Model\Proyecto;
 use FacturaScripts\Dinamic\Model\TareaProyecto;
@@ -32,6 +33,9 @@ class KanbanProyectos extends Controller
 
     /** @var Proyecto */
     public $project;
+
+    /** @var EstadoProyecto|null */
+    public $projectStatus;
 
     /** @var Proyecto[] */
     public array $projects = [];
@@ -107,6 +111,10 @@ class KanbanProyectos extends Controller
             $this->project->load($idproyecto);
         } elseif (!empty($this->projects)) {
             $this->project = $this->projects[0];
+        }
+
+        if (!empty($this->project->idestado)) {
+            $this->projectStatus = $this->project->getStatus();
         }
     }
 
