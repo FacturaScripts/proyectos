@@ -174,7 +174,19 @@ class ListProyecto extends ListController
             }
         }
 
-        $this->listView($viewName)->addFilterSelectWhere('status', $where);
+        $users = $this->codeModel->all('users', 'nick', 'nick');
+        $this->listView($viewName)
+            ->addFilterSelectWhere('status', $where)
+            ->addFilterPeriod('fecha', 'date', 'fecha')
+            ->addFilterAutocomplete('codcliente', 'customer', 'codcliente', 'clientes', 'codcliente', 'nombre')
+            ->addFilterSelect('nick', 'admin', 'nick', $users)
+            ->addFilterNumber('totalcompras-gt', 'total-purchases', 'totalcompras', '>=')
+            ->addFilterNumber('totalcompras-lt', 'total-purchases', 'totalcompras', '<=')
+            ->addFilterNumber('totalventas-gt', 'total-sales', 'totalventas', '>=')
+            ->addFilterNumber('totalventas-lt', 'total-sales', 'totalventas', '<=')
+            ->setSettings('btnNew', false)
+            ->setSettings('btnDelete', false);
+
         $this->setProjectColors($viewName);
     }
 }
