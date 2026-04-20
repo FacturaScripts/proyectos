@@ -5,6 +5,7 @@
     "import-tasks-from-another-project": "Importar tareas desde otro proyecto",
     "link-document": "Vincular...",
     "no-projects": "No hay proyectos",
+    "open-projects": "Abiertos",
     "phases": "Fases",
     "project-stock-rebuild-error": "Error al regenerar el stock",
     "project-stock-rebuild-ok": "Stock regenerado correctamente",

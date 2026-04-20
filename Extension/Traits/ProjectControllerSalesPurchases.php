@@ -38,7 +38,7 @@ trait ProjectControllerSalesPurchases
             }
 
             if (empty($list)) {
-                $list[] = ['key' => null, 'value' => Tools::lang()->trans('no-data')];
+                $list[] = ['key' => null, 'value' => Tools::trans('no-data')];
             }
 
             return $list;

@@ -130,7 +130,7 @@ class EditProyecto extends EditController
         foreach (InvoiceOperation::all() as $key => $value) {
             $operations[] = [
                 'code' => $key,
-                'description' => Tools::lang()->trans($value)
+                'description' => Tools::trans($value)
             ];
         }
         $this->listView($viewName)->addFilterSelect('operacion', 'operation', 'operacion', $operations);
@@ -355,9 +355,9 @@ class EditProyecto extends EditController
 
         // filtramos por grupos de clientes
         $optionsGroup = [
-            ['label' => Tools::lang()->trans('any-group'), 'where' => []],
+            ['label' => Tools::trans('any-group'), 'where' => []],
             [
-                'label' => Tools::lang()->trans('without-groups'),
+                'label' => Tools::trans('without-groups'),
                 'where' => [new DataBaseWhere('codcliente', "SELECT DISTINCT codcliente FROM clientes WHERE codgrupo IS NULL", 'IN')]
             ],
             ['label' => '------', 'where' => []],

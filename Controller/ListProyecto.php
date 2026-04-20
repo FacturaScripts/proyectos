@@ -1,7 +1,7 @@
 <?php
 /**
  * This file is part of Proyectos plugin for FacturaScripts
- * Copyright (C) 2020-2024 Carlos Garcia Gomez <carlos@facturascripts.com>
+ * Copyright (C) 2020-2026 Carlos Garcia Gomez <carlos@facturascripts.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -19,10 +19,10 @@
 
 namespace FacturaScripts\Plugins\Proyectos\Controller;
 
-use FacturaScripts\Core\Where;
 use FacturaScripts\Core\Lib\ExtendedController\ListController;
 use FacturaScripts\Core\Lib\ExtendedController\ListView;
 use FacturaScripts\Core\Tools;
+use FacturaScripts\Core\Where;
 use FacturaScripts\Plugins\Proyectos\Model\EstadoProyecto;
 
 /**
@@ -43,9 +43,9 @@ class ListProyecto extends ListController
 
     protected function createViews()
     {
-        $this->createViewsProjects('ListProyecto', 'projects', 'fa-brands fa-stack-overflow');
-        $this->createViewsProjects('ListProyecto-private', 'private', 'fa-solid fa-unlock-alt');
-        $this->createViewsProjectsClosed('Listproyecto-closed', 'closed', 'fa-solid fa-lock');
+        $this->createViewsProjects('ListProyecto', 'open-projects', 'fa-solid fa-lock-open');
+        $this->createViewsProjects('ListProyecto-private', 'private', 'fa-solid fa-user-lock');
+        $this->createViewsProjectsClosed('ListProyecto-closed', 'closed', 'fa-solid fa-lock');
     }
 
     protected function createViewsProjects(string $viewName, string $label, string $icon): void
@@ -62,12 +62,12 @@ class ListProyecto extends ListController
         // filtros
         $users = $this->codeModel->all('users', 'nick', 'nick');
         $where = [
-            ['label' => Tools::lang()->trans('only-active'), 'where' => [Where::column('editable', true)]],
-            ['label' => Tools::lang()->trans('only-closed'), 'where' => [Where::column('editable', false)]],
-            ['label' => Tools::lang()->trans('all'), 'where' => []]
+            ['label' => Tools::trans('only-active'), 'where' => [Where::eq('editable', true)]],
+            ['label' => Tools::trans('only-closed'), 'where' => [Where::eq('editable', false)]],
+            ['label' => Tools::trans('all'), 'where' => []]
         ];
         foreach ($this->codeModel->all('proyectos_estados', 'idestado', 'nombre') as $status) {
-            $where[] = ['label' => ($status->description ?? $status->nombre), 'where' => [Where::column('idestado', $status->code)]];
+            $where[] = ['label' => ($status->description ?? $status->nombre), 'where' => [Where::eq('idestado', $status->code)]];
         }
 
         $this->listView($viewName)
@@ -96,8 +96,8 @@ class ListProyecto extends ListController
                     break;
                 }
                 $where = [
-                    Where::column('idempresa', $this->user->idempresa),
-                    Where::column('privado', false)
+                    Where::eq('idempresa', $this->user->idempresa),
+                    Where::eq('privado', false)
                 ];
                 $view->loadData('', $where);
                 break;
@@ -106,21 +106,21 @@ class ListProyecto extends ListController
                 $sql = 'SELECT idproyecto FROM proyectos WHERE nick = ' . $this->dataBase->var2str($this->user->nick)
                     . ' UNION SELECT idproyecto FROM proyectos_users WHERE nick = ' . $this->dataBase->var2str($this->user->nick);
                 $where = [
-                    Where::column('privado', true),
+                    Where::eq('privado', true),
                     Where::in('idproyecto', $sql)
                 ];
                 $view->loadData('', $where);
                 break;
 
-            case 'Listproyecto-closed':
+            case 'ListProyecto-closed':
                 if ($this->user->admin) {
                     $view->loadData();
                     break;
                 }
                 $where = [
-                    Where::column('idempresa', $this->user->idempresa),
-                    Where::column('privado', false),
-                    Where::column('editable', false),
+                    Where::eq('idempresa', $this->user->idempresa),
+                    Where::eq('privado', false),
+                    Where::eq('editable', false),
                 ];
                 $view->loadData('', $where);
                 break;
@@ -133,7 +133,7 @@ class ListProyecto extends ListController
     protected function setProjectColors(string $viewName): void
     {
         // asignamos colores
-        foreach (EstadoProyecto::all([], [], 0, 0) as $estado) {
+        foreach (EstadoProyecto::all() as $estado) {
             if (empty($estado->color)) {
                 continue;
             }
@@ -161,15 +161,15 @@ class ListProyecto extends ListController
             ->addSearchFields(['nombre', 'descripcion']);
         // sólo estados no editables
         $where = [
-            ['label' => Tools::lang()->trans('only-closed'), 'where' => [Where::column('editable', false)]],
-            ['label' => '------', 'where' => [Where::column('editable', false)]],
+            ['label' => Tools::trans('only-closed'), 'where' => [Where::eq('editable', false)]],
+            ['label' => '------', 'where' => [Where::eq('editable', false)]],
         ];
 
-        foreach (EstadoProyecto::all([], [], 0, 0) as $estado) {
+        foreach (EstadoProyecto::all() as $estado) {
             if (false === $estado->editable) {
                 $where[] = [
                     'label' => $estado->nombre,
-                    'where' => [Where::column('idestado', $estado->idestado)]
+                    'where' => [Where::eq('idestado', $estado->idestado)]
                 ];
             }
         }
