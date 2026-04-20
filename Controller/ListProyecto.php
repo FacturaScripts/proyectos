@@ -19,7 +19,7 @@
 
 namespace FacturaScripts\Plugins\Proyectos\Controller;
 
-use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
+use FacturaScripts\Core\Where;
 use FacturaScripts\Core\Lib\ExtendedController\ListController;
 use FacturaScripts\Core\Lib\ExtendedController\ListView;
 use FacturaScripts\Core\Tools;
@@ -45,6 +45,7 @@ class ListProyecto extends ListController
     {
         $this->createViewsProjects('ListProyecto', 'projects', 'fa-brands fa-stack-overflow');
         $this->createViewsProjects('ListProyecto-private', 'private', 'fa-solid fa-unlock-alt');
+        $this->createViewsProjectsClosed('Listproyecto-closed', 'closed', 'fa-solid fa-lock');
     }
 
     protected function createViewsProjects(string $viewName, string $label, string $icon): void
@@ -61,12 +62,12 @@ class ListProyecto extends ListController
         // filtros
         $users = $this->codeModel->all('users', 'nick', 'nick');
         $where = [
-            ['label' => Tools::lang()->trans('only-active'), 'where' => [new DataBaseWhere('editable', true)]],
-            ['label' => Tools::lang()->trans('only-closed'), 'where' => [new DataBaseWhere('editable', false)]],
+            ['label' => Tools::lang()->trans('only-active'), 'where' => [Where::column('editable', true)]],
+            ['label' => Tools::lang()->trans('only-closed'), 'where' => [Where::column('editable', false)]],
             ['label' => Tools::lang()->trans('all'), 'where' => []]
         ];
         foreach ($this->codeModel->all('proyectos_estados', 'idestado', 'nombre') as $status) {
-            $where[] = ['label' => $status->description, 'where' => [new DataBaseWhere('idestado', $status->code)]];
+            $where[] = ['label' => ($status->description ?? $status->nombre), 'where' => [Where::column('idestado', $status->code)]];
         }
 
         $this->listView($viewName)
@@ -95,8 +96,8 @@ class ListProyecto extends ListController
                     break;
                 }
                 $where = [
-                    new DataBaseWhere('idempresa', $this->user->idempresa),
-                    new DataBaseWhere('privado', false)
+                    Where::column('idempresa', $this->user->idempresa),
+                    Where::column('privado', false)
                 ];
                 $view->loadData('', $where);
                 break;
@@ -105,8 +106,21 @@ class ListProyecto extends ListController
                 $sql = 'SELECT idproyecto FROM proyectos WHERE nick = ' . $this->dataBase->var2str($this->user->nick)
                     . ' UNION SELECT idproyecto FROM proyectos_users WHERE nick = ' . $this->dataBase->var2str($this->user->nick);
                 $where = [
-                    new DataBaseWhere('privado', true),
-                    new DataBaseWhere('idproyecto', $sql, 'IN')
+                    Where::column('privado', true),
+                    Where::in('idproyecto', $sql)
+                ];
+                $view->loadData('', $where);
+                break;
+
+            case 'Listproyecto-closed':
+                if ($this->user->admin) {
+                    $view->loadData();
+                    break;
+                }
+                $where = [
+                    Where::column('idempresa', $this->user->idempresa),
+                    Where::column('privado', false),
+                    Where::column('editable', false),
                 ];
                 $view->loadData('', $where);
                 break;
@@ -133,5 +147,34 @@ class ListProyecto extends ListController
                 'title' => $estado->nombre
             ];
         }
+    }
+
+    protected function createViewsProjectsClosed(string $viewName, string $label, string $icon): void
+    {
+        $this->addView($viewName, 'Proyecto', $label, $icon)
+            ->addOrderBy(['fecha', 'idproyecto'], 'date', 2)
+            ->addOrderBy(['fechainicio'], 'start-date')
+            ->addOrderBy(['fechafin'], 'end-date')
+            ->addOrderBy(['nombre'], 'name')
+            ->addOrderBy(['totalcompras'], 'total-purchases')
+            ->addOrderBy(['totalventas'], 'total-sales')
+            ->addSearchFields(['nombre', 'descripcion']);
+        // sólo estados no editables
+        $where = [
+            ['label' => Tools::lang()->trans('only-closed'), 'where' => [Where::column('editable', false)]],
+            ['label' => '------', 'where' => [Where::column('editable', false)]],
+        ];
+
+        foreach (EstadoProyecto::all([], [], 0, 0) as $estado) {
+            if (false === $estado->editable) {
+                $where[] = [
+                    'label' => $estado->nombre,
+                    'where' => [Where::column('idestado', $estado->idestado)]
+                ];
+            }
+        }
+
+        $this->listView($viewName)->addFilterSelectWhere('status', $where);
+        $this->setProjectColors($viewName);
     }
 }
