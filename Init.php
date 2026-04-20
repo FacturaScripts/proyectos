@@ -22,7 +22,6 @@ namespace FacturaScripts\Plugins\Proyectos;
 use FacturaScripts\Core\Lib\AjaxForms\PurchasesHeaderHTML;
 use FacturaScripts\Core\Lib\AjaxForms\SalesHeaderHTML;
 use FacturaScripts\Core\Base\DataBase;
-use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
 use FacturaScripts\Core\Model\Role;
 use FacturaScripts\Core\Model\RoleAccess;
 use FacturaScripts\Core\Template\InitClass;

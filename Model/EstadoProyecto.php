@@ -19,7 +19,7 @@
 
 namespace FacturaScripts\Plugins\Proyectos\Model;
 
-use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
+use FacturaScripts\Core\Where;
 use FacturaScripts\Core\Template\ModelClass;
 use FacturaScripts\Core\Template\ModelTrait;
 use FacturaScripts\Core\Tools;
@@ -107,8 +107,8 @@ class EstadoProyecto extends ModelClass
     protected function resetProjectDefault(): void
     {
         $where = [
-            new DataBaseWhere('predeterminado', true),
-            new DataBaseWhere('idestado', $this->idestado, '!=')
+            Where::eq('predeterminado', true),
+            Where::notEq('idestado', $this->idestado)
         ];
         foreach ($this->all($where, [], 0, 0) as $status) {
             $status->predeterminado = false;

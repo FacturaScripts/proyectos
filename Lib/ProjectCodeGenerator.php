@@ -21,7 +21,7 @@ namespace FacturaScripts\Plugins\Proyectos\Lib;
 
 use FacturaScripts\Core\Tools;
 use FacturaScripts\Plugins\Proyectos\Model\Proyecto;
-use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
+use FacturaScripts\Core\Where;
 
 /**
  * Description of ProjectCodeGenerator
@@ -64,10 +64,10 @@ class ProjectCodeGenerator
 
             // find projects that start with the same prefix and belong to the same company, limited to current year
             $where = [
-                new DataBaseWhere('nombre', $prefix . '%', 'LIKE'),
-                new DataBaseWhere('idempresa', $project->idempresa),
-                new DataBaseWhere('fecha', $year . '-01-01', '>='),
-                new DataBaseWhere('fecha', $year . '-12-31', '<=')
+                Where::like('nombre', $prefix . '%'),
+                Where::eq('idempresa', $project->idempresa),
+                Where::gte('fecha', $year . '-01-01'),
+                Where::lte('fecha', $year . '-12-31')
             ];
             $projects = Proyecto::all($where, [], 0, 0);
 

@@ -19,7 +19,7 @@
 
 namespace FacturaScripts\Plugins\Proyectos\Lib;
 
-use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
+use FacturaScripts\Core\Where;
 use FacturaScripts\Core\Model\Base\BusinessDocumentLine;
 use FacturaScripts\Core\Model\Base\TransformerDocument;
 use FacturaScripts\Core\Tools;
@@ -66,7 +66,7 @@ class ProjectStockManager
             new AlbaranCliente(), new FacturaCliente()
         ];
         foreach ($models as $model) {
-            $where = [new DataBaseWhere('idproyecto', $idproyecto)];
+            $where = [Where::eq('idproyecto', $idproyecto)];
             foreach ($model->all($where, [], 0, 0) as $item) {
                 $lines = $item->getLines();
                 foreach ($lines as $line) {
@@ -83,8 +83,8 @@ class ProjectStockManager
         foreach ($stockData as $referencia => $data) {
             $stock = new StockProyecto();
             $where = [
-                new DataBaseWhere('idproyecto', $idproyecto),
-                new DataBaseWhere('referencia', $referencia)
+                Where::eq('idproyecto', $idproyecto),
+                Where::eq('referencia', $referencia)
             ];
             if (false === $stock->loadWhere($where)) {
                 $stock->idproducto = $data['idproducto'];
@@ -127,8 +127,8 @@ class ProjectStockManager
 
             $docTransformation = new DocTransformation();
             $where = [
-                new DataBaseWhere('idlinea1', $line->id()),
-                new DataBaseWhere('model1', $model1)
+                Where::eq('idlinea1', $line->id()),
+                Where::eq('model1', $model1)
             ];
             foreach ($docTransformation->all($where, [], 0, 0) as $dtl) {
                 foreach ($childLines as $chLine) {

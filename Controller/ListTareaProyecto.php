@@ -19,10 +19,10 @@
 
 namespace FacturaScripts\Plugins\Proyectos\Controller;
 
-use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
 use FacturaScripts\Core\Lib\ExtendedController\ListController;
 use FacturaScripts\Core\Lib\ExtendedController\ListView;
 use FacturaScripts\Core\Tools;
+use FacturaScripts\Core\Where;
 
 
 /**
@@ -135,8 +135,8 @@ class ListTareaProyecto extends ListController
                     break;
                 }
                 $where = [
-                    new DataBaseWhere('proyectos.idempresa', $this->user->idempresa),
-                    new DataBaseWhere('proyectos.privado', false)
+                    Where::eq('proyectos.idempresa', $this->user->idempresa),
+                    Where::eq('proyectos.privado', false)
                 ];
                 $view->loadData('', $where);
                 break;
@@ -147,8 +147,8 @@ class ListTareaProyecto extends ListController
                     . ' UNION SELECT idproyecto FROM proyectos WHERE nick = ' . $this->dataBase->var2str($this->user->nick)
                     . ' UNION SELECT idproyecto FROM proyectos_users WHERE nick = ' . $this->dataBase->var2str($this->user->nick);
                 $where = [
-                    new DataBaseWhere('tareas.nick', $this->user->nick),
-                    new DataBaseWhere('tareas.idproyecto', $sql, 'IN')
+                    Where::eq('tareas.nick', $this->user->nick),
+                    Where::in('tareas.idproyecto', $sql)
                 ];
                 $view->loadData('', $where);
                 break;
@@ -157,8 +157,8 @@ class ListTareaProyecto extends ListController
                 $sql = 'SELECT idproyecto FROM proyectos WHERE nick = ' . $this->dataBase->var2str($this->user->nick)
                     . ' UNION SELECT idproyecto FROM proyectos_users WHERE nick = ' . $this->dataBase->var2str($this->user->nick);
                 $where = [
-                    new DataBaseWhere('proyectos.privado', true),
-                    new DataBaseWhere('tareas.idproyecto', $sql, 'IN')
+                    Where::eq('proyectos.privado', true),
+                    Where::in('tareas.idproyecto', $sql)
                 ];
                 $view->loadData('', $where);
                 break;

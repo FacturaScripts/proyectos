@@ -19,7 +19,7 @@
 
 namespace FacturaScripts\Plugins\Proyectos\Model;
 
-use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
+use FacturaScripts\Core\Where;
 use FacturaScripts\Core\Template\ModelClass;
 use FacturaScripts\Core\Template\ModelTrait;
 use FacturaScripts\Core\Tools;
@@ -87,7 +87,7 @@ class StockProyecto extends ModelClass
     public function getVariant()
     {
         $variant = new Variante();
-        $where = [new DataBaseWhere('referencia', $this->referencia)];
+        $where = [Where::eq('referencia', $this->referencia)];
         $variant->loadWhere($where);
         return $variant;
     }

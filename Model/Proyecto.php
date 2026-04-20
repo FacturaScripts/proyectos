@@ -19,7 +19,7 @@
 
 namespace FacturaScripts\Plugins\Proyectos\Model;
 
-use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
+use FacturaScripts\Core\Where;
 use FacturaScripts\Core\Template\ModelClass;
 use FacturaScripts\Core\Template\ModelTrait;
 use FacturaScripts\Core\Model\User;
@@ -110,7 +110,7 @@ class Proyecto extends ModelClass
     {
         $field = empty($fieldCode) ? static::primaryColumn() : $fieldCode;
         $fields = $field . '|nombre|descripcion';
-        $where[] = new DataBaseWhere($fields, mb_strtolower($query, 'UTF8'), 'LIKE');
+        $where[] = Where::like($fields, mb_strtolower($query, 'UTF8'));
         return CodeModel::all(static::tableName(), $field, $this->primaryDescriptionColumn(), false, $where);
     }
 
@@ -142,7 +142,7 @@ class Proyecto extends ModelClass
      */
     public function getTasks(): array
     {
-        $where = [new DataBaseWhere('idproyecto', $this->idproyecto)];
+        $where = [Where::eq('idproyecto', $this->idproyecto)];
         return TareaProyecto::all($where, [], 0, 0);
     }
 
@@ -213,8 +213,8 @@ class Proyecto extends ModelClass
 
         $userProject = new UserProyecto();
         $where = [
-            new DataBaseWhere('idproyecto', $this->idproyecto),
-            new DataBaseWhere('nick', $user->nick)
+            Where::eq('idproyecto', $this->idproyecto),
+            Where::eq('nick', $user->nick)
         ];
         return $userProject->loadWhere($where);
     }

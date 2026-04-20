@@ -20,7 +20,7 @@
 namespace FacturaScripts\Plugins\Proyectos\Extension\Controller;
 
 use Closure;
-use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
+use FacturaScripts\Core\Where;
 use FacturaScripts\Core\Tools;
 
 
@@ -53,7 +53,7 @@ class EditProducto
         return function ($viewName, $view) {
             if ($viewName === 'ListStockProyecto') {
                 $idproducto = $this->getViewModelValue($this->getMainViewName(), 'idproducto');
-                $where = [new DataBaseWhere('idproducto', $idproducto)];
+                $where = [Where::eq('idproducto', $idproducto)];
                 $view->loadData('', $where);
             }
         };

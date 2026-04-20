@@ -19,7 +19,7 @@
 
 namespace FacturaScripts\Plugins\Proyectos\Model;
 
-use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
+use FacturaScripts\Core\Where;
 use FacturaScripts\Core\Template\ModelClass;
 use FacturaScripts\Core\Template\ModelTrait;
 use FacturaScripts\Core\Tools;
@@ -124,8 +124,8 @@ class FaseTarea extends ModelClass
     protected function resetPhaseDefault(): void
     {
         $where = [
-            new DataBaseWhere('predeterminado', true),
-            new DataBaseWhere('idfase', $this->idfase, '!=')
+            Where::eq('predeterminado', true),
+            Where::notEq('idfase', $this->idfase)
         ];
         foreach ($this->all($where) as $phase) {
             $phase->predeterminado = false;
@@ -139,8 +139,8 @@ class FaseTarea extends ModelClass
     protected function resetPhaseType(): void
     {
         $where = [
-            new DataBaseWhere('tipo', $this->tipo),
-            new DataBaseWhere('idfase', $this->idfase, '!=')
+            Where::eq('tipo', $this->tipo),
+            Where::notEq('idfase', $this->idfase)
         ];
         foreach ($this->all($where) as $phase) {
             $phase->tipo = null;

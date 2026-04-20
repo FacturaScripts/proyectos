@@ -34,6 +34,7 @@ use FacturaScripts\Core\Lib\ExtendedController\EditView;
 use FacturaScripts\Core\Lib\InvoiceOperation;
 use FacturaScripts\Core\Model\Asiento;
 use FacturaScripts\Core\Tools;
+use FacturaScripts\Core\Where;
 use FacturaScripts\Dinamic\Lib\ProjectStockManager;
 use FacturaScripts\Dinamic\Lib\ProjectTotalManager;
 use FacturaScripts\Dinamic\Model\EstadoAT;
@@ -68,7 +69,7 @@ class EditProyecto extends EditController
     protected function addColorStatus(string $viewName, string $modelName): void
     {
         $estadoDocumento = new EstadoDocumento();
-        $where = [new DataBaseWhere('tipodoc', $modelName)];
+        $where = [Where::eq('tipodoc', $modelName)];
         foreach ($estadoDocumento->all($where, [], 0, 0) as $status) {
             if ($status->color) {
                 $this->listView($viewName)->addColor('idestado', $status->idestado, $status->color, $status->nombre);
@@ -100,7 +101,7 @@ class EditProyecto extends EditController
             ->addFilterNumber('min-total', 'total', 'total', '>=')
             ->addFilterNumber('max-total', 'total', 'total', '<=');
 
-        $where = [new DataBaseWhere('tipodoc', $modelName)];
+        $where = [Where::eq('tipodoc', $modelName)];
         $statusValues = $this->codeModel->all('estados_documentos', 'idestado', 'nombre', true, $where);
         $this->listView($viewName)->addFilterSelect('idestado', 'state', 'idestado', $statusValues);
 
@@ -174,7 +175,7 @@ class EditProyecto extends EditController
                 return [];
             }
             $value = $this->request->queryOrInput($field);
-            $where[] = new DataBaseWhere($field, $value, '=', $operation);
+            $where[] = Where::column($field, $value, '=', $operation);
         }
 
         $results = [];
@@ -358,7 +359,7 @@ class EditProyecto extends EditController
             ['label' => Tools::trans('any-group'), 'where' => []],
             [
                 'label' => Tools::trans('without-groups'),
-                'where' => [new DataBaseWhere('codcliente', "SELECT DISTINCT codcliente FROM clientes WHERE codgrupo IS NULL", 'IN')]
+                'where' => [Where::in('codcliente', "SELECT DISTINCT codcliente FROM clientes WHERE codgrupo IS NULL")]
             ],
             ['label' => '------', 'where' => []],
         ];
@@ -366,7 +367,7 @@ class EditProyecto extends EditController
             $sqlGrupo = 'SELECT DISTINCT codcliente FROM clientes WHERE codgrupo = ' . $this->dataBase->var2str($grupo->codgrupo);
             $optionsGroup[] = [
                 'label' => $grupo->nombre,
-                'where' => [new DataBaseWhere('codcliente', $sqlGrupo, 'IN')]
+                'where' => [Where::in('codcliente', $sqlGrupo)]
             ];
         }
         if (count($optionsGroup) > 3) {
@@ -664,7 +665,7 @@ class EditProyecto extends EditController
     {
         $companyFilter = $this->request->input('filteridempresa', 0);
         $exerciseFilter = $this->request->input('filtercodejercicio', '');
-        $where = empty($companyFilter) ? [] : [new DataBaseWhere('idempresa', $companyFilter)];
+        $where = empty($companyFilter) ? [] : [Where::eq('idempresa', $companyFilter)];
         $result = $this->codeModel->all('ejercicios', 'codejercicio', 'nombre', true, $where);
         if (empty($exerciseFilter)) {
             return $result;
@@ -806,7 +807,7 @@ class EditProyecto extends EditController
             case 'ListStockProyecto':
             case 'ListTareaProyecto':
             case 'ListServicioAT':
-                $where = [new DataBaseWhere('idproyecto', $idproyecto)];
+                $where = [Where::eq('idproyecto', $idproyecto)];
                 $view->loadData('', $where);
                 break;
 
@@ -819,7 +820,7 @@ class EditProyecto extends EditController
             case 'ListPresupuestoCliente':
             case 'ListPresupuestoProveedor':
             case 'ListAsiento':
-                $where = [new DataBaseWhere('idproyecto', $idproyecto)];
+                $where = [Where::eq('idproyecto', $idproyecto)];
                 $view->loadData('', $where);
 
                 // añadimos el botón de nuevo documento, no para asientos
@@ -872,7 +873,7 @@ class EditProyecto extends EditController
 
     private function tableColToNumber(string $name): string
     {
-        return strtolower(FS_DB_TYPE) == 'postgresql' ?
+        return Tools::config('db_type') == 'postgresql' ?
             'CAST(' . $name . ' as integer)' :
             'CAST(' . $name . ' as unsigned)';
     }

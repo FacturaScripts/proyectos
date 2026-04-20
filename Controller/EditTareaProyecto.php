@@ -19,7 +19,7 @@
 
 namespace FacturaScripts\Plugins\Proyectos\Controller;
 
-use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
+use FacturaScripts\Core\Where;
 use FacturaScripts\Core\Lib\ExtendedController\EditController;
 use FacturaScripts\Core\Lib\ExtendedController\EditView;
 use FacturaScripts\Core\Lib\ExtendedController\DocFilesTrait;
@@ -146,7 +146,7 @@ class EditTareaProyecto extends EditController
                 break;
 
             case 'EditNotaProyecto':
-                $where = [new DataBaseWhere('idtarea', $this->getViewModelValue($mainViewName, 'idtarea'))];
+                $where = [Where::eq('idtarea', $this->getViewModelValue($mainViewName, 'idtarea'))];
                 $view->loadData('', $where, ['fecha' => 'DESC']);
                 if (false === $view->model->exists()) {
                     $view->model->idproyecto = $this->getViewModelValue($mainViewName, 'idproyecto');

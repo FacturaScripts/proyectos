@@ -20,7 +20,7 @@
 namespace FacturaScripts\Plugins\Proyectos\Extension\Controller;
 
 use Closure;
-use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
+use FacturaScripts\Core\Where;
 use FacturaScripts\Core\Tools;
 
 
@@ -51,7 +51,7 @@ class EditCliente
         return function ($viewName, $view) {
             if ($viewName === 'ListProyecto') {
                 $codcliente = $this->getViewModelValue($this->getMainViewName(), 'codcliente');
-                $where = [new DataBaseWhere('codcliente', $codcliente)];
+                $where = [Where::eq('codcliente', $codcliente)];
                 $view->loadData('', $where);
             }
         };

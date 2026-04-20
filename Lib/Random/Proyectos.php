@@ -19,7 +19,7 @@
 
 namespace FacturaScripts\Plugins\Proyectos\Lib\Random;
 
-use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
+use FacturaScripts\Core\Where;
 use FacturaScripts\Core\Model\Base\BusinessDocument;
 use FacturaScripts\Core\Tools;
 
@@ -109,8 +109,8 @@ class Proyectos extends NewItems
         }
 
         $where = [
-            new DataBaseWhere('editable', true),
-            new DataBaseWhere('idproyecto', null, 'IS')
+            Where::eq('editable', true),
+            Where::isNull('idproyecto')
         ];
         foreach ($model->all($where, [], 0, $limit) as $doc) {
             $doc->idproyecto = $code;
@@ -160,8 +160,8 @@ class Proyectos extends NewItems
 
             $user = new UserProyecto();
             $where = [
-                new DataBaseWhere('idproyecto', $project->idproyecto),
-                new DataBaseWhere('nick', $nick)
+                Where::eq('idproyecto', $project->idproyecto),
+                Where::eq('nick', $nick)
             ];
             if ($user->loadWhere($where)) {
                 break;

@@ -20,7 +20,7 @@
 namespace FacturaScripts\Plugins\Proyectos\Extension\Model;
 
 use Closure;
-use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
+use FacturaScripts\Core\Where;
 use FacturaScripts\Core\Tools;
 use FacturaScripts\Dinamic\Model\StockProyecto;
 
@@ -55,8 +55,8 @@ class Stock
 
             $stockProjectModel = new StockProyecto();
             $where = [
-                new DataBaseWhere('referencia', $this->referencia),
-                new DataBaseWhere('disponible', 0, '>')
+                Where::eq('referencia', $this->referencia),
+                Where::gt('disponible', 0)
             ];
             foreach ($stockProjectModel->all($where) as $stock) {
                 $this->disponible -= $stock->disponible;
