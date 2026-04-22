@@ -1,8 +1,0 @@
-{
-  "name": "proyectos",
-  "private": true,
-  "dependencies": {
-    "apexcharts": "^5.3.6",
-    "sortablejs": "^1.15.6"
-  }
-}
