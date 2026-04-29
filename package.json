@@ -1,7 +1,0 @@
-{
-  "name": "proyectos",
-  "private": true,
-  "dependencies": {
-    "sortablejs": "^1.15.6"
-  }
-}
