@@ -104,7 +104,9 @@
                         </h6>
                     </div>
                     <div class="card-body">
-                        <div id="chartByMonth"></div>
+                        <div style="position:relative;height:300px;">
+                            <canvas id="chartByMonth"></canvas>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -117,7 +119,9 @@
                         </h6>
                     </div>
                     <div class="card-body">
-                        <div id="chartByYear"></div>
+                        <div style="position:relative;height:300px;">
+                            <canvas id="chartByYear"></canvas>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -140,6 +144,7 @@
                                     <tr>
                                         <th>{{ trans('status') }}</th>
                                         <th class="text-end">{{ trans('quantity') }}</th>
+                                        <th class="text-end">{{ trans('sales') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -158,10 +163,11 @@
                                                 </a>
                                             </td>
                                             <td class="text-end fw-bold">{{ row.total }}</td>
+                                            <td class="text-end">{{ money(row.totalventas) }}</td>
                                         </tr>
                                     {% else %}
                                         <tr>
-                                            <td colspan="2" class="text-center text-muted py-3">
+                                            <td colspan="3" class="text-center text-muted py-3">
                                                 {{ trans('no-data') }}
                                             </td>
                                         </tr>
@@ -186,7 +192,7 @@
                     </div>
                     <div class="card-body p-0">
                         <div class="p-3 pb-0">
-                            <div id="chartByNick"></div>
+                            <canvas id="chartByNick" height="240"></canvas>
                         </div>
                         <div class="text-end px-3 py-1 border-top">
                             <a class="small text-muted text-decoration-none" data-bs-toggle="collapse"
@@ -238,7 +244,7 @@
                     </div>
                     <div class="card-body p-0">
                         <div class="p-3 pb-0">
-                            <div id="chartByClient"></div>
+                            <canvas id="chartByClient" height="240"></canvas>
                         </div>
                         <div class="text-end px-3 py-1 border-top">
                             <a class="small text-muted text-decoration-none" data-bs-toggle="collapse"
@@ -286,35 +292,40 @@
 
 {% block javascripts %}
     {{ parent() }}
-    <script src="{{ asset('Plugins/Proyectos/node_modules/apexcharts/dist/apexcharts.min.js') }}"></script>
+    <script src="{{ asset('node_modules/chart.js/dist/Chart.min.js') }}"></script>
     <script>
         var monthData  = {{ fsc.projectsByMonth  | json_encode | raw }};
         var yearData   = {{ fsc.projectsByYear   | json_encode | raw }};
         var nickData   = {{ fsc.projectsByNick   | json_encode | raw }};
         var clientData = {{ fsc.projectsByClient | json_encode | raw }};
 
-        function donutChart(selector, data, labelKey) {
+        var PALETTE = ['#4e73df','#1cc88a','#36b9cc','#f6c23e','#e74a3b','#858796'];
+
+        function donutChart(canvasId, data, labelKey) {
             if (!data.length) { return; }
             var MAX = 5;
-            var labels, series;
+            var labels, values;
             if (data.length > MAX) {
                 labels = data.slice(0, MAX).map(function (r) { return r[labelKey] || '---'; });
-                series = data.slice(0, MAX).map(function (r) { return parseInt(r.total); });
+                values = data.slice(0, MAX).map(function (r) { return parseInt(r.total); });
                 var rest = data.slice(MAX).reduce(function (sum, r) { return sum + parseInt(r.total); }, 0);
                 labels.push('Otros');
-                series.push(rest);
+                values.push(rest);
             } else {
                 labels = data.map(function (r) { return r[labelKey] || '---'; });
-                series = data.map(function (r) { return parseInt(r.total); });
+                values = data.map(function (r) { return parseInt(r.total); });
             }
-            new ApexCharts(document.querySelector(selector), {
-                series: series,
-                chart: {type: 'donut', height: 240, toolbar: {show: false}},
-                labels: labels,
-                legend: {position: 'bottom', fontSize: '12px'},
-                plotOptions: {pie: {donut: {size: '60%'}}},
-                dataLabels: {enabled: false}
-            }).render();
+            var colors = labels.map(function (_, i) { return PALETTE[i % PALETTE.length]; });
+            new Chart(document.getElementById(canvasId).getContext('2d'), {
+                type: 'doughnut',
+                data: {labels: labels, datasets: [{data: values, backgroundColor: colors}]},
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    legend: {position: 'bottom', labels: {fontSize: 12}},
+                    cutoutPercentage: 60
+                }
+            });
         }
 
         $(document).ready(function () {
@@ -323,28 +334,48 @@
                 return new Date(p[0], p[1] - 1).toLocaleDateString('es-ES', {month: 'short', year: '2-digit'});
             });
 
-            new ApexCharts(document.querySelector('#chartByMonth'), {
-                series: [{name: '{{ trans('projects') | capitalize }}', data: Object.values(monthData)}],
-                chart: {height: 300, type: 'bar', toolbar: {show: true}},
-                plotOptions: {bar: {borderRadius: 2, dataLabels: {position: 'top'}}},
-                dataLabels: {enabled: false},
-                xaxis: {categories: monthLabels, axisBorder: {show: false}, axisTicks: {show: false}},
-                yaxis: {labels: {formatter: function (v) { return Math.round(v); }}},
-                colors: ['#4e73df']
-            }).render();
+            new Chart(document.getElementById('chartByMonth').getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: monthLabels,
+                    datasets: [{
+                        label: '{{ trans('projects') | capitalize }}',
+                        data: Object.values(monthData),
+                        backgroundColor: '#4e73df'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        yAxes: [{ticks: {beginAtZero: true, callback: function (v) { return Number.isInteger(v) ? v : ''; }}}]
+                    },
+                    legend: {display: false}
+                }
+            });
 
-            new ApexCharts(document.querySelector('#chartByYear'), {
-                series: [{name: '{{ trans('projects') | capitalize }}', data: Object.values(yearData)}],
-                chart: {height: 300, type: 'bar', toolbar: {show: true}},
-                plotOptions: {bar: {borderRadius: 2, dataLabels: {position: 'top'}}},
-                dataLabels: {enabled: false},
-                xaxis: {categories: Object.keys(yearData), axisBorder: {show: false}, axisTicks: {show: false}},
-                yaxis: {labels: {formatter: function (v) { return Math.round(v); }}},
-                colors: ['#1cc88a']
-            }).render();
+            new Chart(document.getElementById('chartByYear').getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(yearData),
+                    datasets: [{
+                        label: '{{ trans('projects') | capitalize }}',
+                        data: Object.values(yearData),
+                        backgroundColor: '#1cc88a'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        yAxes: [{ticks: {beginAtZero: true, callback: function (v) { return Number.isInteger(v) ? v : ''; }}}]
+                    },
+                    legend: {display: false}
+                }
+            });
 
-            donutChart('#chartByNick',   nickData,   'nick');
-            donutChart('#chartByClient', clientData, 'nombre');
+            donutChart('chartByNick',   nickData,   'nick');
+            donutChart('chartByClient', clientData, 'nombre');
         });
     </script>
 {% endblock %}

@@ -19,7 +19,7 @@
 
 namespace FacturaScripts\Plugins\Proyectos\Controller;
 
-use FacturaScripts\Core\Base\Controller;
+use FacturaScripts\Core\Template\Controller;
 
 /**
  * Informe de proyectos: abiertos totales, del último mes, del último año y desglose por estado.
@@ -64,9 +64,9 @@ class ReportProyecto extends Controller
         return $data;
     }
 
-    public function privateCore(&$response, $user, $permissions)
+    public function run(): void
     {
-        parent::privateCore($response, $user, $permissions);
+        parent::run();
 
         $this->loadTotalProjects();
         $this->loadOpenProjects();
@@ -77,12 +77,14 @@ class ReportProyecto extends Controller
         $this->loadProjectsByYear();
         $this->loadProjectsByNick();
         $this->loadProjectsByClient();
+
+        $this->view('ReportProyecto.html.twig');
     }
 
     protected function loadTotalProjects(): void
     {
         $sql = 'SELECT COUNT(*) as total FROM proyectos';
-        $result = $this->dataBase->select($sql);
+        $result = $this->db()->select($sql);
         $this->totalProjects = (int)($result[0]['total'] ?? 0);
     }
 
@@ -92,7 +94,7 @@ class ReportProyecto extends Controller
             . ' FROM proyectos'
             . ' GROUP BY nick'
             . ' ORDER BY total DESC';
-        $this->projectsByNick = $this->dataBase->select($sql);
+        $this->projectsByNick = $this->db()->select($sql);
     }
 
     protected function loadProjectsByClient(): void
@@ -102,14 +104,14 @@ class ReportProyecto extends Controller
             . ' LEFT JOIN clientes c ON c.codcliente = p.codcliente'
             . ' GROUP BY p.codcliente, c.nombre'
             . ' ORDER BY total DESC';
-        $this->projectsByClient = $this->dataBase->select($sql);
+        $this->projectsByClient = $this->db()->select($sql);
     }
 
     protected function loadOpenProjects(): void
     {
         $sql = 'SELECT COUNT(*) as total FROM proyectos'
-            . ' WHERE editable = ' . $this->dataBase->var2str(true);
-        $result = $this->dataBase->select($sql);
+            . ' WHERE editable = ' . $this->db()->var2str(true);
+        $result = $this->db()->select($sql);
         $this->openProjects = (int)($result[0]['total'] ?? 0);
     }
 
@@ -117,7 +119,7 @@ class ReportProyecto extends Controller
     {
         $since = date('Y-m-d', strtotime('-1 month'));
         $sql = "SELECT COUNT(*) as total FROM proyectos WHERE fecha >= '" . $since . "'";
-        $result = $this->dataBase->select($sql);
+        $result = $this->db()->select($sql);
         $this->openProjectsLastMonth = (int)($result[0]['total'] ?? 0);
     }
 
@@ -125,18 +127,19 @@ class ReportProyecto extends Controller
     {
         $since = date('Y-m-d', strtotime('-1 year'));
         $sql = "SELECT COUNT(*) as total FROM proyectos WHERE fecha >= '" . $since . "'";
-        $result = $this->dataBase->select($sql);
+        $result = $this->db()->select($sql);
         $this->openProjectsLastYear = (int)($result[0]['total'] ?? 0);
     }
 
     protected function loadProjectsByStatus(): void
     {
-        $sql = 'SELECT e.idestado, e.nombre, e.color, e.editable, COUNT(p.idproyecto) as total'
+        $sql = 'SELECT e.idestado, e.nombre, e.color, e.editable, COUNT(p.idproyecto) as total,'
+            . ' COALESCE(SUM(p.totalventas), 0) as totalventas'
             . ' FROM proyectos_estados e'
             . ' LEFT JOIN proyectos p ON p.idestado = e.idestado'
             . ' GROUP BY e.idestado, e.nombre, e.color, e.editable'
             . ' ORDER BY total DESC';
-        $this->projectsByStatus = $this->dataBase->select($sql);
+        $this->projectsByStatus = $this->db()->select($sql);
     }
 
     protected function loadProjectsByMonth(): void
@@ -154,7 +157,7 @@ class ReportProyecto extends Controller
             . " WHERE fecha >= '" . $since . "'"
             . " GROUP BY DATE_FORMAT(fecha, '%Y-%m')"
             . ' ORDER BY periodo ASC';
-        foreach ($this->dataBase->select($sql) as $row) {
+        foreach ($this->db()->select($sql) as $row) {
             if (isset($this->projectsByMonth[$row['periodo']])) {
                 $this->projectsByMonth[$row['periodo']] = (int)$row['total'];
             }
@@ -167,7 +170,7 @@ class ReportProyecto extends Controller
             . ' FROM proyectos'
             . ' GROUP BY YEAR(fecha)'
             . ' ORDER BY periodo ASC';
-        foreach ($this->dataBase->select($sql) as $row) {
+        foreach ($this->db()->select($sql) as $row) {
             $this->projectsByYear[(string)$row['periodo']] = (int)$row['total'];
         }
     }
