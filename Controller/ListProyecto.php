@@ -43,7 +43,7 @@ class ListProyecto extends ListController
 
     protected function createViews()
     {
-        $this->createViewsProjects('ListProyecto', 'open-projects', 'fa-solid fa-lock-open');
+        $this->createViewsProjects('ListProyecto', 'opened', 'fa-solid fa-lock-open');
         $this->createViewsProjects('ListProyecto-private', 'private', 'fa-solid fa-user-lock');
         $this->createViewsProjectsClosed('ListProyecto-closed', 'closed', 'fa-solid fa-lock');
     }
