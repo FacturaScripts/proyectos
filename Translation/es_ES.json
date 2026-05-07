@@ -1,17 +1,12 @@
 {
-    "burn-project-stock": "Quemar stock",
-    "canceled": "Cancelado",
-    "generated-projects": "%quantity% proyectos generados",
-    "import-tasks-from-another-project": "Importar tareas desde otro proyecto",
-    "link-document": "Vincular...",
-    "no-projects": "No hay proyectos",
-    "open-projects": "Abiertos",
-    "phases": "Fases",
-    "project-stock-rebuild-error": "Error al regenerar el stock",
-    "project-stock-rebuild-ok": "Stock regenerado correctamente",
-    "reiniciar-patron-anualmente": "Reiniciar patrón anualmente",
-    "show-project-stock": "Mostrar stock del proyecto",
-    "tasks-imported-correctly": "Tareas importadas correctamente",
-    "total-pending-invoice": "Pendiente facturar",
-    "unlink-document": "Desvincular..."
+    "open-projects-last-month": "Proyectos del último mes",
+    "open-projects-last-year": "Proyectos del último año",
+    "open-projects-total": "Proyectos abiertos",
+    "projects-by-client": "Por cliente",
+    "projects-by-month": "Proyectos por mes",
+    "projects-by-nick": "Por administrador",
+    "projects-by-status": "Por estado",
+    "projects-by-year": "Proyectos por año",
+    "sales": "Ventas",
+    "total-projects": "Total de proyectos"
 }
