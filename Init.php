@@ -63,6 +63,7 @@ final class Init extends InitClass
         $this->loadExtension(new Extension\Controller\EditProducto());
         $this->loadExtension(new Extension\Controller\ListAlbaranCliente());
         $this->loadExtension(new Extension\Controller\ListAlbaranProveedor());
+        $this->loadExtension(new Extension\Controller\ListAsiento());
         $this->loadExtension(new Extension\Controller\ListFacturaCliente());
         $this->loadExtension(new Extension\Controller\ListFacturaProveedor());
         $this->loadExtension(new Extension\Controller\ListPedidoCliente());
