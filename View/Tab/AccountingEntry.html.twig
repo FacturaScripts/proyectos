@@ -1,0 +1,250 @@
+{% set model = fsc.getCurrentView().model %}
+
+<script>
+    let editLine = 0;
+    findSubaccount = 0;
+
+    function findSubaccountSearch(action, id, input) {
+        findSubaccount++;
+        return setTimeout(function () {
+            accEntryFormAction(action, id, $(input).parent().find('button'));
+        }, 500);
+    }
+
+    function newLineAction(code) {
+        if (!document.forms['accEntryForm']['concepto'].value.trim()) {
+            alert('{{ trans("acc-concept-required") }}');
+            document.forms['accEntryForm']['concepto'].focus();
+            return false;
+        }
+        document.getElementById("new_subaccount").value = code;
+        return accEntryFormAction('new-line', '0');
+    }
+
+    function recalculateLine(recalculate, idlinea) {
+        editLine++;
+        return setTimeout(function () {
+            accEntryFormAction(recalculate, idlinea);
+        }, 500);
+    }
+
+    function restructureHeader() {
+        const row = document.querySelector('#accEntryFormHeader .row');
+        if (!row) return;
+
+        // eliminar inserciones previas
+        row.querySelectorAll('.proyecto-col, .header-row-break').forEach(function (el) {
+            el.remove();
+        });
+
+        // insertar w-100 break después del campo concepto (col-lg sin col-lg-2)
+        const cols = row.querySelectorAll('.col-sm-6');
+        cols.forEach(function (col) {
+            if (col.classList.contains('col-lg') && !col.classList.contains('col-lg-2')) {
+                const breakDiv = document.createElement('div');
+                breakDiv.className = 'w-100 header-row-break';
+                col.insertAdjacentElement('afterend', breakDiv);
+            }
+        });
+
+        // clonar el campo proyecto y añadirlo al row
+        const template = document.getElementById('proyecto-field-template');
+        if (!template) return;
+        const clone = template.firstElementChild.cloneNode(true);
+
+        // restaurar el valor seleccionado desde el input hidden
+        const hiddenInput = document.getElementById('idproyecto-value');
+        const select = clone.querySelector('select');
+        if (select && hiddenInput) {
+            select.value = hiddenInput.value;
+            select.addEventListener('change', function () {
+                hiddenInput.value = this.value;
+            });
+        }
+
+        row.appendChild(clone);
+    }
+
+    function accEntryFormAction(action, selectedLine) {
+        animateSpinner('add');
+
+        if (editLine > 1) {
+            editLine--;
+            return false;
+        }
+
+        if (findSubaccount > 1) {
+            findSubaccount--;
+            return false;
+        }
+
+        editLine = 0;
+        findSubaccount = 0;
+        document.forms['accEntryForm']['action'].value = action;
+        document.forms['accEntryForm']['selectedLine'].value = selectedLine;
+
+        const formData = new FormData(document.forms['accEntryForm']);
+        const plainFormData = Object.fromEntries(formData.entries());
+        const formDataJsonString = JSON.stringify(plainFormData);
+
+        let data = new FormData();
+        data.append('action', action);
+        data.append('code', document.forms['accEntryForm']['code'].value);
+        data.append('multireqtoken', document.forms['accEntryForm']['multireqtoken'].value);
+        data.append('selectedLine', document.forms['accEntryForm']['selectedLine'].value);
+        data.append('idasiento', document.forms['accEntryForm']['idasiento'].value);
+        data.append('data', formDataJsonString);
+
+        fetch('{{ fsc.url() }}', {
+            method: 'POST',
+            body: data
+        }).then(function (response) {
+            if (response.ok) {
+                animateSpinner('remove', true);
+                return response.json();
+            }
+            animateSpinner('remove', false);
+            return Promise.reject(response);
+        }).then(function (data) {
+            if (data.header !== '') {
+                document.getElementById("accEntryFormHeader").innerHTML = data.header;
+                restructureHeader();
+            }
+            if (data.lines !== '') {
+                document.getElementById("accEntryFormLines").innerHTML = data.lines;
+            }
+            if (data.footer !== '') {
+                document.getElementById("accEntryFormFooter").innerHTML = data.footer;
+            }
+            if (data.list !== '') {
+                document.getElementById("findSubaccountList").innerHTML = data.list;
+            }
+            if (Array.isArray(data.messages) && data.messages.length > 0) {
+                data.messages.forEach(item => alert(item.message));
+                $("#new_subaccount").focus();
+            } else if (document.forms['accEntryForm']['action'].value === 'new-line') {
+                $(".line-debit:last").focus().select();
+            }
+        }).catch(function (error) {
+            alert('error');
+            console.warn(error);
+        });
+
+        return false;
+    };
+
+    function accEntryFormSave(action, selectedLine) {
+        animateSpinner('add');
+        setOrdenLines();
+
+        document.forms['accEntryForm']['action'].value = action;
+        document.forms['accEntryForm']['selectedLine'].value = selectedLine;
+
+        const formData = new FormData(document.forms['accEntryForm']);
+        const plainFormData = Object.fromEntries(formData.entries());
+        const formDataJsonString = JSON.stringify(plainFormData);
+
+        let data = new FormData();
+        data.append('action', action);
+        data.append('code', document.forms['accEntryForm']['code'].value);
+        data.append('multireqtoken', document.forms['accEntryForm']['multireqtoken'].value);
+        data.append('selectedLine', document.forms['accEntryForm']['selectedLine'].value);
+        data.append('idasiento', document.forms['accEntryForm']['idasiento'].value);
+        data.append('data', formDataJsonString);
+
+        fetch('{{ fsc.url() }}', {
+            method: 'POST',
+            body: data
+        }).then(function (response) {
+            if (response.ok) {
+                return response.json();
+            }
+            animateSpinner('remove', false);
+            return Promise.reject(response);
+        }).then(function (data) {
+            if (Array.isArray(data.messages)) {
+                data.messages.forEach(item => alert(item.message));
+            }
+            if (data.ok) {
+                window.location.replace(data.newurl);
+            } else {
+                animateSpinner('remove', true);
+            }
+        }).catch(function (error) {
+            alert('error');
+            console.warn(error);
+        });
+
+        return false;
+    };
+
+    function setOrdenLines() {
+        let orderInputs = $("input[name^='orden_']");
+        let count = orderInputs.length * 10;
+        orderInputs.each(function (index) {
+            $(this).val(count - (index * 10));
+        });
+    }
+
+    function sortableEnable() {
+        $("#accEntryFormLines").sortable({
+            update: function (event, ui) {
+                setOrdenLines();
+            }
+        });
+        $("#accEntryFormLines").sortable("option", "disabled", false);
+        $("#accEntryFormLines").disableSelection();
+    }
+
+    function sortableDisable() {
+        $("#accEntryFormLines").sortable("disable");
+    }
+
+    $(document).ready(function () {
+        restructureHeader();
+
+        {% if model.editable %}
+        let sortable = false;
+
+        $(document).on('click', '#sortableBtn', function () {
+            if (sortable) {
+                sortableDisable();
+                sortable = false;
+                $(this).removeClass('btn-secondary').addClass('btn-light');
+            } else {
+                sortableEnable();
+                sortable = true;
+                $(this).removeClass('btn-light').addClass('btn-secondary');
+            }
+        });
+        {% endif %}
+    });
+</script>
+
+{# Template oculto del campo proyecto, clonado en el header via JS #}
+<div id="proyecto-field-template" style="display:none">
+    <div class="col-sm-6 col-md-4 col-lg-2 proyecto-col">
+        <div class="mb-2">
+            {{ trans('project') }}
+            <select class="form-select"{% if not model.editable %} disabled{% endif %}>
+                <option value="">{{ trans('optional') }}</option>
+                <option value="">------</option>
+                {% for proyecto in fsc.getProyectos() %}
+                    <option value="{{ proyecto.idproyecto }}"{% if model.idproyecto == proyecto.idproyecto %} selected{% endif %}>
+                        {{ proyecto.nombre | e }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+</div>
+
+<form name="accEntryForm" method="post">
+    {{ formToken() }}
+    <input type="hidden" name="action"/>
+    <input type="hidden" name="code" value="{{ model.primaryColumnValue() }}"/>
+    <input type="hidden" name="{{ model.primaryColumn() }}" value="{{ model.primaryColumnValue() }}"/>
+    <input type="hidden" name="selectedLine"/>
+    <input type="hidden" name="idproyecto" id="idproyecto-value" value="{{ model.idproyecto ?: '' }}"/>
+    {{ fsc.renderAccEntryForm(model, model.getLines()) | raw }}
+</form>
