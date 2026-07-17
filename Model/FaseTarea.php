@@ -34,26 +34,36 @@ class FaseTarea extends ModelClass
     use ModelTrait;
 
     /**
+     * Estado de proyecto que se asigna al vincular esta fase.
+     *
      * @var integer
      */
     public $idestado;
 
     /**
+     * Identificador de la fase.
+     *
      * @var integer
      */
     public $idfase;
 
     /**
+     * Nombre de la fase.
+     *
      * @var string
      */
     public $nombre;
 
     /**
+     * Indica si es la fase predeterminada para nuevas tareas.
+     *
      * @var bool
      */
     public $predeterminado;
 
     /**
+     * Tipo de fase: completada, en proceso o cancelada.
+     *
      * @var integer
      */
     public $tipo;

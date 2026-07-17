@@ -35,21 +35,29 @@ class UserProyecto extends ModelClass
     use ModelTrait;
 
     /**
+     * Fecha en la que el usuario se asigna al proyecto.
+     *
      * @var string
      */
     public $fecha;
 
     /**
+     * Identificador del registro.
+     *
      * @var integer
      */
     public $id;
 
     /**
+     * Identificador del proyecto.
+     *
      * @var integer
      */
     public $idproyecto;
 
     /**
+     * Nick del usuario asignado al proyecto.
+     *
      * @var string
      */
     public $nick;

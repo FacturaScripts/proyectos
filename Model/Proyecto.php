@@ -39,49 +39,49 @@ class Proyecto extends ModelClass
 {
     use ModelTrait;
 
-    /** @var string */
+    /** Código del cliente asociado al proyecto. @var string */
     public $codcliente;
 
-    /** @var string */
+    /** Descripción del proyecto. @var string */
     public $descripcion;
 
-    /** @var bool */
+    /** Indica si el proyecto se puede editar. @var bool */
     public $editable;
 
-    /** @var string */
+    /** Fecha de creación del proyecto. @var string */
     public $fecha;
 
-    /** @var string */
+    /** Fecha de finalización del proyecto. @var string */
     public $fechafin;
 
-    /** @var string */
+    /** Fecha de inicio del proyecto. @var string */
     public $fechainicio;
 
-    /** @var int */
+    /** Identificador de la empresa. @var int */
     public $idempresa;
 
-    /** @var int */
+    /** Identificador del estado actual del proyecto. @var int */
     public $idestado;
 
-    /** @var int */
+    /** Identificador del proyecto. @var int */
     public $idproyecto;
 
-    /** @var string */
+    /** Nick del usuario que crea el proyecto. @var string */
     public $nick;
 
-    /** @var string */
+    /** Nombre del proyecto. @var string */
     public $nombre;
 
-    /** @var bool */
+    /** Indica si el proyecto es privado y solo lo pueden ver los usuarios asignados. @var bool */
     public $privado;
 
-    /** @var float */
+    /** Total de compras asociadas al proyecto. @var float */
     public $totalcompras;
 
-    /** @var float */
+    /** Total pendiente de facturar del proyecto. @var float */
     public $totalpendientefacturar;
 
-    /** @var float */
+    /** Total de ventas asociadas al proyecto. @var float */
     public $totalventas;
 
     public function clear(): void
