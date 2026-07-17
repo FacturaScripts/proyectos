@@ -34,7 +34,7 @@ class FaseTarea extends ModelClass
     use ModelTrait;
 
     /**
-     * Estado de proyecto que se asigna al vincular esta fase.
+     * Identificador del estado de proyecto asociado a la fase.
      *
      * @var integer
      */

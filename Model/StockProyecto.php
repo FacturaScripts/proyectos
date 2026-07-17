@@ -37,28 +37,60 @@ class StockProyecto extends ModelClass
 
     const MAX_DECIMALS = 3;
 
-    /** Cantidad total en stock para el proyecto. @var float */
+    /**
+     * Cantidad total en stock para el proyecto.
+     *
+     * @var float
+     */
     public $cantidad;
 
-    /** Cantidad disponible (cantidad menos reservada). @var float */
+    /**
+     * Cantidad disponible (cantidad menos reservada).
+     *
+     * @var float
+     */
     public $disponible;
 
-    /** Identificador del registro. @var int */
+    /**
+     * Identificador del registro.
+     *
+     * @var int
+     */
     public $id;
 
-    /** Identificador del producto. @var int */
+    /**
+     * Identificador del producto.
+     *
+     * @var int
+     */
     public $idproducto;
 
-    /** Identificador del proyecto. @var int */
+    /**
+     * Identificador del proyecto.
+     *
+     * @var int
+     */
     public $idproyecto;
 
-    /** Cantidad pendiente de recibir. @var float */
+    /**
+     * Cantidad pendiente de recibir.
+     *
+     * @var float
+     */
     public $pterecibir;
 
-    /** Referencia de la variante del producto. @var string */
+    /**
+     * Referencia de la variante del producto.
+     *
+     * @var string
+     */
     public $referencia;
 
-    /** Cantidad reservada para el proyecto. @var float */
+    /**
+     * Cantidad reservada para el proyecto.
+     *
+     * @var float
+     */
     public $reservada;
 
     public function clear(): void

@@ -40,34 +40,74 @@ class TareaProyecto extends ModelClass
     const TYPE_PROCESSING = 2;
     const TYPE_CANCELED = 1;
 
-    /** Cantidad de unidades asociadas a la tarea. @var int */
+    /**
+     * Cantidad de unidades asociadas a la tarea.
+     *
+     * @var int
+     */
     public $cantidad;
 
-    /** Descripción de la tarea. @var string */
+    /**
+     * Descripción de la tarea.
+     *
+     * @var string
+     */
     public $descripcion;
 
-    /** Fecha de creación de la tarea. @var string */
+    /**
+     * Fecha de creación de la tarea.
+     *
+     * @var string
+     */
     public $fecha;
 
-    /** Fecha de finalización de la tarea. @var string */
+    /**
+     * Fecha de finalización de la tarea.
+     *
+     * @var string
+     */
     public $fechafin;
 
-    /** Fecha de inicio de la tarea. @var string */
+    /**
+     * Fecha de inicio de la tarea.
+     *
+     * @var string
+     */
     public $fechainicio;
 
-    /** Identificador de la fase en la que se encuentra la tarea. @var int */
+    /**
+     * Identificador de la fase en la que se encuentra la tarea.
+     *
+     * @var int
+     */
     public $idfase;
 
-    /** Identificador del proyecto al que pertenece la tarea. @var int */
+    /**
+     * Identificador del proyecto al que pertenece la tarea.
+     *
+     * @var int
+     */
     public $idproyecto;
 
-    /** Identificador de la tarea. @var int */
+    /**
+     * Identificador de la tarea.
+     *
+     * @var int
+     */
     public $idtarea;
 
-    /** Nombre de la tarea. @var string */
+    /**
+     * Nombre de la tarea.
+     *
+     * @var string
+     */
     public $nombre;
 
-    /** Nick del usuario asignado a la tarea. @var string */
+    /**
+     * Nick del usuario asignado a la tarea.
+     *
+     * @var string
+     */
     public $nick;
 
     public function clear(): void

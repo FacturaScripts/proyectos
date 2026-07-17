@@ -33,19 +33,39 @@ class EstadoProyecto extends ModelClass
 {
     use ModelTrait;
 
-    /** Color de fondo asociado al estado. @var string */
+    /**
+     * Color de fondo asociado al estado.
+     *
+     * @var string
+     */
     public $color;
 
-    /** Indica si los proyectos con este estado se pueden editar. @var bool */
+    /**
+     * Indica si los proyectos con este estado se pueden editar.
+     *
+     * @var bool
+     */
     public $editable;
 
-    /** Identificador del estado. @var integer */
+    /**
+     * Identificador del estado.
+     *
+     * @var integer
+     */
     public $idestado;
 
-    /** Nombre del estado. @var string */
+    /**
+     * Nombre del estado.
+     *
+     * @var string
+     */
     public $nombre;
 
-    /** Indica si es el estado predeterminado para nuevos proyectos. @var bool */
+    /**
+     * Indica si es el estado predeterminado para nuevos proyectos.
+     *
+     * @var bool
+     */
     public $predeterminado;
 
     public function clear(): void

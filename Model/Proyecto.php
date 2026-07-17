@@ -39,49 +39,109 @@ class Proyecto extends ModelClass
 {
     use ModelTrait;
 
-    /** Código del cliente asociado al proyecto. @var string */
+    /**
+     * Código del cliente asociado al proyecto.
+     *
+     * @var string
+     */
     public $codcliente;
 
-    /** Descripción del proyecto. @var string */
+    /**
+     * Descripción del proyecto.
+     *
+     * @var string
+     */
     public $descripcion;
 
-    /** Indica si el proyecto se puede editar. @var bool */
+    /**
+     * Indica si el proyecto se puede editar.
+     *
+     * @var bool
+     */
     public $editable;
 
-    /** Fecha de creación del proyecto. @var string */
+    /**
+     * Fecha de creación del proyecto.
+     *
+     * @var string
+     */
     public $fecha;
 
-    /** Fecha de finalización del proyecto. @var string */
+    /**
+     * Fecha de finalización del proyecto.
+     *
+     * @var string
+     */
     public $fechafin;
 
-    /** Fecha de inicio del proyecto. @var string */
+    /**
+     * Fecha de inicio del proyecto.
+     *
+     * @var string
+     */
     public $fechainicio;
 
-    /** Identificador de la empresa. @var int */
+    /**
+     * Identificador de la empresa.
+     *
+     * @var int
+     */
     public $idempresa;
 
-    /** Identificador del estado actual del proyecto. @var int */
+    /**
+     * Identificador del estado actual del proyecto.
+     *
+     * @var int
+     */
     public $idestado;
 
-    /** Identificador del proyecto. @var int */
+    /**
+     * Identificador del proyecto.
+     *
+     * @var int
+     */
     public $idproyecto;
 
-    /** Nick del usuario que crea el proyecto. @var string */
+    /**
+     * Nick del usuario que crea el proyecto.
+     *
+     * @var string
+     */
     public $nick;
 
-    /** Nombre del proyecto. @var string */
+    /**
+     * Nombre del proyecto.
+     *
+     * @var string
+     */
     public $nombre;
 
-    /** Indica si el proyecto es privado y solo lo pueden ver los usuarios asignados. @var bool */
+    /**
+     * Indica si el proyecto es privado y solo lo pueden ver los usuarios asignados.
+     *
+     * @var bool
+     */
     public $privado;
 
-    /** Total de compras asociadas al proyecto. @var float */
+    /**
+     * Total de compras asociadas al proyecto.
+     *
+     * @var float
+     */
     public $totalcompras;
 
-    /** Total pendiente de facturar del proyecto. @var float */
+    /**
+     * Total pendiente de facturar del proyecto.
+     *
+     * @var float
+     */
     public $totalpendientefacturar;
 
-    /** Total de ventas asociadas al proyecto. @var float */
+    /**
+     * Total de ventas asociadas al proyecto.
+     *
+     * @var float
+     */
     public $totalventas;
 
     public function clear(): void
