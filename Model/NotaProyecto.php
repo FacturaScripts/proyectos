@@ -34,22 +34,22 @@ class NotaProyecto extends ModelClass
 {
     use ModelTrait;
 
-    /** Texto de la nota. @var string */
+    /** @var string Texto de la nota. */
     public $descripcion;
 
-    /** Fecha de la nota. @var string */
+    /** @var string Fecha de la nota. */
     public $fecha;
 
-    /** Identificador de la nota. @var integer */
+    /** @var integer Identificador de la nota. */
     public $idnota;
 
-    /** Identificador del proyecto al que pertenece la nota. @var integer */
+    /** @var integer Identificador del proyecto al que pertenece la nota. */
     public $idproyecto;
 
-    /** Identificador de la tarea a la que pertenece la nota. @var integer */
+    /** @var integer Identificador de la tarea a la que pertenece la nota. */
     public $idtarea;
 
-    /** Nick del usuario que crea la nota. @var string */
+    /** @var string Nick del usuario que crea la nota. */
     public $nick;
 
     public function clear(): void

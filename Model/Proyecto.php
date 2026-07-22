@@ -39,49 +39,49 @@ class Proyecto extends ModelClass
 {
     use ModelTrait;
 
-    /** Código del cliente asociado al proyecto. @var string */
+    /** @var string Código del cliente asociado al proyecto. */
     public $codcliente;
 
-    /** Descripción del proyecto. @var string */
+    /** @var string Descripción del proyecto. */
     public $descripcion;
 
-    /** Indica si el proyecto se puede editar. @var bool */
+    /** @var bool Indica si el proyecto se puede editar. */
     public $editable;
 
-    /** Fecha de creación del proyecto. @var string */
+    /** @var string Fecha de creación del proyecto. */
     public $fecha;
 
-    /** Fecha de finalización del proyecto. @var string */
+    /** @var string Fecha de finalización del proyecto. */
     public $fechafin;
 
-    /** Fecha de inicio del proyecto. @var string */
+    /** @var string Fecha de inicio del proyecto. */
     public $fechainicio;
 
-    /** Identificador de la empresa. @var int */
+    /** @var int Identificador de la empresa. */
     public $idempresa;
 
-    /** Identificador del estado actual del proyecto. @var int */
+    /** @var int Identificador del estado actual del proyecto. */
     public $idestado;
 
-    /** Identificador del proyecto. @var int */
+    /** @var int Identificador del proyecto. */
     public $idproyecto;
 
-    /** Nick del usuario que crea el proyecto. @var string */
+    /** @var string Nick del usuario que crea el proyecto. */
     public $nick;
 
-    /** Nombre del proyecto. @var string */
+    /** @var string Nombre del proyecto. */
     public $nombre;
 
-    /** Indica si el proyecto es privado y solo lo pueden ver los usuarios asignados. @var bool */
+    /** @var bool Indica si el proyecto es privado y solo lo pueden ver los usuarios asignados. */
     public $privado;
 
-    /** Total de compras asociadas al proyecto. @var float */
+    /** @var float Total de compras asociadas al proyecto. */
     public $totalcompras;
 
-    /** Total pendiente de facturar del proyecto. @var float */
+    /** @var float Total pendiente de facturar del proyecto. */
     public $totalpendientefacturar;
 
-    /** Total de ventas asociadas al proyecto. @var float */
+    /** @var float Total de ventas asociadas al proyecto. */
     public $totalventas;
 
     public function clear(): void
