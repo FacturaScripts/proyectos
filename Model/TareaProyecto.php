@@ -19,7 +19,6 @@
 
 namespace FacturaScripts\Plugins\Proyectos\Model;
 
-use FacturaScripts\Core\Where;
 use FacturaScripts\Core\Template\ModelClass;
 use FacturaScripts\Core\Template\ModelTrait;
 use FacturaScripts\Core\Tools;
@@ -237,8 +236,7 @@ class TareaProyecto extends ModelClass
 
         if ($completed + $canceled === count($tasks)) {
             $phase = new FaseTarea();
-            $where = [Where::eq('tipo', self::TYPE_COMPLETED)];
-            if ($phase->loadWhere($where)) {
+            if ($phase->loadWhereEq('tipo', self::TYPE_COMPLETED)) {
                 $project->idestado = $phase->idestado;
                 $project->save();
             }
@@ -274,8 +272,7 @@ class TareaProyecto extends ModelClass
     protected function setDefaultProjectStatus(): void
     {
         $defaultStatus = new EstadoProyecto();
-        $where = [Where::eq('predeterminado', true)];
-        if ($defaultStatus->loadWhere($where)) {
+        if ($defaultStatus->loadWhereEq('predeterminado', true)) {
             $project = $this->getProject();
             $project->idestado = $defaultStatus->idestado;
             $project->save();
