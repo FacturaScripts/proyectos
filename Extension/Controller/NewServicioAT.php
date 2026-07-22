@@ -35,7 +35,7 @@ class NewServicioAT
             // buscamos el proyecto
             $project = new Proyecto();
             $id = $this->request->get('idproyecto');
-            if (false === $project->loadFromCode($id)) {
+            if (false === $project->load($id)) {
                 Tools::log()->warning('project-not-found', [
                     'project' => $id
                 ]);
@@ -57,7 +57,7 @@ class NewServicioAT
             // buscamos el proyecto
             $project = new Proyecto();
             $id = $this->request->get('idproyecto');
-            if (false === $project->loadFromCode($id)) {
+            if (false === $project->load($id)) {
                 Tools::log()->warning('project-not-found', [
                     'project' => $id
                 ]);
