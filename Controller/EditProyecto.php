@@ -83,7 +83,7 @@ class EditProyecto extends EditController
         $this->listView($viewName)->disableColumn('project');
 
         // añadimos botón para enlazar documentos
-        $this->addButton($viewName, [
+        $this->tab($viewName)->addButton([
             'type' => 'modal',
             'action' => 'link-up-' . $modelName,
             'icon' => 'fa-solid fa-link',
@@ -521,7 +521,7 @@ class EditProyecto extends EditController
         $this->setSettings($viewName, 'checkBoxes', false);
 
         if ($this->user->admin) {
-            $this->addButton($viewName, [
+            $this->tab($viewName)->addButton([
                 'action' => 'rebuild-stock',
                 'color' => 'warning',
                 'confirm' => true,
@@ -558,14 +558,14 @@ class EditProyecto extends EditController
         $this->listView($viewName)->disableColumn('project');
         $this->listView($viewName)->disableColumn('company');
 
-        $this->addButton($viewName, [
+        $this->tab($viewName)->addButton([
             'type' => 'modal',
             'action' => 'import-task',
             'icon' => 'fa-solid fa-file-import',
             'label' => 'import'
         ]);
 
-        $this->addButton($viewName, [
+        $this->tab($viewName)->addButton([
             'type' => 'link',
             'action' => 'KanbanProyectos?idproyecto=' . $this->request->queryOrInput('code', ''),
             'icon' => 'fa-brands fa-trello',
@@ -831,7 +831,7 @@ class EditProyecto extends EditController
                         && in_array($view->model->modelClassName(), ['PresupuestoCliente', 'PedidoCliente', 'AlbaranCliente', 'FacturaCliente'])) {
                         $url .= '&codcliente=' . $codcliente;
                     }
-                    $this->addButton($viewName, [
+                    $this->tab($viewName)->addButton([
                         'type' => 'link',
                         'action' => $url,
                         'color' => 'success',
@@ -841,7 +841,7 @@ class EditProyecto extends EditController
 
                 // si hay documentos añadimos el botón de desvincular
                 if ($view->count > 0) {
-                    $this->addButton($viewName, [
+                    $this->tab($viewName)->addButton([
                         'type' => 'action',
                         'action' => 'unlink-up-' . $view->model->modelClassName(),
                         'color' => 'warning',

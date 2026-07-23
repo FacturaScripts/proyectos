@@ -63,7 +63,7 @@ class EditTareaProyecto extends EditController
             ? $this->getModel()->idproyecto
             : $this->request->queryOrInput('idproyecto', '');
 
-        $this->addButton($this->mainTabName(), [
+        $this->tab($this->mainTabName())->addButton([
             'type' => 'link',
             'action' => 'KanbanProyectos?idproyecto=' . $idproyecto,
             'icon' => 'fa-brands fa-trello',
