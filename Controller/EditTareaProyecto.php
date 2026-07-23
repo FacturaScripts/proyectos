@@ -135,7 +135,7 @@ class EditTareaProyecto extends EditController
                     $this->setTemplate('Error/AccessDenied');
                 } elseif (false === $view->model->getProject()->editable) {
                     $this->disableTaskColumns($view);
-                    $this->views['EditTareaProyecto']->disableColumn('code');
+                    $this->tab('EditTareaProyecto')->disableColumn('code');
                 }
 
                 // Si el modelo no existe, desactivamos la pestaña de archivos

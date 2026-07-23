@@ -138,7 +138,7 @@ class ListProyecto extends ListController
                 continue;
             }
 
-            $this->views[$viewName]->getRow('status')->options[] = [
+            $this->listView($viewName)->getRow('status')->options[] = [
                 'tag' => 'option',
                 'children' => [],
                 'color' => $estado->color,

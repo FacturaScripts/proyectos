@@ -60,7 +60,7 @@ class EditNotaProyecto extends EditController
                 }
 
                 if (empty($view->model->idtarea)) {
-                    $this->views[$viewName]->disableColumn('task');
+                    $this->tab($viewName)->disableColumn('task');
                 }
                 break;
         }

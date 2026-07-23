@@ -217,7 +217,7 @@ class EditProyecto extends EditController
 
         // disable company column if there is only one company
         if ($this->empresa->count() < 2) {
-            $this->views[$this->mainTabName()]->disableColumn('company');
+            $this->tab($this->mainTabName())->disableColumn('company');
         }
 
         $this->createViewsTasks();
@@ -436,7 +436,7 @@ class EditProyecto extends EditController
             ->addSearchFields(['descripcion']);
 
         $status = $this->codeModel->all('tareas', 'idtarea', 'nombre');
-        $this->views[$viewName]->addFilterSelect('idtarea', 'task', 'idtarea', $status);
+        $this->listView($viewName)->addFilterSelect('idtarea', 'task', 'idtarea', $status);
     }
 
     protected function createViewsServices(string $viewName = 'ListServicioAT'): void
@@ -453,22 +453,22 @@ class EditProyecto extends EditController
             ->addSearchFields(['descripcion', 'idservicio', 'material', 'observaciones', 'solucion']);
 
         // filters
-        $this->views[$viewName]->addFilterPeriod('fecha', 'date', 'fecha')
+        $this->listView($viewName)->addFilterPeriod('fecha', 'date', 'fecha')
             ->addFilterAutocomplete('codcliente', 'customer', 'codcliente', 'clientes', 'codcliente', 'nombre');
 
         $priority = $this->codeModel->all('serviciosat_prioridades', 'id', 'nombre');
-        $this->views[$viewName]->addFilterSelect('idprioridad', 'priority', 'idprioridad', $priority);
+        $this->listView($viewName)->addFilterSelect('idprioridad', 'priority', 'idprioridad', $priority);
 
         $status = $this->codeModel->all('serviciosat_estados', 'id', 'nombre');
-        $this->views[$viewName]->addFilterSelect('idestado', 'status', 'idestado', $status);
+        $this->listView($viewName)->addFilterSelect('idestado', 'status', 'idestado', $status);
 
         $users = $this->codeModel->all('users', 'nick', 'nick');
-        $this->views[$viewName]->addFilterSelect('nick', 'user', 'nick', $users);
+        $this->listView($viewName)->addFilterSelect('nick', 'user', 'nick', $users);
 
         $agents = $this->codeModel->all('agentes', 'codagente', 'nombre');
-        $this->views[$viewName]->addFilterSelect('codagente', 'agent', 'codagente', $agents);
+        $this->listView($viewName)->addFilterSelect('codagente', 'agent', 'codagente', $agents);
 
-        $this->views[$viewName]->addFilterNumber('netogt', 'net', 'neto', '>=')
+        $this->listView($viewName)->addFilterNumber('netogt', 'net', 'neto', '>=')
             ->addFilterNumber('netolt', 'net', 'neto', '<=');
 
         // asignamos colores
@@ -478,7 +478,7 @@ class EditProyecto extends EditController
                 continue;
             }
 
-            $this->views[$viewName]->getRow('status')->options[] = [
+            $this->listView($viewName)->getRow('status')->options[] = [
                 'tag' => 'option',
                 'children' => [],
                 'color' => $estado->color,
@@ -507,13 +507,13 @@ class EditProyecto extends EditController
             ->addOrderBy(['pterecibir'], 'pending-reception');
 
         // filters
-        $this->views[$viewName]->addFilterNumber('cantidad', 'quantity', 'cantidad')
+        $this->listView($viewName)->addFilterNumber('cantidad', 'quantity', 'cantidad')
             ->addFilterNumber('reservada', 'reserved', 'reservada')
             ->addFilterNumber('pterecibir', 'pending-reception', 'pterecibir')
             ->addFilterNumber('disponible', 'available', 'disponible');
 
         // disable column
-        $this->views[$viewName]->disableColumn('project');
+        $this->listView($viewName)->disableColumn('project');
 
         // disable buttons
         $this->setSettings($viewName, 'btnDelete', false);
@@ -542,21 +542,21 @@ class EditProyecto extends EditController
             ->addSearchFields(['descripcion', 'nombre']);
 
         // filters
-        $this->views[$viewName]->addFilterPeriod('fecha', 'start-date', 'fecha');
-        $this->views[$viewName]->addFilterPeriod('fechafin', 'end-date', 'fechafin');
+        $this->listView($viewName)->addFilterPeriod('fecha', 'start-date', 'fecha');
+        $this->listView($viewName)->addFilterPeriod('fechafin', 'end-date', 'fechafin');
 
         $status = $this->codeModel->all('tareas_fases', 'idfase', 'nombre');
-        $this->views[$viewName]->addFilterSelect('idfase', 'phase', 'idfase', $status);
+        $this->listView($viewName)->addFilterSelect('idfase', 'phase', 'idfase', $status);
 
         // filtro por usuario asignado
         $users = $this->codeModel->all('users', 'nick', 'nick');
         if (count($users) > 1) {
-            $this->views[$viewName]->addFilterSelect('nick', 'user', 'nick', $users);
+            $this->listView($viewName)->addFilterSelect('nick', 'user', 'nick', $users);
         }
 
         // disable columns
-        $this->views[$viewName]->disableColumn('project');
-        $this->views[$viewName]->disableColumn('company');
+        $this->listView($viewName)->disableColumn('project');
+        $this->listView($viewName)->disableColumn('company');
 
         $this->addButton($viewName, [
             'type' => 'modal',
@@ -579,7 +579,7 @@ class EditProyecto extends EditController
         $this->addEditListView($viewName, 'UserProyecto', 'users', 'fa-solid fa-users');
 
         // disable column
-        $this->views[$viewName]->disableColumn('project');
+        $this->tab($viewName)->disableColumn('project');
     }
 
     /**
