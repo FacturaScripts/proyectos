@@ -1,7 +1,7 @@
 <?php
 /**
  * This file is part of Proyectos plugin for FacturaScripts
- * Copyright (C) 2020-2023 Carlos Garcia Gomez <carlos@facturascripts.com>
+ * Copyright (C) 2020-2026 Carlos Garcia Gomez <carlos@facturascripts.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -174,6 +174,15 @@ class TareaProyecto extends ModelClass
         $this->nombre = Tools::noHtml($this->nombre);
 
         return parent::test();
+    }
+
+    public function url(string $type = 'auto', string $list = 'List'): string
+    {
+        if ('list' === $type && !empty($this->idproyecto)) {
+            return $this->getProject()->url() . '&activetab=List' . $this->modelClassName();
+        }
+
+        return parent::url($type, $list);
     }
 
     /**
