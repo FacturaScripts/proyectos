@@ -321,6 +321,7 @@ class EditProyecto extends EditController
             ->addOrderBy(['codproveedor'], 'supplier-code')
             ->addOrderBy(['total'], 'total')
             ->addSearchFields(['cifnif', 'codigo', 'nombre', 'numproveedor', 'observaciones'])
+            ->setSettings('btnPrint', true)
             ->setSettings('btnNew', false);
 
         // filtros
@@ -346,6 +347,7 @@ class EditProyecto extends EditController
             ->addOrderBy(['numero2'], 'number2')
             ->addOrderBy(['total'], 'total')
             ->addSearchFields(['cifnif', 'codigo', 'codigoenv', 'nombrecliente', 'numero2', 'observaciones'])
+            ->setSettings('btnPrint', true)
             ->setSettings('btnNew', false);
 
         if ($modelName === 'PresupuestoCliente') {
