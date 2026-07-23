@@ -217,7 +217,7 @@ class EditProyecto extends EditController
 
         // disable company column if there is only one company
         if ($this->empresa->count() < 2) {
-            $this->views[$this->getMainViewName()]->disableColumn('company');
+            $this->views[$this->mainTabName()]->disableColumn('company');
         }
 
         $this->createViewsTasks();
@@ -779,8 +779,8 @@ class EditProyecto extends EditController
      */
     protected function loadData($viewName, $view)
     {
-        $mainViewName = $this->getMainViewName();
-        $idproyecto = $this->getViewModelValue($mainViewName, 'idproyecto');
+        $mainViewName = $this->mainTabName();
+        $idproyecto = $this->tabModelValue($mainViewName, 'idproyecto');
 
         switch ($viewName) {
             case $mainViewName:
@@ -825,7 +825,7 @@ class EditProyecto extends EditController
 
                 // añadimos el botón de nuevo documento, no para asientos
                 if ($viewName !== 'ListAsiento') {
-                    $codcliente = $this->getViewModelValue($mainViewName, 'codcliente');
+                    $codcliente = $this->tabModelValue($mainViewName, 'codcliente');
                     $url = $view->model->url('edit') . '?idproyecto=' . $idproyecto;
                     if (false === empty($codcliente)
                         && in_array($view->model->modelClassName(), ['PresupuestoCliente', 'PedidoCliente', 'AlbaranCliente', 'FacturaCliente'])) {

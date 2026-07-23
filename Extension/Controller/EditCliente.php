@@ -50,7 +50,7 @@ class EditCliente
     {
         return function ($viewName, $view) {
             if ($viewName === 'ListProyecto') {
-                $codcliente = $this->getViewModelValue($this->getMainViewName(), 'codcliente');
+                $codcliente = $this->tabModelValue($this->mainTabName(), 'codcliente');
                 $where = [Where::eq('codcliente', $codcliente)];
                 $view->loadData('', $where);
             }
