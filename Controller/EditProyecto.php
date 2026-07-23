@@ -799,7 +799,7 @@ class EditProyecto extends EditController
                 break;
 
             case 'docfiles':
-                $this->loadDataDocFiles($view, $this->getModelClassName(), $this->getModel()->primaryColumnValue());
+                $this->loadDataDocFiles($view, $this->getModelClassName(), $this->getModel()->id());
                 break;
 
             case 'EditUserProyecto':
