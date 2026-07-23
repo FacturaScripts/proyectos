@@ -21,8 +21,6 @@ namespace FacturaScripts\Plugins\Proyectos\Extension\Controller;
 
 use Closure;
 use FacturaScripts\Core\Where;
-use FacturaScripts\Core\Tools;
-
 
 /**
  * Description of EditProducto

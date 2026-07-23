@@ -23,7 +23,7 @@ use FacturaScripts\Core\Lib\ExtendedController\ListController;
 use FacturaScripts\Core\Lib\ExtendedController\ListView;
 use FacturaScripts\Core\Tools;
 use FacturaScripts\Core\Where;
-use FacturaScripts\Plugins\Proyectos\Model\EstadoProyecto;
+use FacturaScripts\Dinamic\Model\EstadoProyecto;
 
 /**
  * Description of ListProyecto

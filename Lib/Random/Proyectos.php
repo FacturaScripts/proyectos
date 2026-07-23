@@ -1,7 +1,7 @@
 <?php
 /**
  * This file is part of Randomizer plugin for FacturaScripts
- * Copyright (C) 2021-2024 Carlos Garcia Gomez <carlos@facturascripts.com>
+ * Copyright (C) 2021-2026 Carlos Garcia Gomez <carlos@facturascripts.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -21,8 +21,6 @@ namespace FacturaScripts\Plugins\Proyectos\Lib\Random;
 
 use FacturaScripts\Core\Where;
 use FacturaScripts\Core\Model\Base\BusinessDocument;
-use FacturaScripts\Core\Tools;
-
 use FacturaScripts\Dinamic\Model\AlbaranCliente;
 use FacturaScripts\Dinamic\Model\AlbaranProveedor;
 use FacturaScripts\Dinamic\Model\FacturaCliente;
@@ -31,11 +29,11 @@ use FacturaScripts\Dinamic\Model\PedidoCliente;
 use FacturaScripts\Dinamic\Model\PedidoProveedor;
 use FacturaScripts\Dinamic\Model\PresupuestoCliente;
 use FacturaScripts\Dinamic\Model\PresupuestoProveedor;
-use FacturaScripts\Plugins\Proyectos\Model\FaseTarea;
-use FacturaScripts\Plugins\Proyectos\Model\Proyecto;
-use FacturaScripts\Plugins\Proyectos\Model\TareaProyecto;
-use FacturaScripts\Plugins\Proyectos\Model\UserProyecto;
-use FacturaScripts\Plugins\Randomizer\Lib\Random\NewItems;
+use FacturaScripts\Dinamic\Model\FaseTarea;
+use FacturaScripts\Dinamic\Model\Proyecto;
+use FacturaScripts\Dinamic\Model\TareaProyecto;
+use FacturaScripts\Dinamic\Model\UserProyecto;
+use FacturaScripts\Dinamic\Lib\Random\NewItems;
 use Faker;
 
 /**

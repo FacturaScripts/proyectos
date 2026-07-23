@@ -21,7 +21,7 @@ namespace FacturaScripts\Plugins\Proyectos\Extension\Controller;
 
 use Closure;
 use FacturaScripts\Core\Tools;
-use FacturaScripts\Plugins\Proyectos\Model\Proyecto;
+use FacturaScripts\Dinamic\Model\Proyecto;
 
 class NewServicioAT
 {

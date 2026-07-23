@@ -23,7 +23,6 @@ use FacturaScripts\Core\Template\ModelClass;
 use FacturaScripts\Core\Template\ModelTrait;
 use FacturaScripts\Core\Tools;
 
-
 /**
  * Description of UserProyecto
  *

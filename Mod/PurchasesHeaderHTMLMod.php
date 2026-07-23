@@ -1,7 +1,7 @@
 <?php
 /**
  * This file is part of Proyectos plugin for FacturaScripts
- * Copyright (C) 2022-2023 Carlos Garcia Gomez <carlos@facturascripts.com>
+ * Copyright (C) 2022-2026 Carlos Garcia Gomez <carlos@facturascripts.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -22,8 +22,8 @@ namespace FacturaScripts\Plugins\Proyectos\Mod;
 use FacturaScripts\Core\Contract\PurchasesModInterface;
 use FacturaScripts\Core\Model\Base\PurchaseDocument;
 use FacturaScripts\Core\Tools;
+use FacturaScripts\Dinamic\Model\Proyecto;
 use FacturaScripts\Dinamic\Lib\AssetManager;
-use FacturaScripts\Plugins\Proyectos\Model\Proyecto;
 
 /**
  * Description of PurchasesHeaderHTMLMod
