@@ -28,13 +28,13 @@ class NewServicioAT
     public function load(): Closure
     {
         return function () {
-            if (empty($this->request->get('idproyecto')) || !empty($this->codcliente)) {
+            if (empty($this->request->queryOrInput('idproyecto')) || !empty($this->codcliente)) {
                 return;
             }
 
             // buscamos el proyecto
             $project = new Proyecto();
-            $id = $this->request->get('idproyecto');
+            $id = $this->request->queryOrInput('idproyecto');
             if (false === $project->load($id)) {
                 Tools::log()->warning('project-not-found', [
                     'project' => $id
@@ -50,13 +50,13 @@ class NewServicioAT
     public function saveNewService(): Closure
     {
         return function ($service) {
-            if (empty($this->request->get('idproyecto'))) {
+            if (empty($this->request->queryOrInput('idproyecto'))) {
                 return;
             }
 
             // buscamos el proyecto
             $project = new Proyecto();
-            $id = $this->request->get('idproyecto');
+            $id = $this->request->queryOrInput('idproyecto');
             if (false === $project->load($id)) {
                 Tools::log()->warning('project-not-found', [
                     'project' => $id

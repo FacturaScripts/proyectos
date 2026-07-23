@@ -567,7 +567,7 @@ class EditProyecto extends EditController
 
         $this->addButton($viewName, [
             'type' => 'link',
-            'action' => 'KanbanProyectos?idproyecto=' . $this->request->get('code', ''),
+            'action' => 'KanbanProyectos?idproyecto=' . $this->request->queryOrInput('code', ''),
             'icon' => 'fa-brands fa-trello',
             'label' => 'kanban',
             'color' => 'info',
@@ -694,13 +694,13 @@ class EditProyecto extends EditController
 
         // cargamos el proyecto actual
         $origProject = new Proyecto();
-        if (false === $origProject->load($this->request->get('code', ''))) {
+        if (false === $origProject->load($this->request->queryOrInput('code', ''))) {
             return true;
         }
 
         // obtenemos el ID del proyecto a copiar
         $copyProject = new Proyecto();
-        if (false === $copyProject->load($this->request->get('idproyecto', '')) ||
+        if (false === $copyProject->load($this->request->queryOrInput('idproyecto', '')) ||
             $origProject->idproyecto === $copyProject->idproyecto) {
             return true;
         }
@@ -757,7 +757,7 @@ class EditProyecto extends EditController
         $modelTable = $model->tableName();
         $modelKey = $model->primaryColumn();
         $code = $this->request->request->get('linkupcode', '');
-        $idproyecto = $this->request->get('code', '');
+        $idproyecto = $this->request->queryOrInput('code', '');
 
         $sql = "UPDATE $modelTable SET idproyecto = " . $this->dataBase->var2str($idproyecto)
             . " WHERE " . $this->dataBase->escapeColumn($modelKey) . " = " . $this->dataBase->var2str($code) . ';';
@@ -889,7 +889,7 @@ class EditProyecto extends EditController
 
         // obtenemos el proyecto
         $project = $this->getModel();
-        if (false === $project->load($this->request->get('code', ''))) {
+        if (false === $project->load($this->request->queryOrInput('code', ''))) {
             return true;
         }
 

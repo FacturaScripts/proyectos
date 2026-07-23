@@ -59,9 +59,9 @@ class EditTareaProyecto extends EditController
         $this->createViewsNotes();
         $this->createViewDocFiles();
 
-        $idproyecto = $this->request->get('code', '')
+        $idproyecto = $this->request->queryOrInput('code', '')
             ? $this->getModel()->idproyecto
-            : $this->request->get('idproyecto', '');
+            : $this->request->queryOrInput('idproyecto', '');
 
         $this->addButton($this->mainTabName(), [
             'type' => 'link',
