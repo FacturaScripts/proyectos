@@ -83,7 +83,7 @@ class EditProyecto extends EditController
         $this->listView($viewName)->disableColumn('project');
 
         // añadimos botón para enlazar documentos
-        $this->addButton($viewName, [
+        $this->tab($viewName)->addButton([
             'type' => 'modal',
             'action' => 'link-up-' . $modelName,
             'icon' => 'fa-solid fa-link',
@@ -217,7 +217,7 @@ class EditProyecto extends EditController
 
         // disable company column if there is only one company
         if ($this->empresa->count() < 2) {
-            $this->views[$this->getMainViewName()]->disableColumn('company');
+            $this->tab($this->mainTabName())->disableColumn('company');
         }
 
         $this->createViewsTasks();
@@ -438,7 +438,7 @@ class EditProyecto extends EditController
             ->addSearchFields(['descripcion']);
 
         $status = $this->codeModel->all('tareas', 'idtarea', 'nombre');
-        $this->views[$viewName]->addFilterSelect('idtarea', 'task', 'idtarea', $status);
+        $this->listView($viewName)->addFilterSelect('idtarea', 'task', 'idtarea', $status);
     }
 
     protected function createViewsServices(string $viewName = 'ListServicioAT'): void
@@ -455,22 +455,22 @@ class EditProyecto extends EditController
             ->addSearchFields(['descripcion', 'idservicio', 'material', 'observaciones', 'solucion']);
 
         // filters
-        $this->views[$viewName]->addFilterPeriod('fecha', 'date', 'fecha')
+        $this->listView($viewName)->addFilterPeriod('fecha', 'date', 'fecha')
             ->addFilterAutocomplete('codcliente', 'customer', 'codcliente', 'clientes', 'codcliente', 'nombre');
 
         $priority = $this->codeModel->all('serviciosat_prioridades', 'id', 'nombre');
-        $this->views[$viewName]->addFilterSelect('idprioridad', 'priority', 'idprioridad', $priority);
+        $this->listView($viewName)->addFilterSelect('idprioridad', 'priority', 'idprioridad', $priority);
 
         $status = $this->codeModel->all('serviciosat_estados', 'id', 'nombre');
-        $this->views[$viewName]->addFilterSelect('idestado', 'status', 'idestado', $status);
+        $this->listView($viewName)->addFilterSelect('idestado', 'status', 'idestado', $status);
 
         $users = $this->codeModel->all('users', 'nick', 'nick');
-        $this->views[$viewName]->addFilterSelect('nick', 'user', 'nick', $users);
+        $this->listView($viewName)->addFilterSelect('nick', 'user', 'nick', $users);
 
         $agents = $this->codeModel->all('agentes', 'codagente', 'nombre');
-        $this->views[$viewName]->addFilterSelect('codagente', 'agent', 'codagente', $agents);
+        $this->listView($viewName)->addFilterSelect('codagente', 'agent', 'codagente', $agents);
 
-        $this->views[$viewName]->addFilterNumber('netogt', 'net', 'neto', '>=')
+        $this->listView($viewName)->addFilterNumber('netogt', 'net', 'neto', '>=')
             ->addFilterNumber('netolt', 'net', 'neto', '<=');
 
         // asignamos colores
@@ -480,7 +480,7 @@ class EditProyecto extends EditController
                 continue;
             }
 
-            $this->views[$viewName]->getRow('status')->options[] = [
+            $this->listView($viewName)->getRow('status')->options[] = [
                 'tag' => 'option',
                 'children' => [],
                 'color' => $estado->color,
@@ -509,13 +509,13 @@ class EditProyecto extends EditController
             ->addOrderBy(['pterecibir'], 'pending-reception');
 
         // filters
-        $this->views[$viewName]->addFilterNumber('cantidad', 'quantity', 'cantidad')
+        $this->listView($viewName)->addFilterNumber('cantidad', 'quantity', 'cantidad')
             ->addFilterNumber('reservada', 'reserved', 'reservada')
             ->addFilterNumber('pterecibir', 'pending-reception', 'pterecibir')
             ->addFilterNumber('disponible', 'available', 'disponible');
 
         // disable column
-        $this->views[$viewName]->disableColumn('project');
+        $this->listView($viewName)->disableColumn('project');
 
         // disable buttons
         $this->setSettings($viewName, 'btnDelete', false);
@@ -523,7 +523,7 @@ class EditProyecto extends EditController
         $this->setSettings($viewName, 'checkBoxes', false);
 
         if ($this->user->admin) {
-            $this->addButton($viewName, [
+            $this->tab($viewName)->addButton([
                 'action' => 'rebuild-stock',
                 'color' => 'warning',
                 'confirm' => true,
@@ -544,32 +544,32 @@ class EditProyecto extends EditController
             ->addSearchFields(['descripcion', 'nombre']);
 
         // filters
-        $this->views[$viewName]->addFilterPeriod('fecha', 'start-date', 'fecha');
-        $this->views[$viewName]->addFilterPeriod('fechafin', 'end-date', 'fechafin');
+        $this->listView($viewName)->addFilterPeriod('fecha', 'start-date', 'fecha');
+        $this->listView($viewName)->addFilterPeriod('fechafin', 'end-date', 'fechafin');
 
         $status = $this->codeModel->all('tareas_fases', 'idfase', 'nombre');
-        $this->views[$viewName]->addFilterSelect('idfase', 'phase', 'idfase', $status);
+        $this->listView($viewName)->addFilterSelect('idfase', 'phase', 'idfase', $status);
 
         // filtro por usuario asignado
         $users = $this->codeModel->all('users', 'nick', 'nick');
         if (count($users) > 1) {
-            $this->views[$viewName]->addFilterSelect('nick', 'user', 'nick', $users);
+            $this->listView($viewName)->addFilterSelect('nick', 'user', 'nick', $users);
         }
 
         // disable columns
-        $this->views[$viewName]->disableColumn('project');
-        $this->views[$viewName]->disableColumn('company');
+        $this->listView($viewName)->disableColumn('project');
+        $this->listView($viewName)->disableColumn('company');
 
-        $this->addButton($viewName, [
+        $this->tab($viewName)->addButton([
             'type' => 'modal',
             'action' => 'import-task',
             'icon' => 'fa-solid fa-file-import',
             'label' => 'import'
         ]);
 
-        $this->addButton($viewName, [
+        $this->tab($viewName)->addButton([
             'type' => 'link',
-            'action' => 'KanbanProyectos?idproyecto=' . $this->request->get('code', ''),
+            'action' => 'KanbanProyectos?idproyecto=' . $this->request->queryOrInput('code', ''),
             'icon' => 'fa-brands fa-trello',
             'label' => 'kanban',
             'color' => 'info',
@@ -581,7 +581,7 @@ class EditProyecto extends EditController
         $this->addEditListView($viewName, 'UserProyecto', 'users', 'fa-solid fa-users');
 
         // disable column
-        $this->views[$viewName]->disableColumn('project');
+        $this->tab($viewName)->disableColumn('project');
     }
 
     /**
@@ -696,13 +696,13 @@ class EditProyecto extends EditController
 
         // cargamos el proyecto actual
         $origProject = new Proyecto();
-        if (false === $origProject->load($this->request->get('code', ''))) {
+        if (false === $origProject->load($this->request->queryOrInput('code', ''))) {
             return true;
         }
 
         // obtenemos el ID del proyecto a copiar
         $copyProject = new Proyecto();
-        if (false === $copyProject->load($this->request->get('idproyecto', '')) ||
+        if (false === $copyProject->load($this->request->queryOrInput('idproyecto', '')) ||
             $origProject->idproyecto === $copyProject->idproyecto) {
             return true;
         }
@@ -759,7 +759,7 @@ class EditProyecto extends EditController
         $modelTable = $model->tableName();
         $modelKey = $model->primaryColumn();
         $code = $this->request->request->get('linkupcode', '');
-        $idproyecto = $this->request->get('code', '');
+        $idproyecto = $this->request->queryOrInput('code', '');
 
         $sql = "UPDATE $modelTable SET idproyecto = " . $this->dataBase->var2str($idproyecto)
             . " WHERE " . $this->dataBase->escapeColumn($modelKey) . " = " . $this->dataBase->var2str($code) . ';';
@@ -781,8 +781,8 @@ class EditProyecto extends EditController
      */
     protected function loadData($viewName, $view)
     {
-        $mainViewName = $this->getMainViewName();
-        $idproyecto = $this->getViewModelValue($mainViewName, 'idproyecto');
+        $mainViewName = $this->mainTabName();
+        $idproyecto = $this->tabModelValue($mainViewName, 'idproyecto');
 
         switch ($viewName) {
             case $mainViewName:
@@ -801,7 +801,7 @@ class EditProyecto extends EditController
                 break;
 
             case 'docfiles':
-                $this->loadDataDocFiles($view, $this->getModelClassName(), $this->getModel()->primaryColumnValue());
+                $this->loadDataDocFiles($view, $this->getModelClassName(), $this->getModel()->id());
                 break;
 
             case 'EditUserProyecto':
@@ -827,13 +827,13 @@ class EditProyecto extends EditController
 
                 // añadimos el botón de nuevo documento, no para asientos
                 if ($viewName !== 'ListAsiento') {
-                    $codcliente = $this->getViewModelValue($mainViewName, 'codcliente');
+                    $codcliente = $this->tabModelValue($mainViewName, 'codcliente');
                     $url = $view->model->url('edit') . '?idproyecto=' . $idproyecto;
                     if (false === empty($codcliente)
                         && in_array($view->model->modelClassName(), ['PresupuestoCliente', 'PedidoCliente', 'AlbaranCliente', 'FacturaCliente'])) {
                         $url .= '&codcliente=' . $codcliente;
                     }
-                    $this->addButton($viewName, [
+                    $this->tab($viewName)->addButton([
                         'type' => 'link',
                         'action' => $url,
                         'color' => 'success',
@@ -843,7 +843,7 @@ class EditProyecto extends EditController
 
                 // si hay documentos añadimos el botón de desvincular
                 if ($view->count > 0) {
-                    $this->addButton($viewName, [
+                    $this->tab($viewName)->addButton([
                         'type' => 'action',
                         'action' => 'unlink-up-' . $view->model->modelClassName(),
                         'color' => 'warning',
@@ -891,7 +891,7 @@ class EditProyecto extends EditController
 
         // obtenemos el proyecto
         $project = $this->getModel();
-        if (false === $project->load($this->request->get('code', ''))) {
+        if (false === $project->load($this->request->queryOrInput('code', ''))) {
             return true;
         }
 

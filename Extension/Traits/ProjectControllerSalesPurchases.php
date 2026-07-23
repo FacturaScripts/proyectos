@@ -50,7 +50,7 @@ trait ProjectControllerSalesPurchases
         return function ($action) {
             if ($action === 'autocomplete-project') {
                 $this->setTemplate(false);
-                $query = (string)$this->request->get('term', '');
+                $query = (string)$this->request->queryOrInput('term', '');
                 $this->response->setContent(json_encode($this->autocompleteProjectAction($query)));
                 return false;
             }

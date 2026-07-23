@@ -19,7 +19,6 @@
 
 namespace FacturaScripts\Plugins\Proyectos\Model;
 
-use FacturaScripts\Core\Where;
 use FacturaScripts\Core\Template\ModelClass;
 use FacturaScripts\Core\Template\ModelTrait;
 use FacturaScripts\Core\Tools;
@@ -40,34 +39,34 @@ class TareaProyecto extends ModelClass
     const TYPE_PROCESSING = 2;
     const TYPE_CANCELED = 1;
 
-    /** Cantidad de unidades asociadas a la tarea. @var int */
+    /** @var int Cantidad de unidades asociadas a la tarea. */
     public $cantidad;
 
-    /** Descripción de la tarea. @var string */
+    /** @var string Descripción de la tarea. */
     public $descripcion;
 
-    /** Fecha de creación de la tarea. @var string */
+    /** @var string Fecha de creación de la tarea. */
     public $fecha;
 
-    /** Fecha de finalización de la tarea. @var string */
+    /** @var string Fecha de finalización de la tarea. */
     public $fechafin;
 
-    /** Fecha de inicio de la tarea. @var string */
+    /** @var string Fecha de inicio de la tarea. */
     public $fechainicio;
 
-    /** Identificador de la fase en la que se encuentra la tarea. @var int */
+    /** @var int Identificador de la fase en la que se encuentra la tarea. */
     public $idfase;
 
-    /** Identificador del proyecto al que pertenece la tarea. @var int */
+    /** @var int Identificador del proyecto al que pertenece la tarea. */
     public $idproyecto;
 
-    /** Identificador de la tarea. @var int */
+    /** @var int Identificador de la tarea. */
     public $idtarea;
 
-    /** Nombre de la tarea. @var string */
+    /** @var string Nombre de la tarea. */
     public $nombre;
 
-    /** Nick del usuario asignado a la tarea. @var string */
+    /** @var string Nick del usuario asignado a la tarea. */
     public $nick;
 
     public function clear(): void
@@ -246,8 +245,7 @@ class TareaProyecto extends ModelClass
 
         if ($completed + $canceled === count($tasks)) {
             $phase = new FaseTarea();
-            $where = [Where::eq('tipo', self::TYPE_COMPLETED)];
-            if ($phase->loadWhere($where)) {
+            if ($phase->loadWhereEq('tipo', self::TYPE_COMPLETED)) {
                 $project->idestado = $phase->idestado;
                 $project->save();
             }
@@ -283,8 +281,7 @@ class TareaProyecto extends ModelClass
     protected function setDefaultProjectStatus(): void
     {
         $defaultStatus = new EstadoProyecto();
-        $where = [Where::eq('predeterminado', true)];
-        if ($defaultStatus->loadWhere($where)) {
+        if ($defaultStatus->loadWhereEq('predeterminado', true)) {
             $project = $this->getProject();
             $project->idestado = $defaultStatus->idestado;
             $project->save();

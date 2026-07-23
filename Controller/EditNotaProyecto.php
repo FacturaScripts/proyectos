@@ -53,14 +53,14 @@ class EditNotaProyecto extends EditController
     protected function loadData($viewName, $view)
     {
         switch ($viewName) {
-            case $this->getMainViewName():
+            case $this->mainTabName():
                 parent::loadData($viewName, $view);
                 if (false === $view->model->getProject()->userCanSee($this->user)) {
                     $this->setTemplate('Error/AccessDenied');
                 }
 
                 if (empty($view->model->idtarea)) {
-                    $this->views[$viewName]->disableColumn('task');
+                    $this->tab($viewName)->disableColumn('task');
                 }
                 break;
         }

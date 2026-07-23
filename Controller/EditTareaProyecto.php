@@ -59,11 +59,11 @@ class EditTareaProyecto extends EditController
         $this->createViewsNotes();
         $this->createViewDocFiles();
 
-        $idproyecto = $this->request->get('code', '')
+        $idproyecto = $this->request->queryOrInput('code', '')
             ? $this->getModel()->idproyecto
-            : $this->request->get('idproyecto', '');
+            : $this->request->queryOrInput('idproyecto', '');
 
-        $this->addButton($this->getMainViewName(), [
+        $this->tab($this->mainTabName())->addButton([
             'type' => 'link',
             'action' => 'KanbanProyectos?idproyecto=' . $idproyecto,
             'icon' => 'fa-brands fa-trello',
@@ -127,7 +127,7 @@ class EditTareaProyecto extends EditController
      */
     protected function loadData($viewName, $view)
     {
-        $mainViewName = $this->getMainViewName();
+        $mainViewName = $this->mainTabName();
         switch ($viewName) {
             case $mainViewName:
                 parent::loadData($viewName, $view);
@@ -135,7 +135,7 @@ class EditTareaProyecto extends EditController
                     $this->setTemplate('Error/AccessDenied');
                 } elseif (false === $view->model->getProject()->editable) {
                     $this->disableTaskColumns($view);
-                    $this->views['EditTareaProyecto']->disableColumn('code');
+                    $this->tab('EditTareaProyecto')->disableColumn('code');
                 }
 
                 // Si el modelo no existe, desactivamos la pestaña de archivos
@@ -146,15 +146,15 @@ class EditTareaProyecto extends EditController
                 break;
 
             case 'EditNotaProyecto':
-                $where = [Where::eq('idtarea', $this->getViewModelValue($mainViewName, 'idtarea'))];
+                $where = [Where::eq('idtarea', $this->tabModelValue($mainViewName, 'idtarea'))];
                 $view->loadData('', $where, ['fecha' => 'DESC']);
                 if (false === $view->model->exists()) {
-                    $view->model->idproyecto = $this->getViewModelValue($mainViewName, 'idproyecto');
+                    $view->model->idproyecto = $this->tabModelValue($mainViewName, 'idproyecto');
                 }
                 break;
 
             case 'docfiles':
-                $this->loadDataDocFiles($view, $this->getModelClassName(), $this->getViewModelValue($mainViewName, 'idtarea'));
+                $this->loadDataDocFiles($view, $this->getModelClassName(), $this->tabModelValue($mainViewName, 'idtarea'));
                 break;
         }
     }
