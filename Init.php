@@ -52,6 +52,7 @@ final class Init extends InitClass
     public function init(): void
     {
         $this->loadExtension(new Extension\Controller\DocumentStitcher());
+        $this->loadExtension(new Extension\Controller\EditAsiento());
         $this->loadExtension(new Extension\Controller\EditAlbaranCliente());
         $this->loadExtension(new Extension\Controller\EditAlbaranProveedor());
         $this->loadExtension(new Extension\Controller\EditCliente());
@@ -72,6 +73,7 @@ final class Init extends InitClass
         $this->loadExtension(new Extension\Controller\ListPresupuestoCliente());
         $this->loadExtension(new Extension\Controller\ListPresupuestoProveedor());
         $this->loadExtension(new Extension\Controller\NewServicioAT());
+        $this->loadExtension(new Extension\Model\Asiento());
         $this->loadExtension(new Extension\Model\Base\BusinessDocument());
         $this->loadExtension(new Extension\Model\Stock());
         $this->loadExtension(new Extension\Model\FacturaProgramada());
