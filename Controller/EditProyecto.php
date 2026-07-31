@@ -788,7 +788,9 @@ class EditProyecto extends EditController
             case $mainViewName:
                 parent::loadData($viewName, $view);
                 if (false === $view->model->exists()) {
-                    $view->model->idempresa = $this->user->idempresa;
+                    if (false === empty($this->user->idempresa)) {
+                        $view->model->idempresa = $this->user->idempresa;
+                    }
                     $this->setSettings('docfiles', 'active', true);
                 } elseif (false === $view->model->userCanSee($this->user)) {
                     $this->setTemplate('Error/AccessDenied');

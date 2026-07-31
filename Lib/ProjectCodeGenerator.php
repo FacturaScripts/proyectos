@@ -22,6 +22,7 @@ namespace FacturaScripts\Plugins\Proyectos\Lib;
 use FacturaScripts\Core\Tools;
 use FacturaScripts\Core\Where;
 use FacturaScripts\Dinamic\Model\Proyecto;
+use FacturaScripts\Plugins\Proyectos\Model\Proyecto as BaseProyecto;
 
 /**
  * Description of ProjectCodeGenerator
@@ -31,7 +32,7 @@ use FacturaScripts\Dinamic\Model\Proyecto;
  */
 class ProjectCodeGenerator
 {
-    public static function new(Proyecto &$project)
+    public static function new(BaseProyecto &$project)
     {
         $patron = Tools::settings('proyectos', 'patron', 'PR-{ANYO}-{NUM}');
         $long_numero = Tools::settings('proyectos', 'longnumero', 6);
