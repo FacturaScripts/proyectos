@@ -21,8 +21,6 @@ namespace FacturaScripts\Plugins\Proyectos\Extension\Controller;
 
 use Closure;
 use FacturaScripts\Core\Where;
-use FacturaScripts\Core\Tools;
-
 
 /**
  * Description of EditProducto
@@ -52,7 +50,7 @@ class EditProducto
     {
         return function ($viewName, $view) {
             if ($viewName === 'ListStockProyecto') {
-                $idproducto = $this->getViewModelValue($this->getMainViewName(), 'idproducto');
+                $idproducto = $this->tabModelValue($this->mainTabName(), 'idproducto');
                 $where = [Where::eq('idproducto', $idproducto)];
                 $view->loadData('', $where);
             }

@@ -22,8 +22,7 @@ namespace FacturaScripts\Plugins\Proyectos;
 use FacturaScripts\Core\Lib\AjaxForms\PurchasesHeaderHTML;
 use FacturaScripts\Core\Lib\AjaxForms\SalesHeaderHTML;
 use FacturaScripts\Core\Base\DataBase;
-use FacturaScripts\Core\Model\Role;
-use FacturaScripts\Core\Model\RoleAccess;
+use FacturaScripts\Core\Plugins;
 use FacturaScripts\Core\Template\InitClass;
 use FacturaScripts\Core\Tools;
 use FacturaScripts\Core\Where;
@@ -36,8 +35,10 @@ use FacturaScripts\Dinamic\Model\PedidoCliente;
 use FacturaScripts\Dinamic\Model\PedidoProveedor;
 use FacturaScripts\Dinamic\Model\PresupuestoCliente;
 use FacturaScripts\Dinamic\Model\PresupuestoProveedor;
-use FacturaScripts\Plugins\Proyectos\Model\Proyecto;
-use FacturaScripts\Plugins\Proyectos\Model\UserProyecto;
+use FacturaScripts\Dinamic\Model\Proyecto;
+use FacturaScripts\Dinamic\Model\Role;
+use FacturaScripts\Dinamic\Model\RoleAccess;
+use FacturaScripts\Dinamic\Model\UserProyecto;
 
 /**
  * Description of Init
@@ -78,7 +79,7 @@ final class Init extends InitClass
         PurchasesHeaderHTML::addMod(new Mod\PurchasesHeaderHTMLMod());
         SalesHeaderHTML::addMod(new Mod\SalesHeaderHTMLMod());
 
-        if (class_exists('FacturaScripts\\Dinamic\\Controller\\Randomizer')) {
+        if (Plugins::isEnabled('Randomizer')) {
             $this->loadExtension(new Extension\Controller\Randomizer());
         }
     }

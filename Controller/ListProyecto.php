@@ -23,7 +23,7 @@ use FacturaScripts\Core\Lib\ExtendedController\ListController;
 use FacturaScripts\Core\Lib\ExtendedController\ListView;
 use FacturaScripts\Core\Tools;
 use FacturaScripts\Core\Where;
-use FacturaScripts\Plugins\Proyectos\Model\EstadoProyecto;
+use FacturaScripts\Dinamic\Model\EstadoProyecto;
 
 /**
  * Description of ListProyecto
@@ -138,7 +138,7 @@ class ListProyecto extends ListController
                 continue;
             }
 
-            $this->views[$viewName]->getRow('status')->options[] = [
+            $this->listView($viewName)->getRow('status')->options[] = [
                 'tag' => 'option',
                 'children' => [],
                 'color' => $estado->color,

@@ -1,7 +1,7 @@
 <?php
 /**
  * This file is part of Proyectos plugin for FacturaScripts
- * Copyright (C) 2020-2024 Carlos Garcia Gomez <carlos@facturascripts.com>
+ * Copyright (C) 2020-2026 Carlos Garcia Gomez <carlos@facturascripts.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -21,8 +21,6 @@ namespace FacturaScripts\Plugins\Proyectos\Extension\Controller;
 
 use Closure;
 use FacturaScripts\Core\Where;
-use FacturaScripts\Core\Tools;
-
 
 /**
  * Description of EditCliente
@@ -50,7 +48,7 @@ class EditCliente
     {
         return function ($viewName, $view) {
             if ($viewName === 'ListProyecto') {
-                $codcliente = $this->getViewModelValue($this->getMainViewName(), 'codcliente');
+                $codcliente = $this->tabModelValue($this->mainTabName(), 'codcliente');
                 $where = [Where::eq('codcliente', $codcliente)];
                 $view->loadData('', $where);
             }
