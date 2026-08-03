@@ -28,16 +28,28 @@ use FacturaScripts\Core\Tools;
 use FacturaScripts\Core\Where;
 use FacturaScripts\Dinamic\Model\AlbaranCliente;
 use FacturaScripts\Dinamic\Model\AlbaranProveedor;
+use FacturaScripts\Dinamic\Model\Asiento;
 use FacturaScripts\Dinamic\Model\EmailNotification;
+use FacturaScripts\Dinamic\Model\EstadoAT;
+use FacturaScripts\Dinamic\Model\EstadoProyecto;
 use FacturaScripts\Dinamic\Model\FacturaCliente;
+use FacturaScripts\Dinamic\Model\FacturaProgramada;
 use FacturaScripts\Dinamic\Model\FacturaProveedor;
+use FacturaScripts\Dinamic\Model\FaseTarea;
+use FacturaScripts\Dinamic\Model\MaquinaAT;
+use FacturaScripts\Dinamic\Model\NotaProyecto;
 use FacturaScripts\Dinamic\Model\PedidoCliente;
 use FacturaScripts\Dinamic\Model\PedidoProveedor;
 use FacturaScripts\Dinamic\Model\PresupuestoCliente;
 use FacturaScripts\Dinamic\Model\PresupuestoProveedor;
+use FacturaScripts\Dinamic\Model\PrioridadAT;
 use FacturaScripts\Dinamic\Model\Proyecto;
 use FacturaScripts\Dinamic\Model\Role;
 use FacturaScripts\Dinamic\Model\RoleAccess;
+use FacturaScripts\Dinamic\Model\ServicioAT;
+use FacturaScripts\Dinamic\Model\StockProyecto;
+use FacturaScripts\Dinamic\Model\TareaProyecto;
+use FacturaScripts\Dinamic\Model\TipoAT;
 use FacturaScripts\Dinamic\Model\UserProyecto;
 
 /**
@@ -90,9 +102,22 @@ final class Init extends InitClass
 
     public function update(): void
     {
-        // init models
-        new UserProyecto();
+        // init models de este plugin, en orden de dependencia
+        new EstadoProyecto();
         new Proyecto();
+        new UserProyecto();
+        new FaseTarea();
+        new TareaProyecto();
+        new NotaProyecto();
+        new StockProyecto();
+
+        // init models de otros plugins, cuyas tablas extendemos.
+        // hay que hacerlo antes de los documentos, porque estos pueden tener
+        // restricciones que apunten a esas tablas.
+        $this->initModelsFromOtherPlugins();
+
+        // init models de los documentos
+        new Asiento();
         new AlbaranCliente();
         new AlbaranProveedor();
         new FacturaCliente();
@@ -157,6 +182,24 @@ final class Init extends InitClass
 
         // without problems = Commit
         $db->commit();
+    }
+
+    private function initModelsFromOtherPlugins(): void
+    {
+        // el plugin Servicios añade idservicio a los documentos de venta,
+        // por lo que la tabla serviciosat debe existir antes de comprobarlos
+        if (Plugins::isEnabled('Servicios') && class_exists(ServicioAT::class)) {
+            new EstadoAT();
+            new MaquinaAT();
+            new PrioridadAT();
+            new TipoAT();
+            new ServicioAT();
+        }
+
+        // extendemos la tabla de facturas programadas
+        if (Plugins::isEnabled('FacturasProgramadas') && class_exists(FacturaProgramada::class)) {
+            new FacturaProgramada();
+        }
     }
 
     private function setupSettings(): void
