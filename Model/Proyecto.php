@@ -181,6 +181,11 @@ class Proyecto extends ModelClass
         $this->descripcion = Tools::noHtml($this->descripcion);
         $this->nombre = Tools::noHtml($this->nombre);
 
+        // Asigna la empresa actual si no se ha especificado ninguna
+        if (empty($this->idempresa)) {
+            $this->idempresa = $this->empresa->idempresa ?? 1;
+        }
+        
         return parent::test();
     }
 
