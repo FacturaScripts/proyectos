@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Document   : EditContacto.xml
+    Description:
+        Añade el permiso para ver los proyectos en el portal cliente, junto al resto de
+        permisos del portal si el plugin PortalCliente está activo.
+-->
+<view>
+    <columns>
+        <group name="portal-cliente-advanced" numcolumns="12" valign="bottom">
+            <column name="allow-show-projects" order="190">
+                <widget type="checkbox" fieldname="pc_allow_show_project"/>
+            </column>
+        </group>
+    </columns>
+</view>

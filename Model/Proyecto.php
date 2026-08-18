@@ -25,10 +25,12 @@ use FacturaScripts\Core\Template\ModelTrait;
 use FacturaScripts\Core\Model\User;
 use FacturaScripts\Core\Session;
 use FacturaScripts\Core\Tools;
+use FacturaScripts\Dinamic\Model\AttachedFileRelation;
 use FacturaScripts\Dinamic\Model\Cliente;
 use FacturaScripts\Dinamic\Model\CodeModel;
 use FacturaScripts\Dinamic\Model\Empresa;
 use FacturaScripts\Dinamic\Lib\ProjectCodeGenerator;
+use FacturaScripts\Dinamic\Lib\PortalDocShare;
 
 /**
  * Description of Proyecto
@@ -71,6 +73,9 @@ class Proyecto extends ModelClass
 
     /** @var string Nombre del proyecto. */
     public $nombre;
+
+    /** @var string Identificador público del proyecto para URLs amigables en el portal del cliente. */
+    public $pc_uuid;
 
     /** @var bool Indica si el proyecto es privado y solo lo pueden ver los usuarios asignados. */
     public $privado;
@@ -125,6 +130,32 @@ class Proyecto extends ModelClass
         }
 
         return $available;
+    }
+
+    /**
+     * @return Cliente
+     */
+    public function getCustomer()
+    {
+        $customer = new Cliente();
+        $customer->load($this->codcliente);
+        return $customer;
+    }
+
+    /**
+     * Devuelve los archivos adjuntos del proyecto marcados para mostrarse en el portal
+     * cliente (columna pc_show, añadida por el plugin PortalCliente).
+     *
+     * @return AttachedFileRelation[]
+     */
+    public function getPortalFiles(): array
+    {
+        $where = [
+            Where::eq('model', 'Proyecto'),
+            Where::eq('modelid|modelcode', $this->id()),
+            Where::eq('pc_show', true),
+        ];
+        return AttachedFileRelation::all($where, ['creationdate' => 'DESC']);
     }
 
     /**
@@ -185,22 +216,6 @@ class Proyecto extends ModelClass
     }
 
     /**
-     * @param string $field
-     *
-     * @return bool
-     */
-    protected function onChange(string $field): bool
-    {
-        switch ($field) {
-            case 'idestado':
-                $this->editable = $this->getStatus()->editable;
-                return true;
-        }
-
-        return parent::onChange($field);
-    }
-
-    /**
      * @param User $user
      *
      * @return bool
@@ -217,5 +232,21 @@ class Proyecto extends ModelClass
             Where::eq('nick', $user->nick)
         ];
         return $userProject->loadWhere($where);
+    }
+
+    /**
+     * @param string $field
+     *
+     * @return bool
+     */
+    protected function onChange(string $field): bool
+    {
+        switch ($field) {
+            case 'idestado':
+                $this->editable = $this->getStatus()->editable;
+                return true;
+        }
+
+        return parent::onChange($field);
     }
 }

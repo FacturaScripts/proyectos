@@ -59,6 +59,10 @@
         <type>boolean</type>
     </column>
     <column>
+        <name>pc_uuid</name>
+        <type>character varying(50)</type>
+    </column>
+    <column>
         <name>totalcompras</name>
         <type>double precision</type>
         <default>0</default>

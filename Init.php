@@ -22,10 +22,16 @@ namespace FacturaScripts\Plugins\Proyectos;
 use FacturaScripts\Core\Lib\AjaxForms\PurchasesHeaderHTML;
 use FacturaScripts\Core\Lib\AjaxForms\SalesHeaderHTML;
 use FacturaScripts\Core\Base\DataBase;
+use FacturaScripts\Core\Cache;
+use FacturaScripts\Core\Kernel;
 use FacturaScripts\Core\Plugins;
 use FacturaScripts\Core\Template\InitClass;
 use FacturaScripts\Core\Tools;
 use FacturaScripts\Core\Where;
+use FacturaScripts\Dinamic\Lib\ExportManager;
+use FacturaScripts\Dinamic\Model\Contacto;
+use FacturaScripts\Dinamic\Lib\PortalMenu;
+use FacturaScripts\Dinamic\Lib\PortalSearch;
 use FacturaScripts\Dinamic\Model\AlbaranCliente;
 use FacturaScripts\Dinamic\Model\AlbaranProveedor;
 use FacturaScripts\Dinamic\Model\Asiento;
@@ -91,8 +97,27 @@ final class Init extends InitClass
         PurchasesHeaderHTML::addMod(new Mod\PurchasesHeaderHTMLMod());
         SalesHeaderHTML::addMod(new Mod\SalesHeaderHTMLMod());
 
+        // export manager: impresión y envío por email del proyecto
+        if (Plugins::isEnabled('PlantillasPDF')) {
+            ExportManager::addOptionModel('PlantillasPDFproyectosExport', 'PDF', 'Proyecto');
+            ExportManager::addOptionModel('PlantillasMAILproyectosExport', 'MAIL', 'Proyecto');
+        } else {
+            ExportManager::addOptionModel('PDFproyectosExport', 'PDF', 'Proyecto');
+            ExportManager::addOptionModel('MAILproyectosExport', 'MAIL', 'Proyecto');
+        }
+
         if (Plugins::isEnabled('Randomizer')) {
             $this->loadExtension(new Extension\Controller\Randomizer());
+        }
+
+        // portal cliente: pestaña de proyectos, menú, buscador global y ficha propia
+        if (Plugins::isEnabled('PortalCliente')) {
+            $this->loadExtension(new Extension\Controller\EditProyecto());
+            $this->loadExtension(new Extension\Controller\PortalCliente());
+            $this->loadExtension(new Extension\Controller\SendMail());
+            $this->loadExtension(new Extension\Model\Proyecto());
+            $this->addPortalMenuAndSearch();
+            $this->registerPortalRoutes();
         }
     }
 
@@ -130,6 +155,67 @@ final class Init extends InitClass
         $this->setupSettings();
         $this->createRoleForPlugin();
         $this->updateEmailNotifications();
+
+        // portal cliente: identificador público de los proyectos ya existentes
+        if (Plugins::isEnabled('PortalCliente')) {
+            $this->registerPortalRoutes();
+            $this->deployPortalRoutes();
+            $this->assignMissingPortalUuids();
+        }
+    }
+
+    /**
+     * Añade la sección de proyectos al menú lateral y al buscador global del portal
+     * cliente. Solo se llama cuando el plugin PortalCliente está activo.
+     *
+     * @return void
+     */
+    private function addPortalMenuAndSearch(): void
+    {
+        PortalMenu::add('ListPortalProyecto', 'projects', 'fa-solid fa-diagram-project', 190, function (Contacto $contact) {
+            return (bool)$contact->pc_allow_show_project;
+        });
+
+        PortalSearch::add('ListPortalProyecto', [
+            'model' => 'Proyecto',
+            'fields' => ['nombre', 'descripcion'],
+            'order_by' => ['fecha' => 'DESC', 'nombre' => 'ASC'],
+            'filter' => function (Contacto $contact) {
+                // sin cliente asociado no hay proyectos que mostrar
+                return empty($contact->codcliente) ?
+                    [] :
+                    [Where::eq('codcliente', $contact->codcliente)];
+            },
+            'map' => function (Proyecto $proyecto) {
+                return [
+                    'title' => $proyecto->nombre,
+                    'subtitle' => Tools::date($proyecto->fecha),
+                    'url' => $proyecto->url('public'),
+                ];
+            },
+        ]);
+    }
+
+    /**
+     * Asigna un identificador público (pc_uuid) a los proyectos que aún no lo tengan, para
+     * poder acceder a su ficha en el portal cliente por una url amigable. Solo se llama
+     * cuando el plugin PortalCliente está activo.
+     *
+     * @return void
+     */
+    private function assignMissingPortalUuids(): void
+    {
+        $db = new DataBase();
+        if (false === $db->tableExists('proyectos')) {
+            return;
+        }
+
+        $sql = "SELECT idproyecto FROM proyectos WHERE pc_uuid IS NULL OR pc_uuid = '';";
+        foreach ($db->select($sql) as $row) {
+            $sql = 'UPDATE proyectos SET pc_uuid = ' . $db->var2str(uniqid())
+                . ' WHERE idproyecto = ' . (int)$row['idproyecto'] . ';';
+            $db->exec($sql);
+        }
     }
 
     private function createRoleForPlugin(): void
@@ -184,6 +270,12 @@ final class Init extends InitClass
         $db->commit();
     }
 
+    private function deployPortalRoutes(): void
+    {
+        Plugins::deploy(true, true);
+        Cache::clear();
+    }
+
     private function initModelsFromOtherPlugins(): void
     {
         // el plugin Servicios añade idservicio a los documentos de venta,
@@ -202,11 +294,25 @@ final class Init extends InitClass
         }
     }
 
+    /**
+     * Registra la ruta amigable de la ficha del proyecto en el portal cliente, del tipo
+     * /PortalProyecto/{uuid}. Solo se llama cuando el plugin PortalCliente está activo.
+     *
+     * @return void
+     */
+    private function registerPortalRoutes(): void
+    {
+        Kernel::addRoutes(function () {
+            Kernel::addRoute('/PortalProyecto/*', 'PortalProyecto');
+        });
+    }
+
     private function setupSettings(): void
     {
         Tools::settings('proyectos', 'patron', 'PR-{ANYO}-{NUM}');
         Tools::settings('proyectos', 'longnumero', 6);
         Tools::settings('proyectos', 'reiniciar_patron_anualmente', 0);
+        Tools::settings('proyectos', 'print_pdf_footer_text', '');
         Tools::settingsSave();
     }
 

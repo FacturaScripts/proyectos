@@ -1,0 +1,17 @@
+{#
+* This file is part of Proyectos plugin for FacturaScripts
+* Copyright (C) 2026 Daniel Fernández Giménez <contacto@danielfg.es>
+*
+* Cabecera de la ficha de un proyecto en el portal cliente. El resto de la página
+* (pestañas y menú) lo aporta Master/PortalViewTemplate.html.twig, del plugin PortalCliente.
+#}
+
+{% set model = fsc.getCurrentView().model %}
+
+{% embed 'Master/Partial/PortalPageHeader.html.twig' with {
+    'pcTitle': trans('project') ~ ' ' ~ model.nombre,
+    'pcIcon': 'fa-solid fa-diagram-project',
+    'pcSubtitle': model.getCustomer().nombre,
+    'pcBackUrl': fsc.contact.exists() ? 'PortalCliente?activetab=ListPortalProyecto' : ''
+} %}
+{% endembed %}

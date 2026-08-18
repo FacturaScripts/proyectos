@@ -1,0 +1,64 @@
+{#
+* This file is part of Proyectos plugin for FacturaScripts
+* Copyright (C) 2026 Daniel Fernández Giménez <contacto@danielfg.es>
+*
+* Pestaña "Tareas" de la ficha PortalProyecto: las tareas del proyecto.
+#}
+
+{% set firstView = fsc.views | first %}
+{% set proyecto = firstView.model %}
+
+<div class="card mb-3 pc-doc-lines-card">
+    <div class="table-responsive">
+        <table class="table pc-table mb-0">
+            <thead>
+                <tr>
+                    <th>{{ trans('name') }}</th>
+                    <th>{{ trans('phase') }}</th>
+                    <th class="text-end text-nowrap">{{ trans('start-date') }}</th>
+                    <th class="text-end text-nowrap">{{ trans('end-date') }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for tarea in proyecto.getTasks() %}
+                    <tr>
+                        <td>
+                            <div class="fw-semibold">{{ tarea.nombre }}</div>
+                            {% if tarea.descripcion %}
+                                <div class="text-body-secondary small">{{ tarea.descripcion | raw | nl2br }}</div>
+                            {% endif %}
+                        </td>
+                        <td>{{ tarea.getPhase().nombre }}</td>
+                        <td class="text-end text-nowrap">
+                            {{ tarea.fechainicio }}
+                            {% if tarea.fechainicio %}
+                                {% if tarea.horainicio %}
+                                    {{ tarea.horainicio }}
+                                {% endif %}
+                            {% endif %}
+                        </td>
+                        <td class="text-end text-nowrap">
+                            {% if tarea.fechafin %}
+                                {{ tarea.fechafin }}
+                                {% if tarea.horafin %}
+                                    {{ tarea.horafin }}
+                                {% endif %}
+                            {% else %}
+                                <span class="text-muted">{{ trans('not-finished') }}</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="4">
+                            <div class="pc-empty">
+                                <i class="fa-regular fa-rectangle-list" aria-hidden="true"></i>
+                                {{ trans('no-data') }}
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>

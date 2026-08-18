@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Document   : ListPortalProyecto.xml
+    Description:
+        Lista de proyectos visible en el portal del cliente.
+-->
+<view>
+    <columns>
+        <column name="nombre" order="100">
+            <widget type="text" fieldname="nombre" url="PortalProyecto"/>
+        </column>
+        <column name="status" order="110">
+            <widget type="select" fieldname="idestado">
+                <values source="proyectos_estados" fieldcode="idestado" fieldtitle="nombre"/>
+            </widget>
+        </column>
+        <column name="description" order="120">
+            <widget type="textarea" fieldname="descripcion"/>
+        </column>
+        <column name="date" display="right" order="130">
+            <widget type="text" fieldname="fecha"/>
+        </column>
+    </columns>
+</view>
