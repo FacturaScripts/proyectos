@@ -79,6 +79,32 @@ final class ProyectoTest extends TestCase
         $this->assertTrue($proyecto->delete());
     }
 
+    public function testCreateProjectDirectlyClosed(): void
+    {
+        // buscamos un estado no editable
+        $proyecto = new Proyecto();
+        $closedStatus = null;
+        foreach ($proyecto->getAvailableStatus() as $status) {
+            if (false === $status->editable) {
+                $closedStatus = $status;
+                break;
+            }
+        }
+        $this->assertNotNull($closedStatus, 'no-closed-status-found');
+
+        // creamos el proyecto ya con ese estado desde el alta (no es un update)
+        $proyecto->nombre = 'Proyecto de prueba';
+        $proyecto->descripcion = 'Este es un proyecto de prueba';
+        $proyecto->idestado = $closedStatus->idestado;
+        $this->assertTrue($proyecto->save());
+
+        // comprobamos que editable se ha sincronizado también en el alta
+        $this->assertFalse($proyecto->editable);
+
+        // eliminamos el proyecto
+        $this->assertTrue($proyecto->delete());
+    }
+
     protected function tearDown(): void
     {
         $this->logErrors();

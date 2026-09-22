@@ -181,6 +181,10 @@ class Proyecto extends ModelClass
         $this->descripcion = Tools::noHtml($this->descripcion);
         $this->nombre = Tools::noHtml($this->nombre);
 
+        // sincronizamos editable con el estado seleccionado, tanto en el alta como en la edición
+        // (onChange sólo se dispara al actualizar, así que en el alta no se ejecutaría)
+        $this->editable = $this->getStatus()->editable;
+
         return parent::test();
     }
 
