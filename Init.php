@@ -19,6 +19,7 @@
 
 namespace FacturaScripts\Plugins\Proyectos;
 
+use FacturaScripts\Core\Lib\AjaxForms\AccountingHeaderHTML;
 use FacturaScripts\Core\Lib\AjaxForms\PurchasesHeaderHTML;
 use FacturaScripts\Core\Lib\AjaxForms\SalesHeaderHTML;
 use FacturaScripts\Core\Base\DataBase;
@@ -66,6 +67,7 @@ final class Init extends InitClass
         $this->loadExtension(new Extension\Controller\DocumentStitcher());
         $this->loadExtension(new Extension\Controller\EditAlbaranCliente());
         $this->loadExtension(new Extension\Controller\EditAlbaranProveedor());
+        $this->loadExtension(new Extension\Controller\EditAsiento());
         $this->loadExtension(new Extension\Controller\EditCliente());
         $this->loadExtension(new Extension\Controller\EditFacturaCliente());
         $this->loadExtension(new Extension\Controller\EditFacturaProveedor());
@@ -88,6 +90,7 @@ final class Init extends InitClass
         $this->loadExtension(new Extension\Model\Stock());
         $this->loadExtension(new Extension\Model\FacturaProgramada());
 
+        AccountingHeaderHTML::addMod(new Mod\AccountingHeaderHTMLMod());
         PurchasesHeaderHTML::addMod(new Mod\PurchasesHeaderHTMLMod());
         SalesHeaderHTML::addMod(new Mod\SalesHeaderHTMLMod());
 
