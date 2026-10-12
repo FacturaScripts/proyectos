@@ -30,6 +30,7 @@ use FacturaScripts\Core\DataSrc\Series;
 use FacturaScripts\Core\Lib\ExtendedController\DocFilesTrait;
 use FacturaScripts\Core\Lib\ExtendedController\EditController;
 use FacturaScripts\Core\Lib\ExtendedController\EditView;
+use FacturaScripts\Core\Lib\ExtendedController\ListBusinessActionTrait;
 use FacturaScripts\Core\Lib\InvoiceOperation;
 use FacturaScripts\Core\Model\Asiento;
 use FacturaScripts\Core\Tools;
@@ -49,6 +50,7 @@ use FacturaScripts\Dinamic\Model\Proyecto;
 class EditProyecto extends EditController
 {
     use DocFilesTrait;
+    use ListBusinessActionTrait;
 
     public function getModelClassName(): string
     {
@@ -614,6 +616,12 @@ class EditProyecto extends EditController
                 $parts = explode('-', $action);
                 return $this->linkUpAction(end($parts));
 
+            case 'pay-receipt':
+                // pagar recibos exige poder modificar el proyecto y también los recibos
+                $allowUpdate = $this->permissions->allowUpdate && $this->user->can('EditReciboCliente', 'update');
+                $codes = $this->request->request->getArray('codes');
+                return $this->payReceiptAction($codes, $this->activeTab()->model, $allowUpdate, $this->dataBase, $this->user->nick);
+
             case 'rebuild-stock':
                 $this->rebuildStockAction();
                 return true;
@@ -827,6 +835,13 @@ class EditProyecto extends EditController
             case 'ListTareaProyecto':
             case 'ListServicioAT':
                 $where = [Where::eq('idproyecto', $idproyecto)];
+                $view->loadData('', $where);
+                break;
+
+            case 'ListReciboCliente':
+                // recibos de las facturas de cliente vinculadas al proyecto
+                $sql = 'SELECT idfactura FROM facturascli WHERE idproyecto = ' . $this->dataBase->var2str($idproyecto);
+                $where = [Where::in('idfactura', $sql)];
                 $view->loadData('', $where);
                 break;
 
