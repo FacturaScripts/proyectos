@@ -252,7 +252,8 @@ class EditProyecto extends EditController
             $this->createViewSales('FacturaCliente', 'customer-invoices');
         }
         if ($this->user->can('EditReciboCliente')) {
-            $this->createReceiptView('ListReciboCliente', 'ReciboCliente');
+            $this->createReceiptView('ListReciboCliente', 'ReciboCliente')
+                ->setSettings('group', 'sales');
         }
 
         $this->createViewsAccountEntries();
@@ -322,7 +323,8 @@ class EditProyecto extends EditController
             ->addOrderBy(['total'], 'total')
             ->addSearchFields(['cifnif', 'codigo', 'nombre', 'numproveedor', 'observaciones'])
             ->setSettings('btnPrint', true)
-            ->setSettings('btnNew', false);
+            ->setSettings('btnNew', false)
+            ->setSettings('group', 'purchases');
 
         // filtros
         $this->addCommonViewFilters($viewName, $modelName);
@@ -348,7 +350,8 @@ class EditProyecto extends EditController
             ->addOrderBy(['total'], 'total')
             ->addSearchFields(['cifnif', 'codigo', 'codigoenv', 'nombrecliente', 'numero2', 'observaciones'])
             ->setSettings('btnPrint', true)
-            ->setSettings('btnNew', false);
+            ->setSettings('btnNew', false)
+            ->setSettings('group', 'sales');
 
         if ($modelName === 'PresupuestoCliente') {
             $this->listView($viewName)->addOrderBy(['finoferta'], 'expiration');
