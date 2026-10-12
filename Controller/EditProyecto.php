@@ -83,12 +83,14 @@ class EditProyecto extends EditController
         $this->listView($viewName)->disableColumn('project');
 
         // añadimos botón para enlazar documentos
-        $this->tab($viewName)->addButton([
-            'type' => 'modal',
-            'action' => 'link-up-' . $modelName,
-            'icon' => 'fa-solid fa-link',
-            'label' => 'link-document'
-        ]);
+        if ($this->permissions->allowUpdate) {
+            $this->tab($viewName)->addButton([
+                'type' => 'modal',
+                'action' => 'link-up-' . $modelName,
+                'icon' => 'fa-solid fa-link',
+                'label' => 'link-document'
+            ]);
+        }
 
         // desactivamos el botón de eliminar
         $this->listView($viewName)->setSettings('btnDelete', false);
@@ -259,14 +261,18 @@ class EditProyecto extends EditController
             ->addFilterNumber('max-total', 'amount', 'importe', '<=')
             ->addFilterCheckbox('editable')
             ->addFilterSelect('operacion', 'operation', 'operacion', $operaciones)
-            ->addButton([
+            ->setSettings('btnDelete', false)
+            ->setSettings('btnNew', false);
+
+        // añadimos botón para enlazar asientos
+        if ($this->permissions->allowUpdate) {
+            $this->tab($viewName)->addButton([
                 'type' => 'modal',
                 'action' => 'link-up-Asiento',
                 'icon' => 'fa-solid fa-link',
                 'label' => 'link-document'
-            ])
-            ->setSettings('btnDelete', false)
-            ->setSettings('btnNew', false);
+            ]);
+        }
 
         // desactivamos la columna de proyecto
         $this->listView($viewName)->disableColumn('project');
@@ -894,8 +900,8 @@ class EditProyecto extends EditController
                     ]);
                 }
 
-                // si hay documentos añadimos el botón de desvincular
-                if ($view->count > 0) {
+                // si hay documentos y el usuario puede modificar, añadimos el botón de desvincular
+                if ($view->count > 0 && $this->permissions->allowUpdate) {
                     $this->tab($viewName)->addButton([
                         'type' => 'action',
                         'action' => 'unlink-up-' . $view->model->modelClassName(),
