@@ -964,8 +964,14 @@ class EditProyecto extends EditController
             return true;
         }
 
+        $unlinked = 0;
         foreach ($codes as $code) {
             // solo desvinculamos documentos de este proyecto
+            $doc = new $modelClass();
+            if (false === $doc->load($code) || $doc->idproyecto != $project->idproyecto) {
+                continue;
+            }
+
             $sql = "UPDATE $modelTable SET idproyecto = NULL WHERE "
                 . $this->dataBase->escapeColumn($modelKey) . " = " . $this->dataBase->var2str($code)
                 . " AND idproyecto = " . $this->dataBase->var2str($project->idproyecto) . ';';
@@ -973,6 +979,12 @@ class EditProyecto extends EditController
                 Tools::log()->error('record-save-error');
                 return true;
             }
+            $unlinked++;
+        }
+
+        if (0 === $unlinked) {
+            Tools::log()->warning('record-not-found');
+            return true;
         }
 
         ProjectStockManager::rebuild($project->idproyecto);
