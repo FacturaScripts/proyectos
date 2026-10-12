@@ -827,6 +827,7 @@ class EditProyecto extends EditController
 
         switch ($viewName) {
             case $mainViewName:
+                $title = $this->title;
                 parent::loadData($viewName, $view);
                 if (false === $view->model->exists()) {
                     if (false === empty($this->user->idempresa)) {
@@ -834,6 +835,8 @@ class EditProyecto extends EditController
                     }
                     $this->setSettings('docfiles', 'active', true);
                 } elseif (false === $view->model->userCanSee($this->user)) {
+                    // no mostramos el nombre del proyecto en el título
+                    $this->title = $title;
                     $this->setTemplate('Error/AccessDenied');
                 } elseif (false === $view->model->editable) {
                     $this->disableProjectColumns($view);
