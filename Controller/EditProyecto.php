@@ -19,7 +19,6 @@
 
 namespace FacturaScripts\Plugins\Proyectos\Controller;
 
-use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
 use FacturaScripts\Core\Cache;
 use FacturaScripts\Core\DataSrc\Agentes;
 use FacturaScripts\Core\DataSrc\Almacenes;
@@ -155,38 +154,21 @@ class EditProyecto extends EditController
 
     protected function autocompleteAction(): array
     {
-        // recogemos los datos
-        $data = $this->requestGet(['field', 'fieldcode', 'fieldfilter', 'fieldtitle', 'formname', 'source', 'strict', 'term']);
-
         // si no es una vinculación de documentos de compra o venta, ejecutamos el parent
-        if ($data['field'] !== 'linkupcode') {
+        $data = $this->requestGet(['field', 'fieldcode', 'fieldtitle', 'source', 'term']);
+        if ($data['field'] !== 'linkupcode' || empty($data['source'])) {
             return parent::autocompleteAction();
         }
 
-        if ($data['source'] == '') {
-            return $this->getAutocompleteValues($data['formname'], $data['field']);
-        }
-
-        $where = [];
-        foreach (DataBaseWhere::applyOperation($data['fieldfilter'] ?? '') as $field => $operation) {
-            // validar nombre de campo para prevenir SQL injection
-            if (1 !== preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*(?:\.[a-zA-Z_][a-zA-Z0-9_]*)?$/', $field)) {
-                Tools::log()->warning('autocomplete: invalid field filter name');
-                return [];
-            }
-            $value = $this->request->queryOrInput($field);
-            $where[] = Where::column($field, $value, '=', $operation);
-        }
-
         $results = [];
-        foreach ($this->codeModel->search($data['source'], $data['fieldcode'], $data['fieldtitle'], $data['term'], $where) as $value) {
+        foreach ($this->codeModel->search($data['source'], $data['fieldcode'], $data['fieldtitle'], $data['term']) as $value) {
             $results[] = ['key' => Tools::fixHtml($value->code), 'value' => Tools::fixHtml($value->description)];
         }
 
         // en documentos, buscamos también por numproveedor o numero2 según el tipo
         if (str_ends_with($data['source'], 'prov') || str_ends_with($data['source'], 'clie')) {
             $additionalField = str_ends_with($data['source'], 'prov') ? 'numproveedor' : 'numero2';
-            foreach ($this->codeModel->search($data['source'], $data['fieldcode'], $additionalField, $data['term'], $where) as $value) {
+            foreach ($this->codeModel->search($data['source'], $data['fieldcode'], $additionalField, $data['term']) as $value) {
                 $key = Tools::fixHtml($value->code);
                 // evitamos duplicados
                 $found = false;
@@ -202,13 +184,9 @@ class EditProyecto extends EditController
             }
         }
 
-        if (empty($results) && '0' == $data['strict']) {
-            $results[] = ['key' => $data['term'], 'value' => $data['term']];
-        } elseif (empty($results)) {
-            $results[] = ['key' => null, 'value' => Tools::trans('no-data')];
-        }
-
-        return $results;
+        return empty($results)
+            ? [['key' => null, 'value' => Tools::trans('no-data')]]
+            : $results;
     }
 
     protected function createViews()
