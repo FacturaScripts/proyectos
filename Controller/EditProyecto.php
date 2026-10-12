@@ -168,7 +168,7 @@ class EditProyecto extends EditController
         }
 
         // en documentos, buscamos también por numproveedor o numero2 según el tipo
-        if (str_ends_with($data['source'], 'prov') || str_ends_with($data['source'], 'clie')) {
+        if (str_ends_with($data['source'], 'prov') || str_ends_with($data['source'], 'cli')) {
             $additionalField = str_ends_with($data['source'], 'prov') ? 'numproveedor' : 'numero2';
             foreach ($this->codeModel->search($data['source'], $data['fieldcode'], $additionalField, $data['term']) as $value) {
                 $key = Tools::fixHtml($value->code);
