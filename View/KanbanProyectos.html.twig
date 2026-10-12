@@ -216,7 +216,8 @@
                     chosenClass: 'sortable-chosen',
                     disabled: !editable,
                     onEnd: function (evt) {
-                        if (evt.from === evt.to && evt.oldIndex === evt.newIndex) {
+                        // el orden dentro de una fase no se guarda, solo el cambio de fase
+                        if (evt.from === evt.to) {
                             return;
                         }
 
