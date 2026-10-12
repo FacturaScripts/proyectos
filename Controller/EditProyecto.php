@@ -780,6 +780,19 @@ class EditProyecto extends EditController
 
         $modelClass = '\\FacturaScripts\\Dinamic\\Model\\' . $modelName;
         $model = new $modelClass();
+        if (false === $model->load($code)) {
+            Tools::log()->warning('record-not-found');
+            return true;
+        }
+
+        // si el documento ya está en otro proyecto, el usuario también debe poder verlo
+        $origProject = new Proyecto();
+        if (false === empty($model->idproyecto) && $model->idproyecto != $project->idproyecto
+            && $origProject->load($model->idproyecto) && false === $origProject->userCanSee($this->user)) {
+            Tools::log()->warning('access-denied');
+            return true;
+        }
+
         $modelTable = $model->tableName();
         $modelKey = $model->primaryColumn();
         $idproyecto = $project->idproyecto;
@@ -793,6 +806,12 @@ class EditProyecto extends EditController
 
         ProjectStockManager::rebuild($idproyecto);
         ProjectTotalManager::recalculate($idproyecto);
+
+        // recalculamos también el proyecto del que sale el documento
+        if ($origProject->exists() && $origProject->idproyecto != $idproyecto) {
+            ProjectStockManager::rebuild($origProject->idproyecto);
+            ProjectTotalManager::recalculate($origProject->idproyecto);
+        }
 
         Tools::log()->info('record-updated-correctly');
         return true;
@@ -947,8 +966,10 @@ class EditProyecto extends EditController
         }
 
         foreach ($codes as $code) {
+            // solo desvinculamos documentos de este proyecto
             $sql = "UPDATE $modelTable SET idproyecto = NULL WHERE "
-                . $this->dataBase->escapeColumn($modelKey) . " = " . $this->dataBase->var2str($code) . ';';
+                . $this->dataBase->escapeColumn($modelKey) . " = " . $this->dataBase->var2str($code)
+                . " AND idproyecto = " . $this->dataBase->var2str($project->idproyecto) . ';';
             if (false === $this->dataBase->exec($sql)) {
                 Tools::log()->error('record-save-error');
                 return true;
