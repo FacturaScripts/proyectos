@@ -586,6 +586,12 @@ class EditProyecto extends EditController
      */
     protected function execPreviousAction($action)
     {
+        // no permitimos ejecutar acciones sobre proyectos que el usuario no puede ver
+        if (false === in_array($action, ['', 'autocomplete'], true) && false === $this->userCanSeeProject()) {
+            Tools::log()->warning('access-denied');
+            return true;
+        }
+
         switch ($action) {
             case 'autocomplete':
                 $this->setTemplate(false);
@@ -644,6 +650,27 @@ class EditProyecto extends EditController
         }
     }
 
+    /**
+     * Carga el proyecto de la petición. Devuelve null si no existe o el usuario no puede verlo.
+     *
+     * @return Proyecto|null
+     */
+    private function getProjectFromRequest(): ?Proyecto
+    {
+        $project = new Proyecto();
+        if (false === $project->load($this->request->queryOrInput('code', ''))) {
+            Tools::log()->warning('record-not-found');
+            return null;
+        }
+
+        if (false === $project->userCanSee($this->user)) {
+            Tools::log()->warning('access-denied');
+            return null;
+        }
+
+        return $project;
+    }
+
     private function getSelectExercise(): array
     {
         $companyFilter = $this->request->input('filteridempresa', 0);
@@ -668,16 +695,13 @@ class EditProyecto extends EditController
 
     protected function importTaskAction(): bool
     {
-        if (false === $this->permissions->allowUpdate) {
-            Tools::log()->warning('not-allowed-to-update');
-            return true;
-        } elseif (false === $this->validateFormToken()) {
+        if (false === $this->validateUpdateAction()) {
             return true;
         }
 
         // cargamos el proyecto actual
-        $origProject = new Proyecto();
-        if (false === $origProject->load($this->request->queryOrInput('code', ''))) {
+        $origProject = $this->getProjectFromRequest();
+        if (null === $origProject) {
             return true;
         }
 
@@ -685,6 +709,9 @@ class EditProyecto extends EditController
         $copyProject = new Proyecto();
         if (false === $copyProject->load($this->request->queryOrInput('idproyecto', '')) ||
             $origProject->idproyecto === $copyProject->idproyecto) {
+            return true;
+        } elseif (false === $copyProject->userCanSee($this->user)) {
+            Tools::log()->warning('access-denied');
             return true;
         }
 
@@ -728,10 +755,18 @@ class EditProyecto extends EditController
 
     protected function linkUpAction(string $modelName): bool
     {
-        if (false === $this->permissions->allowUpdate) {
-            Tools::log()->warning('not-allowed-to-update');
+        if (false === $this->validateUpdateAction($modelName)) {
             return true;
-        } elseif (false === $this->validateFormToken()) {
+        }
+
+        $project = $this->getProjectFromRequest();
+        if (null === $project) {
+            return true;
+        }
+
+        $code = $this->request->request->get('linkupcode', '');
+        if (empty($code)) {
+            Tools::log()->warning('no-selected-item');
             return true;
         }
 
@@ -739,8 +774,7 @@ class EditProyecto extends EditController
         $model = new $modelClass();
         $modelTable = $model->tableName();
         $modelKey = $model->primaryColumn();
-        $code = $this->request->request->get('linkupcode', '');
-        $idproyecto = $this->request->queryOrInput('code', '');
+        $idproyecto = $project->idproyecto;
 
         $sql = "UPDATE $modelTable SET idproyecto = " . $this->dataBase->var2str($idproyecto)
             . " WHERE " . $this->dataBase->escapeColumn($modelKey) . " = " . $this->dataBase->var2str($code) . ';';
@@ -840,8 +874,20 @@ class EditProyecto extends EditController
 
     protected function rebuildStockAction(?int $idproyecto = null): void
     {
+        // el botón solo se muestra a administradores
+        if (false === $this->user->admin) {
+            Tools::log()->warning('not-allowed-modify');
+            return;
+        } elseif (false === $this->validateUpdateAction()) {
+            return;
+        }
+
         if (empty($idproyecto)) {
-            $idproyecto = (int)$this->request->query->get('code');
+            $project = $this->getProjectFromRequest();
+            if (null === $project) {
+                return;
+            }
+            $idproyecto = $project->idproyecto;
         }
 
         if (ProjectStockManager::rebuild($idproyecto)) {
@@ -865,16 +911,13 @@ class EditProyecto extends EditController
 
     protected function unlinkUpAction(string $modelName): bool
     {
-        if (false === $this->permissions->allowUpdate) {
-            Tools::log()->warning('not-allowed-to-update');
-            return true;
-        } elseif (false === $this->validateFormToken()) {
+        if (false === $this->validateUpdateAction($modelName)) {
             return true;
         }
 
         // obtenemos el proyecto
-        $project = $this->getModel();
-        if (false === $project->load($this->request->queryOrInput('code', ''))) {
+        $project = $this->getProjectFromRequest();
+        if (null === $project) {
             return true;
         }
 
@@ -893,7 +936,7 @@ class EditProyecto extends EditController
                 . $this->dataBase->escapeColumn($modelKey) . " = " . $this->dataBase->var2str($code) . ';';
             if (false === $this->dataBase->exec($sql)) {
                 Tools::log()->error('record-save-error');
-                return false;
+                return true;
             }
         }
 
@@ -902,5 +945,41 @@ class EditProyecto extends EditController
 
         Tools::log()->info('record-updated-correctly');
         return true;
+    }
+
+    /**
+     * Comprueba si el usuario puede ver el proyecto de la petición. Si es un proyecto nuevo, devuelve true.
+     *
+     * @return bool
+     */
+    private function userCanSeeProject(): bool
+    {
+        $code = $this->request->queryOrInput('code', '');
+        if (empty($code)) {
+            return true;
+        }
+
+        $project = new Proyecto();
+        return false === $project->load($code) || $project->userCanSee($this->user);
+    }
+
+    /**
+     * Comprueba que el usuario puede modificar el proyecto y, si se indica, el tipo de documento,
+     * y que el token del formulario es válido.
+     *
+     * @param string $modelName
+     * @return bool
+     */
+    private function validateUpdateAction(string $modelName = ''): bool
+    {
+        if (false === $this->permissions->allowUpdate) {
+            Tools::log()->warning('not-allowed-modify');
+            return false;
+        } elseif ($modelName !== '' && false === $this->user->can('Edit' . $modelName, 'update')) {
+            Tools::log()->warning('not-allowed-modify');
+            return false;
+        }
+
+        return $this->validateFormToken();
     }
 }
