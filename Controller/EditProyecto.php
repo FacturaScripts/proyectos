@@ -19,7 +19,6 @@
 
 namespace FacturaScripts\Plugins\Proyectos\Controller;
 
-use FacturaScripts\Core\Cache;
 use FacturaScripts\Core\DataSrc\Agentes;
 use FacturaScripts\Core\DataSrc\Almacenes;
 use FacturaScripts\Core\DataSrc\Divisas;
@@ -926,9 +925,6 @@ class EditProyecto extends EditController
 
         if (ProjectStockManager::rebuild($idproyecto)) {
             ProjectTotalManager::recalculate($idproyecto);
-
-            // limpiamos caché para forzar actualizar los totales de los listados
-            Cache::clear();
             Tools::log()->notice('project-stock-rebuild-ok');
             return;
         }
