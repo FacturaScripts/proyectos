@@ -130,6 +130,9 @@ final class Init extends InitClass
         new PresupuestoCliente();
         new PresupuestoProveedor();
 
+        // Recalcular numero de archivos adjuntos
+        $this->updateNumDocsProjects();
+
         $this->setupSettings();
         $this->createRoleForPlugin();
         $this->updateEmailNotifications();
@@ -211,6 +214,15 @@ final class Init extends InitClass
         Tools::settings('proyectos', 'longnumero', 6);
         Tools::settings('proyectos', 'reiniciar_patron_anualmente', 0);
         Tools::settingsSave();
+    }
+
+    private function updateNumDocsProjects(): void
+    {
+        foreach (Proyecto::all([], [], 0, 0) as $project) {
+            if (false === $project->updateNumDocs()) {
+                Tools::log()->error('record-save-error');
+            }
+        }
     }
 
     private function updateEmailNotifications(): void

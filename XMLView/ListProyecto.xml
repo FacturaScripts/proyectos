@@ -43,6 +43,9 @@
         <column name="total-sales" display="right" order="210">
             <widget type="money" fieldname="totalventas"/>
         </column>
+        <column name="number-attachments" display="center" order="215">
+            <widget type="number" fieldname="numdocs" decimal="0"/>
+        </column>
         <column name="date" display="right" order="220">
             <widget type="date" fieldname="fecha"/>
         </column>

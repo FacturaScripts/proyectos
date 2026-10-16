@@ -644,16 +644,22 @@ class EditProyecto extends EditController
                 return $this->unlinkUpAction(end($parts));
 
             case 'add-file':
-                return $this->addFileAction();
+                $result = $this->addFileAction();
+                $this->updateProjectNumDocs();
+                return $result;
 
             case 'delete-file':
-                return $this->deleteFileAction();
+                $result = $this->deleteFileAction();
+                $this->updateProjectNumDocs();
+                return $result;
 
             case 'edit-file':
                 return $this->editFileAction();
 
             case 'unlink-file':
-                return $this->unlinkFileAction();
+                $result = $this->unlinkFileAction();
+                $this->updateProjectNumDocs();
+                return $result;
 
             case 'sort-files':
                 return $this->sortFilesAction();
@@ -873,6 +879,21 @@ class EditProyecto extends EditController
         }
 
         Tools::log()->warning('project-stock-rebuild-error');
+    }
+
+    /**
+     * Actualiza el número de adjuntos del proyecto al añadir o eliminar
+     */
+    private function updateProjectNumDocs(): void
+    {
+        $project = new Proyecto();
+        if (false === $project->load($this->request->query('code'))) {
+            return;
+        }
+
+        if (false === $project->updateNumDocs()) {
+            Tools::log()->error('record-save-error');
+        }
     }
 
     private function tableColToNumber(string $name): string
