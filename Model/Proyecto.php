@@ -22,6 +22,7 @@ namespace FacturaScripts\Plugins\Proyectos\Model;
 use FacturaScripts\Core\Where;
 use FacturaScripts\Core\Template\ModelClass;
 use FacturaScripts\Core\Template\ModelTrait;
+use FacturaScripts\Core\Model\AttachedFileRelation;
 use FacturaScripts\Core\Model\User;
 use FacturaScripts\Core\Session;
 use FacturaScripts\Core\Tools;
@@ -72,6 +73,9 @@ class Proyecto extends ModelClass
     /** @var string Nombre del proyecto. */
     public $nombre;
 
+    /** @var int Número de archivos adjuntos al proyecto. */
+    public $numdocs;
+
     /** @var bool Indica si el proyecto es privado y solo lo pueden ver los usuarios asignados. */
     public $privado;
 
@@ -90,6 +94,7 @@ class Proyecto extends ModelClass
         $this->editable = true;
         $this->fecha = Tools::date();
         $this->idempresa = Tools::settings('default', 'idempresa', 1);
+        $this->numdocs = 0;
         $this->privado = false;
         $this->totalcompras = 0.0;
         $this->totalpendientefacturar = 0.0;
@@ -144,6 +149,19 @@ class Proyecto extends ModelClass
     {
         $where = [Where::eq('idproyecto', $this->idproyecto)];
         return TareaProyecto::all($where, [], 0, 0);
+    }
+
+    /**
+     * Recalcula el número de archivos adjuntos.
+     */
+    public function updateNumDocs(): bool
+    {
+        $this->numdocs = AttachedFileRelation::count([
+            Where::eq('model', 'Proyecto'),
+            Where::eq('modelid|modelcode', $this->idproyecto)
+        ]);
+
+        return $this->save();
     }
 
     public function install(): string

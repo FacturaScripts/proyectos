@@ -78,7 +78,8 @@ class ListProyecto extends ListController
             ->addFilterNumber('totalcompras-gt', 'total-purchases', 'totalcompras', '>=')
             ->addFilterNumber('totalcompras-lt', 'total-purchases', 'totalcompras', '<=')
             ->addFilterNumber('totalventas-gt', 'total-sales', 'totalventas', '>=')
-            ->addFilterNumber('totalventas-lt', 'total-sales', 'totalventas', '<=');
+            ->addFilterNumber('totalventas-lt', 'total-sales', 'totalventas', '<=')
+            ->addFilterCheckbox('numdocs', 'has-attachments', 'numdocs', '!=', 0);
 
         $this->setProjectColors($viewName);
     }
@@ -184,6 +185,7 @@ class ListProyecto extends ListController
             ->addFilterNumber('totalcompras-lt', 'total-purchases', 'totalcompras', '<=')
             ->addFilterNumber('totalventas-gt', 'total-sales', 'totalventas', '>=')
             ->addFilterNumber('totalventas-lt', 'total-sales', 'totalventas', '<=')
+            ->addFilterCheckbox('numdocs', 'has-attachments', 'numdocs', '!=', 0)
             ->setSettings('btnNew', false)
             ->setSettings('btnDelete', false);
 
