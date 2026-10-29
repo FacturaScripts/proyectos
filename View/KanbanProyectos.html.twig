@@ -206,6 +206,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             var editable = {{ fsc.project.editable and fsc.permissions.allowUpdate ? 'true' : 'false' }};
+            var multireqtoken = '{{ formToken(false) }}';
 
             document.querySelectorAll('.kanban-column').forEach(function (column) {
                 new Sortable(column, {
@@ -215,7 +216,8 @@
                     chosenClass: 'sortable-chosen',
                     disabled: !editable,
                     onEnd: function (evt) {
-                        if (evt.from === evt.to && evt.oldIndex === evt.newIndex) {
+                        // el orden dentro de una fase no se guarda, solo el cambio de fase
+                        if (evt.from === evt.to) {
                             return;
                         }
 
@@ -232,9 +234,13 @@
                             method: 'POST',
                             headers: {'Content-Type': 'application/x-www-form-urlencoded'},
                             body: 'idtarea=' + taskId + '&idfase=' + newPhaseId
+                                + '&multireqtoken=' + encodeURIComponent(multireqtoken)
                         }).then(function (response) {
                             return response.json();
                         }).then(function (data) {
+                            if (data.token) {
+                                multireqtoken = data.token;
+                            }
                             if (!data.ok) {
                                 location.reload();
                             }

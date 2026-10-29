@@ -61,7 +61,7 @@ class EditTareaProyecto extends EditController
             ? $this->getModel()->idproyecto
             : $this->request->queryOrInput('idproyecto', '');
 
-        $this->tab($this->mainTabName())->addButton([
+        $this->mainTab()->addButton([
             'type' => 'link',
             'action' => 'KanbanProyectos?idproyecto=' . $idproyecto,
             'icon' => 'fa-brands fa-trello',
@@ -133,7 +133,7 @@ class EditTareaProyecto extends EditController
                     $this->setTemplate('Error/AccessDenied');
                 } elseif (false === $view->model->getProject()->editable) {
                     $this->disableTaskColumns($view);
-                    $this->tab('EditTareaProyecto')->disableColumn('code');
+                    $this->mainTab()->disableColumn('code');
                 }
 
                 // Si el modelo no existe, desactivamos la pestaña de archivos
@@ -144,15 +144,15 @@ class EditTareaProyecto extends EditController
                 break;
 
             case 'EditNotaProyecto':
-                $where = [Where::eq('idtarea', $this->tabModelValue($mainViewName, 'idtarea'))];
+                $where = [Where::eq('idtarea', $this->mainTabModelValue('idtarea'))];
                 $view->loadData('', $where, ['fecha' => 'DESC']);
                 if (false === $view->model->exists()) {
-                    $view->model->idproyecto = $this->tabModelValue($mainViewName, 'idproyecto');
+                    $view->model->idproyecto = $this->mainTabModelValue('idproyecto');
                 }
                 break;
 
             case 'docfiles':
-                $this->loadDataDocFiles($view, $this->getModelClassName(), $this->tabModelValue($mainViewName, 'idtarea'));
+                $this->loadDataDocFiles($view, $this->getModelClassName(), $this->mainTabModelValue('idtarea'));
                 break;
         }
     }

@@ -19,8 +19,6 @@
 
 namespace FacturaScripts\Plugins\Proyectos\Controller;
 
-use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
-use FacturaScripts\Core\Cache;
 use FacturaScripts\Core\DataSrc\Agentes;
 use FacturaScripts\Core\DataSrc\Almacenes;
 use FacturaScripts\Core\DataSrc\Divisas;
@@ -31,6 +29,7 @@ use FacturaScripts\Core\DataSrc\Series;
 use FacturaScripts\Core\Lib\ExtendedController\DocFilesTrait;
 use FacturaScripts\Core\Lib\ExtendedController\EditController;
 use FacturaScripts\Core\Lib\ExtendedController\EditView;
+use FacturaScripts\Core\Lib\ExtendedController\ListBusinessActionTrait;
 use FacturaScripts\Core\Lib\InvoiceOperation;
 use FacturaScripts\Core\Model\Asiento;
 use FacturaScripts\Core\Tools;
@@ -50,6 +49,7 @@ use FacturaScripts\Dinamic\Model\Proyecto;
 class EditProyecto extends EditController
 {
     use DocFilesTrait;
+    use ListBusinessActionTrait;
 
     public function getModelClassName(): string
     {
@@ -83,12 +83,14 @@ class EditProyecto extends EditController
         $this->listView($viewName)->disableColumn('project');
 
         // añadimos botón para enlazar documentos
-        $this->tab($viewName)->addButton([
-            'type' => 'modal',
-            'action' => 'link-up-' . $modelName,
-            'icon' => 'fa-solid fa-link',
-            'label' => 'link-document'
-        ]);
+        if ($this->permissions->allowUpdate) {
+            $this->tab($viewName)->addButton([
+                'type' => 'modal',
+                'action' => 'link-up-' . $modelName,
+                'icon' => 'fa-solid fa-link',
+                'label' => 'link-document'
+            ]);
+        }
 
         // desactivamos el botón de eliminar
         $this->listView($viewName)->setSettings('btnDelete', false);
@@ -155,38 +157,21 @@ class EditProyecto extends EditController
 
     protected function autocompleteAction(): array
     {
-        // recogemos los datos
-        $data = $this->requestGet(['field', 'fieldcode', 'fieldfilter', 'fieldtitle', 'formname', 'source', 'strict', 'term']);
-
         // si no es una vinculación de documentos de compra o venta, ejecutamos el parent
-        if ($data['field'] !== 'linkupcode') {
+        $data = $this->requestGet(['field', 'fieldcode', 'fieldtitle', 'source', 'term']);
+        if ($data['field'] !== 'linkupcode' || empty($data['source'])) {
             return parent::autocompleteAction();
         }
 
-        if ($data['source'] == '') {
-            return $this->getAutocompleteValues($data['formname'], $data['field']);
-        }
-
-        $where = [];
-        foreach (DataBaseWhere::applyOperation($data['fieldfilter'] ?? '') as $field => $operation) {
-            // validar nombre de campo para prevenir SQL injection
-            if (1 !== preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*(?:\.[a-zA-Z_][a-zA-Z0-9_]*)?$/', $field)) {
-                Tools::log()->warning('autocomplete: invalid field filter name');
-                return [];
-            }
-            $value = $this->request->queryOrInput($field);
-            $where[] = Where::column($field, $value, '=', $operation);
-        }
-
         $results = [];
-        foreach ($this->codeModel->search($data['source'], $data['fieldcode'], $data['fieldtitle'], $data['term'], $where) as $value) {
+        foreach ($this->codeModel->search($data['source'], $data['fieldcode'], $data['fieldtitle'], $data['term']) as $value) {
             $results[] = ['key' => Tools::fixHtml($value->code), 'value' => Tools::fixHtml($value->description)];
         }
 
         // en documentos, buscamos también por numproveedor o numero2 según el tipo
-        if (str_ends_with($data['source'], 'prov') || str_ends_with($data['source'], 'clie')) {
+        if (str_ends_with($data['source'], 'prov') || str_ends_with($data['source'], 'cli')) {
             $additionalField = str_ends_with($data['source'], 'prov') ? 'numproveedor' : 'numero2';
-            foreach ($this->codeModel->search($data['source'], $data['fieldcode'], $additionalField, $data['term'], $where) as $value) {
+            foreach ($this->codeModel->search($data['source'], $data['fieldcode'], $additionalField, $data['term']) as $value) {
                 $key = Tools::fixHtml($value->code);
                 // evitamos duplicados
                 $found = false;
@@ -202,13 +187,9 @@ class EditProyecto extends EditController
             }
         }
 
-        if (empty($results) && '0' == $data['strict']) {
-            $results[] = ['key' => $data['term'], 'value' => $data['term']];
-        } elseif (empty($results)) {
-            $results[] = ['key' => null, 'value' => Tools::trans('no-data')];
-        }
-
-        return $results;
+        return empty($results)
+            ? [['key' => null, 'value' => Tools::trans('no-data')]]
+            : $results;
     }
 
     protected function createViews()
@@ -217,7 +198,7 @@ class EditProyecto extends EditController
 
         // disable company column if there is only one company
         if ($this->empresa->count() < 2) {
-            $this->tab($this->mainTabName())->disableColumn('company');
+            $this->mainTab()->disableColumn('company');
         }
 
         $this->createViewsTasks();
@@ -252,7 +233,8 @@ class EditProyecto extends EditController
             $this->createViewSales('FacturaCliente', 'customer-invoices');
         }
         if ($this->user->can('EditReciboCliente')) {
-            $this->createReceiptView('ListReciboCliente', 'ReciboCliente');
+            $this->createReceiptView('ListReciboCliente', 'ReciboCliente')
+                ->setSettings('group', 'sales');
         }
 
         $this->createViewsAccountEntries();
@@ -279,14 +261,18 @@ class EditProyecto extends EditController
             ->addFilterNumber('max-total', 'amount', 'importe', '<=')
             ->addFilterCheckbox('editable')
             ->addFilterSelect('operacion', 'operation', 'operacion', $operaciones)
-            ->addButton([
+            ->setSettings('btnDelete', false)
+            ->setSettings('btnNew', false);
+
+        // añadimos botón para enlazar asientos
+        if ($this->permissions->allowUpdate) {
+            $this->tab($viewName)->addButton([
                 'type' => 'modal',
                 'action' => 'link-up-Asiento',
                 'icon' => 'fa-solid fa-link',
                 'label' => 'link-document'
-            ])
-            ->setSettings('btnDelete', false)
-            ->setSettings('btnNew', false);
+            ]);
+        }
 
         // desactivamos la columna de proyecto
         $this->listView($viewName)->disableColumn('project');
@@ -322,7 +308,8 @@ class EditProyecto extends EditController
             ->addOrderBy(['total'], 'total')
             ->addSearchFields(['cifnif', 'codigo', 'nombre', 'numproveedor', 'observaciones'])
             ->setSettings('btnPrint', true)
-            ->setSettings('btnNew', false);
+            ->setSettings('btnNew', false)
+            ->setSettings('group', 'purchases');
 
         // filtros
         $this->addCommonViewFilters($viewName, $modelName);
@@ -348,7 +335,8 @@ class EditProyecto extends EditController
             ->addOrderBy(['total'], 'total')
             ->addSearchFields(['cifnif', 'codigo', 'codigoenv', 'nombrecliente', 'numero2', 'observaciones'])
             ->setSettings('btnPrint', true)
-            ->setSettings('btnNew', false);
+            ->setSettings('btnNew', false)
+            ->setSettings('group', 'sales');
 
         if ($modelName === 'PresupuestoCliente') {
             $this->listView($viewName)->addOrderBy(['finoferta'], 'expiration');
@@ -605,6 +593,12 @@ class EditProyecto extends EditController
      */
     protected function execPreviousAction($action)
     {
+        // no permitimos ejecutar acciones sobre proyectos que el usuario no puede ver
+        if (false === in_array($action, ['', 'autocomplete'], true) && false === $this->userCanSeeProject()) {
+            Tools::log()->warning('access-denied');
+            return true;
+        }
+
         switch ($action) {
             case 'autocomplete':
                 $this->setTemplate(false);
@@ -626,6 +620,12 @@ class EditProyecto extends EditController
             case 'link-up-Asiento':
                 $parts = explode('-', $action);
                 return $this->linkUpAction(end($parts));
+
+            case 'pay-receipt':
+                // pagar recibos exige poder modificar el proyecto y también los recibos
+                $allowUpdate = $this->permissions->allowUpdate && $this->user->can('EditReciboCliente', 'update');
+                $codes = $this->request->request->getArray('codes');
+                return $this->payReceiptAction($codes, $this->activeTab()->model, $allowUpdate, $this->dataBase, $this->user->nick);
 
             case 'rebuild-stock':
                 $this->rebuildStockAction();
@@ -663,6 +663,27 @@ class EditProyecto extends EditController
         }
     }
 
+    /**
+     * Carga el proyecto de la petición. Devuelve null si no existe o el usuario no puede verlo.
+     *
+     * @return Proyecto|null
+     */
+    private function getProjectFromRequest(): ?Proyecto
+    {
+        $project = new Proyecto();
+        if (false === $project->load($this->request->queryOrInput('code', ''))) {
+            Tools::log()->warning('record-not-found');
+            return null;
+        }
+
+        if (false === $project->userCanSee($this->user)) {
+            Tools::log()->warning('access-denied');
+            return null;
+        }
+
+        return $project;
+    }
+
     private function getSelectExercise(): array
     {
         $companyFilter = $this->request->input('filteridempresa', 0);
@@ -687,16 +708,13 @@ class EditProyecto extends EditController
 
     protected function importTaskAction(): bool
     {
-        if (false === $this->permissions->allowUpdate) {
-            Tools::log()->warning('not-allowed-to-update');
-            return true;
-        } elseif (false === $this->validateFormToken()) {
+        if (false === $this->validateUpdateAction()) {
             return true;
         }
 
         // cargamos el proyecto actual
-        $origProject = new Proyecto();
-        if (false === $origProject->load($this->request->queryOrInput('code', ''))) {
+        $origProject = $this->getProjectFromRequest();
+        if (null === $origProject) {
             return true;
         }
 
@@ -704,6 +722,9 @@ class EditProyecto extends EditController
         $copyProject = new Proyecto();
         if (false === $copyProject->load($this->request->queryOrInput('idproyecto', '')) ||
             $origProject->idproyecto === $copyProject->idproyecto) {
+            return true;
+        } elseif (false === $copyProject->userCanSee($this->user)) {
+            Tools::log()->warning('access-denied');
             return true;
         }
 
@@ -747,19 +768,39 @@ class EditProyecto extends EditController
 
     protected function linkUpAction(string $modelName): bool
     {
-        if (false === $this->permissions->allowUpdate) {
-            Tools::log()->warning('not-allowed-to-update');
+        if (false === $this->validateUpdateAction($modelName)) {
             return true;
-        } elseif (false === $this->validateFormToken()) {
+        }
+
+        $project = $this->getProjectFromRequest();
+        if (null === $project) {
+            return true;
+        }
+
+        $code = $this->request->request->get('linkupcode', '');
+        if (empty($code)) {
+            Tools::log()->warning('no-selected-item');
             return true;
         }
 
         $modelClass = '\\FacturaScripts\\Dinamic\\Model\\' . $modelName;
         $model = new $modelClass();
+        if (false === $model->load($code)) {
+            Tools::log()->warning('record-not-found');
+            return true;
+        }
+
+        // si el documento ya está en otro proyecto, el usuario también debe poder verlo
+        $origProject = new Proyecto();
+        if (false === empty($model->idproyecto) && $model->idproyecto != $project->idproyecto
+            && $origProject->load($model->idproyecto) && false === $origProject->userCanSee($this->user)) {
+            Tools::log()->warning('access-denied');
+            return true;
+        }
+
         $modelTable = $model->tableName();
         $modelKey = $model->primaryColumn();
-        $code = $this->request->request->get('linkupcode', '');
-        $idproyecto = $this->request->queryOrInput('code', '');
+        $idproyecto = $project->idproyecto;
 
         $sql = "UPDATE $modelTable SET idproyecto = " . $this->dataBase->var2str($idproyecto)
             . " WHERE " . $this->dataBase->escapeColumn($modelKey) . " = " . $this->dataBase->var2str($code) . ';';
@@ -770,6 +811,12 @@ class EditProyecto extends EditController
 
         ProjectStockManager::rebuild($idproyecto);
         ProjectTotalManager::recalculate($idproyecto);
+
+        // recalculamos también el proyecto del que sale el documento
+        if ($origProject->exists() && $origProject->idproyecto != $idproyecto) {
+            ProjectStockManager::rebuild($origProject->idproyecto);
+            ProjectTotalManager::recalculate($origProject->idproyecto);
+        }
 
         Tools::log()->info('record-updated-correctly');
         return true;
@@ -782,10 +829,11 @@ class EditProyecto extends EditController
     protected function loadData($viewName, $view)
     {
         $mainViewName = $this->mainTabName();
-        $idproyecto = $this->tabModelValue($mainViewName, 'idproyecto');
+        $idproyecto = $this->mainTabModelValue('idproyecto');
 
         switch ($viewName) {
             case $mainViewName:
+                $title = $this->title;
                 parent::loadData($viewName, $view);
                 if (false === $view->model->exists()) {
                     if (false === empty($this->user->idempresa)) {
@@ -793,6 +841,8 @@ class EditProyecto extends EditController
                     }
                     $this->setSettings('docfiles', 'active', true);
                 } elseif (false === $view->model->userCanSee($this->user)) {
+                    // no mostramos el nombre del proyecto en el título
+                    $this->title = $title;
                     $this->setTemplate('Error/AccessDenied');
                 } elseif (false === $view->model->editable) {
                     $this->disableProjectColumns($view);
@@ -815,6 +865,13 @@ class EditProyecto extends EditController
                 $view->loadData('', $where);
                 break;
 
+            case 'ListReciboCliente':
+                // recibos de las facturas de cliente vinculadas al proyecto
+                $sql = 'SELECT idfactura FROM facturascli WHERE idproyecto = ' . $this->dataBase->var2str($idproyecto);
+                $where = [Where::in('idfactura', $sql)];
+                $view->loadData('', $where);
+                break;
+
             case 'ListAlbaranCliente':
             case 'ListAlbaranProveedor':
             case 'ListFacturaCliente':
@@ -829,7 +886,7 @@ class EditProyecto extends EditController
 
                 // añadimos el botón de nuevo documento, no para asientos
                 if ($viewName !== 'ListAsiento') {
-                    $codcliente = $this->tabModelValue($mainViewName, 'codcliente');
+                    $codcliente = $this->mainTabModelValue('codcliente');
                     $url = $view->model->url('edit') . '?idproyecto=' . $idproyecto;
                     if (false === empty($codcliente)
                         && in_array($view->model->modelClassName(), ['PresupuestoCliente', 'PedidoCliente', 'AlbaranCliente', 'FacturaCliente'])) {
@@ -843,8 +900,8 @@ class EditProyecto extends EditController
                     ]);
                 }
 
-                // si hay documentos añadimos el botón de desvincular
-                if ($view->count > 0) {
+                // si hay documentos y el usuario puede modificar, añadimos el botón de desvincular
+                if ($view->count > 0 && $this->permissions->allowUpdate) {
                     $this->tab($viewName)->addButton([
                         'type' => 'action',
                         'action' => 'unlink-up-' . $view->model->modelClassName(),
@@ -859,15 +916,24 @@ class EditProyecto extends EditController
 
     protected function rebuildStockAction(?int $idproyecto = null): void
     {
+        // el botón solo se muestra a administradores
+        if (false === $this->user->admin) {
+            Tools::log()->warning('not-allowed-modify');
+            return;
+        } elseif (false === $this->validateUpdateAction()) {
+            return;
+        }
+
         if (empty($idproyecto)) {
-            $idproyecto = (int)$this->request->query->get('code');
+            $project = $this->getProjectFromRequest();
+            if (null === $project) {
+                return;
+            }
+            $idproyecto = $project->idproyecto;
         }
 
         if (ProjectStockManager::rebuild($idproyecto)) {
             ProjectTotalManager::recalculate($idproyecto);
-
-            // limpiamos caché para forzar actualizar los totales de los listados
-            Cache::clear();
             Tools::log()->notice('project-stock-rebuild-ok');
             return;
         }
@@ -884,16 +950,13 @@ class EditProyecto extends EditController
 
     protected function unlinkUpAction(string $modelName): bool
     {
-        if (false === $this->permissions->allowUpdate) {
-            Tools::log()->warning('not-allowed-to-update');
-            return true;
-        } elseif (false === $this->validateFormToken()) {
+        if (false === $this->validateUpdateAction($modelName)) {
             return true;
         }
 
         // obtenemos el proyecto
-        $project = $this->getModel();
-        if (false === $project->load($this->request->queryOrInput('code', ''))) {
+        $project = $this->getProjectFromRequest();
+        if (null === $project) {
             return true;
         }
 
@@ -907,13 +970,27 @@ class EditProyecto extends EditController
             return true;
         }
 
+        $unlinked = 0;
         foreach ($codes as $code) {
+            // solo desvinculamos documentos de este proyecto
+            $doc = new $modelClass();
+            if (false === $doc->load($code) || $doc->idproyecto != $project->idproyecto) {
+                continue;
+            }
+
             $sql = "UPDATE $modelTable SET idproyecto = NULL WHERE "
-                . $this->dataBase->escapeColumn($modelKey) . " = " . $this->dataBase->var2str($code) . ';';
+                . $this->dataBase->escapeColumn($modelKey) . " = " . $this->dataBase->var2str($code)
+                . " AND idproyecto = " . $this->dataBase->var2str($project->idproyecto) . ';';
             if (false === $this->dataBase->exec($sql)) {
                 Tools::log()->error('record-save-error');
-                return false;
+                return true;
             }
+            $unlinked++;
+        }
+
+        if (0 === $unlinked) {
+            Tools::log()->warning('record-not-found');
+            return true;
         }
 
         ProjectStockManager::rebuild($project->idproyecto);
@@ -921,5 +998,41 @@ class EditProyecto extends EditController
 
         Tools::log()->info('record-updated-correctly');
         return true;
+    }
+
+    /**
+     * Comprueba si el usuario puede ver el proyecto de la petición. Si es un proyecto nuevo, devuelve true.
+     *
+     * @return bool
+     */
+    private function userCanSeeProject(): bool
+    {
+        $code = $this->request->queryOrInput('code', '');
+        if (empty($code)) {
+            return true;
+        }
+
+        $project = new Proyecto();
+        return false === $project->load($code) || $project->userCanSee($this->user);
+    }
+
+    /**
+     * Comprueba que el usuario puede modificar el proyecto y, si se indica, el tipo de documento,
+     * y que el token del formulario es válido.
+     *
+     * @param string $modelName
+     * @return bool
+     */
+    private function validateUpdateAction(string $modelName = ''): bool
+    {
+        if (false === $this->permissions->allowUpdate) {
+            Tools::log()->warning('not-allowed-modify');
+            return false;
+        } elseif ($modelName !== '' && false === $this->user->can('Edit' . $modelName, 'update')) {
+            Tools::log()->warning('not-allowed-modify');
+            return false;
+        }
+
+        return $this->validateFormToken();
     }
 }

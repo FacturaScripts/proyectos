@@ -21,6 +21,7 @@ namespace FacturaScripts\Plugins\Proyectos\Controller;
 
 use FacturaScripts\Core\Template\Controller;
 use FacturaScripts\Core\Where;
+use FacturaScripts\Dinamic\Lib\MultiRequestProtection;
 use FacturaScripts\Dinamic\Model\EstadoProyecto;
 use FacturaScripts\Dinamic\Model\FaseTarea;
 use FacturaScripts\Dinamic\Model\Proyecto;
@@ -74,20 +75,32 @@ class KanbanProyectos extends Controller
         if (false === $this->permissions->allowUpdate) {
             $this->response()->json(['ok' => false, 'error' => 'not-allowed']);
             return;
+        } elseif (false === $this->validateFormToken()) {
+            $this->response()->json(['ok' => false, 'error' => 'invalid-request']);
+            return;
         }
+
+        // devolvemos un token nuevo para el siguiente movimiento
+        $token = (new MultiRequestProtection())->newToken();
 
         $idtarea = (int) $this->request()->input('idtarea', '0');
         $idfase = (int) $this->request()->input('idfase', '0');
 
         $task = new TareaProyecto();
-        if ($idtarea > 0 && $task->load($idtarea)) {
-            $task->idfase = $idfase;
-            $task->save();
-            $this->response()->json(['ok' => true]);
+        if ($idtarea <= 0 || false === $task->load($idtarea)) {
+            $this->response()->json(['ok' => false, 'token' => $token]);
             return;
         }
 
-        $this->response()->json(['ok' => false]);
+        // el usuario debe poder ver el proyecto y este debe ser editable
+        $project = $task->getProject();
+        if (false === $project->userCanSee($this->user) || false === $project->editable) {
+            $this->response()->json(['ok' => false, 'error' => 'not-allowed', 'token' => $token]);
+            return;
+        }
+
+        $task->idfase = $idfase;
+        $this->response()->json(['ok' => $task->save(), 'token' => $token]);
     }
 
     private function loadProjects(): void
@@ -108,7 +121,10 @@ class KanbanProyectos extends Controller
 
         $this->project = new Proyecto();
         if ($idproyecto > 0) {
-            $this->project->load($idproyecto);
+            // si el usuario no puede ver el proyecto, no lo cargamos
+            if ($this->project->load($idproyecto) && false === $this->project->userCanSee($this->user)) {
+                $this->project = new Proyecto();
+            }
         } elseif (!empty($this->projects)) {
             $this->project = $this->projects[0];
         }
