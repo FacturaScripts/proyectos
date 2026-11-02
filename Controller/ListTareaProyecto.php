@@ -22,6 +22,7 @@ namespace FacturaScripts\Plugins\Proyectos\Controller;
 use FacturaScripts\Core\Lib\ExtendedController\ListController;
 use FacturaScripts\Core\Lib\ExtendedController\ListView;
 use FacturaScripts\Core\Where;
+use FacturaScripts\Dinamic\Model\Proyecto;
 
 
 /**
@@ -133,16 +134,12 @@ class ListTareaProyecto extends ListController
                     $view->loadData();
                     break;
                 }
-                $where = [
-                    Where::eq('proyectos.idempresa', $this->user->idempresa),
-                    Where::eq('proyectos.privado', false)
-                ];
-                $view->loadData('', $where);
+                $view->loadData('', Proyecto::publicWhere($this->user, 'proyectos.'));
                 break;
 
             case 'ListTareaProyecto-mine':
                 // projects accessible to the user (public in same company OR owned by user OR user assigned)
-                $sql = 'SELECT idproyecto FROM proyectos WHERE idempresa = ' . $this->dataBase->var2str($this->user->idempresa)
+                $sql = Proyecto::companyProjectsSql($this->user, $this->dataBase)
                     . ' UNION SELECT idproyecto FROM proyectos WHERE nick = ' . $this->dataBase->var2str($this->user->nick)
                     . ' UNION SELECT idproyecto FROM proyectos_users WHERE nick = ' . $this->dataBase->var2str($this->user->nick);
                 $where = [

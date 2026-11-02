@@ -19,6 +19,8 @@
 
 namespace FacturaScripts\Test\Plugins;
 
+use FacturaScripts\Core\Base\DataBase;
+use FacturaScripts\Core\Model\User;
 use FacturaScripts\Plugins\Proyectos\Model\Proyecto;
 use FacturaScripts\Test\Traits\DefaultSettingsTrait;
 use FacturaScripts\Test\Traits\LogErrorsTrait;
@@ -105,8 +107,94 @@ final class ProyectoTest extends TestCase
         $this->assertTrue($proyecto->delete());
     }
 
+    public function testUserWithoutCompanySeesPublicProjects(): void
+    {
+        $public = $this->createProject('Proyecto público sin empresa', false);
+        $private = $this->createProject('Proyecto privado sin empresa', true);
+
+        // usuario sin empresa asignada, como los creados con una sola empresa
+        $user = new User();
+        $user->idempresa = null;
+
+        // el listado de proyectos incluye el público y no el privado
+        $ids = $this->visibleIds($user);
+        $this->assertContains($public->idproyecto, $ids);
+        $this->assertNotContains($private->idproyecto, $ids);
+
+        // la consulta de proyectos de la empresa también incluye los públicos
+        $sql = Proyecto::companyProjectsSql($user, new DataBase());
+        $ids = array_map('intval', array_column((new DataBase())->select($sql), 'idproyecto'));
+        $this->assertContains($public->idproyecto, $ids);
+        $this->assertNotContains($private->idproyecto, $ids);
+
+        // eliminamos los proyectos
+        $this->assertTrue($public->delete());
+        $this->assertTrue($private->delete());
+    }
+
+    public function testUserWithCompanySeesOnlyItsCompany(): void
+    {
+        $project = $this->createProject('Proyecto público con empresa', false);
+
+        // usuario de la misma empresa
+        $user = new User();
+        $user->idempresa = $project->idempresa;
+        $this->assertContains($project->idproyecto, $this->visibleIds($user));
+
+        $sql = Proyecto::companyProjectsSql($user, new DataBase());
+        $ids = array_map('intval', array_column((new DataBase())->select($sql), 'idproyecto'));
+        $this->assertContains($project->idproyecto, $ids);
+
+        // usuario de otra empresa
+        $other = new User();
+        $other->idempresa = 99999;
+        $this->assertNotContains($project->idproyecto, $this->visibleIds($other));
+
+        $sql = Proyecto::companyProjectsSql($other, new DataBase());
+        $ids = array_map('intval', array_column((new DataBase())->select($sql), 'idproyecto'));
+        $this->assertNotContains($project->idproyecto, $ids);
+
+        // eliminamos el proyecto
+        $this->assertTrue($project->delete());
+    }
+
     protected function tearDown(): void
     {
         $this->logErrors();
+    }
+
+    /**
+     * Crea y guarda un proyecto.
+     *
+     * @param string $name Nombre del proyecto.
+     * @param bool $private Indica si el proyecto es privado.
+     *
+     * @return Proyecto
+     */
+    private function createProject(string $name, bool $private): Proyecto
+    {
+        $project = new Proyecto();
+        $project->nombre = $name;
+        $project->privado = $private;
+        $this->assertTrue($project->save());
+
+        return $project;
+    }
+
+    /**
+     * Devuelve los identificadores de proyecto públicos que lista el usuario.
+     *
+     * @param User $user Usuario que consulta.
+     *
+     * @return array
+     */
+    private function visibleIds(User $user): array
+    {
+        $ids = [];
+        foreach (Proyecto::all(Proyecto::publicWhere($user), [], 0, 0) as $project) {
+            $ids[] = $project->idproyecto;
+        }
+
+        return $ids;
     }
 }

@@ -19,6 +19,7 @@
 
 namespace FacturaScripts\Plugins\Proyectos\Model;
 
+use FacturaScripts\Core\Base\DataBase;
 use FacturaScripts\Core\Where;
 use FacturaScripts\Core\Template\ModelClass;
 use FacturaScripts\Core\Template\ModelTrait;
@@ -202,6 +203,44 @@ class Proyecto extends ModelClass
         }
 
         return parent::onChange($field);
+    }
+
+    /**
+     * Devuelve la consulta con los identificadores de los proyectos de la empresa del usuario.
+     * Si el usuario no tiene empresa asignada, devuelve todos los proyectos públicos.
+     *
+     * @param User $user Usuario que consulta.
+     * @param DataBase $db Conexión usada para escapar los valores.
+     *
+     * @return string
+     */
+    public static function companyProjectsSql(User $user, DataBase $db): string
+    {
+        // con una sola empresa el formulario de usuario oculta ese campo y queda vacío
+        if (empty($user->idempresa)) {
+            return 'SELECT idproyecto FROM proyectos WHERE privado = ' . $db->var2str(false);
+        }
+
+        return 'SELECT idproyecto FROM proyectos WHERE idempresa = ' . $db->var2str($user->idempresa);
+    }
+
+    /**
+     * Devuelve las condiciones para listar los proyectos públicos visibles por el usuario.
+     * Solo añade el filtro de empresa cuando el usuario tiene una asignada.
+     *
+     * @param User $user Usuario que consulta.
+     * @param string $prefix Prefijo de tabla de las columnas, por ejemplo 'proyectos.'.
+     *
+     * @return Where[]
+     */
+    public static function publicWhere(User $user, string $prefix = ''): array
+    {
+        $where = [Where::eq($prefix . 'privado', false)];
+        if (false === empty($user->idempresa)) {
+            $where[] = Where::eq($prefix . 'idempresa', $user->idempresa);
+        }
+
+        return $where;
     }
 
     /**
