@@ -33,7 +33,6 @@ use FacturaScripts\Dinamic\Model\Proyecto;
  */
 class ListTareaProyecto extends ListController
 {
-
     public function getPageData(): array
     {
         $data = parent::getPageData();
@@ -138,13 +137,10 @@ class ListTareaProyecto extends ListController
                 break;
 
             case 'ListTareaProyecto-mine':
-                // projects accessible to the user (public in same company OR owned by user OR user assigned)
-                $sql = Proyecto::companyProjectsSql($this->user, $this->dataBase)
-                    . ' UNION SELECT idproyecto FROM proyectos WHERE nick = ' . $this->dataBase->var2str($this->user->nick)
-                    . ' UNION SELECT idproyecto FROM proyectos_users WHERE nick = ' . $this->dataBase->var2str($this->user->nick);
+                // tareas del usuario en los proyectos que puede ver (mismas reglas que Proyecto::userCanSee())
                 $where = [
                     Where::eq('tareas.nick', $this->user->nick),
-                    Where::in('tareas.idproyecto', $sql)
+                    Where::in('tareas.idproyecto', Proyecto::visibleProjectsSql($this->user, $this->dataBase))
                 ];
                 $view->loadData('', $where);
                 break;

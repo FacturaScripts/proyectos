@@ -168,6 +168,25 @@ class Proyecto extends ModelClass
         return 'nombre';
     }
 
+    /**
+     * Devuelve las condiciones para listar los proyectos públicos visibles por el usuario.
+     * Solo añade el filtro de empresa cuando el usuario tiene una asignada.
+     *
+     * @param User $user Usuario que consulta.
+     * @param string $prefix Prefijo de tabla de las columnas, por ejemplo 'proyectos.'.
+     *
+     * @return Where[]
+     */
+    public static function publicWhere(User $user, string $prefix = ''): array
+    {
+        $where = [Where::eq($prefix . 'privado', false)];
+        if (false === empty($user->idempresa)) {
+            $where[] = Where::eq($prefix . 'idempresa', $user->idempresa);
+        }
+
+        return $where;
+    }
+
     public static function tableName(): string
     {
         return 'proyectos';
@@ -190,6 +209,62 @@ class Proyecto extends ModelClass
     }
 
     /**
+     * Indica si el usuario puede ver el proyecto. Lo ve si es administrador, si lo ha creado,
+     * si está asignado a él o si el proyecto es público y es de su empresa. Un usuario sin
+     * empresa asignada ve los proyectos públicos de todas las empresas.
+     *
+     * @param User $user Usuario que consulta.
+     *
+     * @return bool
+     */
+    public function userCanSee($user): bool
+    {
+        if ($user->admin || $this->nick === $user->nick) {
+            return true;
+        }
+
+        // los proyectos públicos solo son visibles para los usuarios de su empresa
+        if (false === $this->privado && (empty($user->idempresa) || $user->idempresa == $this->idempresa)) {
+            return true;
+        }
+
+        $userProject = new UserProyecto();
+        $where = [
+            Where::eq('idproyecto', $this->idproyecto),
+            Where::eq('nick', $user->nick)
+        ];
+        return $userProject->loadWhere($where);
+    }
+
+    /**
+     * Devuelve la consulta con los identificadores de los proyectos que puede ver el usuario,
+     * con la misma regla que userCanSee(): los públicos de su empresa (o todos los públicos si
+     * no tiene empresa), los que ha creado y aquellos en los que está asignado.
+     * Un administrador ve todos los proyectos.
+     *
+     * @param User $user Usuario que consulta.
+     * @param DataBase $db Conexión usada para escapar los valores.
+     *
+     * @return string
+     */
+    public static function visibleProjectsSql(User $user, DataBase $db): string
+    {
+        if ($user->admin) {
+            return 'SELECT idproyecto FROM proyectos';
+        }
+
+        // con una sola empresa el formulario de usuario oculta ese campo y queda vacío
+        $sql = 'SELECT idproyecto FROM proyectos WHERE privado = ' . $db->var2str(false);
+        if (false === empty($user->idempresa)) {
+            $sql .= ' AND idempresa = ' . $db->var2str($user->idempresa);
+        }
+
+        return $sql
+            . ' UNION SELECT idproyecto FROM proyectos WHERE nick = ' . $db->var2str($user->nick)
+            . ' UNION SELECT idproyecto FROM proyectos_users WHERE nick = ' . $db->var2str($user->nick);
+    }
+
+    /**
      * @param string $field
      *
      * @return bool
@@ -203,62 +278,5 @@ class Proyecto extends ModelClass
         }
 
         return parent::onChange($field);
-    }
-
-    /**
-     * Devuelve la consulta con los identificadores de los proyectos de la empresa del usuario.
-     * Si el usuario no tiene empresa asignada, devuelve todos los proyectos públicos.
-     *
-     * @param User $user Usuario que consulta.
-     * @param DataBase $db Conexión usada para escapar los valores.
-     *
-     * @return string
-     */
-    public static function companyProjectsSql(User $user, DataBase $db): string
-    {
-        // con una sola empresa el formulario de usuario oculta ese campo y queda vacío
-        if (empty($user->idempresa)) {
-            return 'SELECT idproyecto FROM proyectos WHERE privado = ' . $db->var2str(false);
-        }
-
-        return 'SELECT idproyecto FROM proyectos WHERE idempresa = ' . $db->var2str($user->idempresa);
-    }
-
-    /**
-     * Devuelve las condiciones para listar los proyectos públicos visibles por el usuario.
-     * Solo añade el filtro de empresa cuando el usuario tiene una asignada.
-     *
-     * @param User $user Usuario que consulta.
-     * @param string $prefix Prefijo de tabla de las columnas, por ejemplo 'proyectos.'.
-     *
-     * @return Where[]
-     */
-    public static function publicWhere(User $user, string $prefix = ''): array
-    {
-        $where = [Where::eq($prefix . 'privado', false)];
-        if (false === empty($user->idempresa)) {
-            $where[] = Where::eq($prefix . 'idempresa', $user->idempresa);
-        }
-
-        return $where;
-    }
-
-    /**
-     * @param User $user
-     *
-     * @return bool
-     */
-    public function userCanSee($user): bool
-    {
-        if ($user->admin || false === $this->privado || $this->nick === $user->nick) {
-            return true;
-        }
-
-        $userProject = new UserProyecto();
-        $where = [
-            Where::eq('idproyecto', $this->idproyecto),
-            Where::eq('nick', $user->nick)
-        ];
-        return $userProject->loadWhere($where);
     }
 }

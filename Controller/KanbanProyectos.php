@@ -34,11 +34,11 @@ class KanbanProyectos extends Controller
     /** @var Proyecto */
     public $project;
 
-    /** @var EstadoProyecto|null */
-    public $projectStatus;
-
     /** @var Proyecto[] */
     public array $projects = [];
+
+    /** @var EstadoProyecto|null */
+    public $projectStatus;
 
     /** @var array<int, TareaProyecto[]> */
     public array $tasksByPhase = [];
@@ -69,55 +69,6 @@ class KanbanProyectos extends Controller
         $this->view('KanbanProyectos.html.twig');
     }
 
-    private function moveTaskAction(): void
-    {
-        if (false === $this->permissions->allowUpdate) {
-            $this->response()->json(['ok' => false, 'error' => 'not-allowed']);
-            return;
-        }
-
-        $idtarea = (int) $this->request()->input('idtarea', '0');
-        $idfase = (int) $this->request()->input('idfase', '0');
-
-        $task = new TareaProyecto();
-        if ($idtarea > 0 && $task->load($idtarea)) {
-            $task->idfase = $idfase;
-            $task->save();
-            $this->response()->json(['ok' => true]);
-            return;
-        }
-
-        $this->response()->json(['ok' => false]);
-    }
-
-    private function loadProjects(): void
-    {
-        $proyecto = new Proyecto();
-        $allProjects = $proyecto->all([], ['nombre' => 'ASC'], 0, 0);
-
-        foreach ($allProjects as $project) {
-            if ($project->userCanSee($this->user)) {
-                $this->projects[] = $project;
-            }
-        }
-    }
-
-    private function loadSelectedProject(): void
-    {
-        $idproyecto = (int) $this->request()->query('idproyecto', '0');
-
-        $this->project = new Proyecto();
-        if ($idproyecto > 0) {
-            $this->project->load($idproyecto);
-        } elseif (!empty($this->projects)) {
-            $this->project = $this->projects[0];
-        }
-
-        if (!empty($this->project->idestado)) {
-            $this->projectStatus = $this->project->getStatus();
-        }
-    }
-
     private function loadPhasesAndTasks(): void
     {
         $faseTarea = new FaseTarea();
@@ -138,5 +89,61 @@ class KanbanProyectos extends Controller
                 $this->tasksByPhase[$task->idfase][] = $task;
             }
         }
+    }
+
+    private function loadProjects(): void
+    {
+        $proyecto = new Proyecto();
+        $allProjects = $proyecto->all([], ['nombre' => 'ASC'], 0, 0);
+
+        foreach ($allProjects as $project) {
+            if ($project->userCanSee($this->user)) {
+                $this->projects[] = $project;
+            }
+        }
+    }
+
+    private function loadSelectedProject(): void
+    {
+        $idproyecto = (int) $this->request()->query('idproyecto', '0');
+
+        // solo se puede abrir un proyecto de la lista de proyectos visibles para el usuario
+        $this->project = new Proyecto();
+        foreach ($this->projects as $project) {
+            if ($idproyecto > 0 && (int) $project->idproyecto === $idproyecto) {
+                $this->project = $project;
+                break;
+            }
+        }
+
+        if (false === $this->project->exists() && !empty($this->projects)) {
+            $this->project = $this->projects[0];
+        }
+
+        if (!empty($this->project->idestado)) {
+            $this->projectStatus = $this->project->getStatus();
+        }
+    }
+
+    private function moveTaskAction(): void
+    {
+        if (false === $this->permissions->allowUpdate) {
+            $this->response()->json(['ok' => false, 'error' => 'not-allowed']);
+            return;
+        }
+
+        $idtarea = (int) $this->request()->input('idtarea', '0');
+        $idfase = (int) $this->request()->input('idfase', '0');
+
+        // solo se pueden mover tareas de proyectos que el usuario puede ver
+        $task = new TareaProyecto();
+        if ($idtarea > 0 && $task->load($idtarea) && $task->getProject()->userCanSee($this->user)) {
+            $task->idfase = $idfase;
+            $task->save();
+            $this->response()->json(['ok' => true]);
+            return;
+        }
+
+        $this->response()->json(['ok' => false]);
     }
 }
