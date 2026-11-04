@@ -587,16 +587,22 @@ class EditProyecto extends EditController
     }
 
     /**
+     * Ejecuta las acciones previas a la carga de datos. Si el usuario no puede ver el proyecto,
+     * muestra la página de acceso denegado y detiene la ejecución, para que no se carguen ni
+     * exporten sus pestañas.
+     *
      * @param string $action
      *
      * @return bool
      */
     protected function execPreviousAction($action)
     {
-        // no permitimos ejecutar acciones sobre proyectos que el usuario no puede ver
+        // no permitimos ejecutar acciones sobre proyectos que el usuario no puede ver,
+        // tampoco las que se ejecutan después de cargar los datos, como exportar
         if (false === in_array($action, ['', 'autocomplete'], true) && false === $this->userCanSeeProject()) {
             Tools::log()->warning('access-denied');
-            return true;
+            $this->setTemplate('Error/AccessDenied');
+            return false;
         }
 
         switch ($action) {
