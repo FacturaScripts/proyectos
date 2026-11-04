@@ -35,11 +35,11 @@ class KanbanProyectos extends Controller
     /** @var Proyecto */
     public $project;
 
-    /** @var EstadoProyecto|null */
-    public $projectStatus;
-
     /** @var Proyecto[] */
     public array $projects = [];
+
+    /** @var EstadoProyecto|null */
+    public $projectStatus;
 
     /** @var array<int, TareaProyecto[]> */
     public array $tasksByPhase = [];
@@ -70,6 +70,62 @@ class KanbanProyectos extends Controller
         $this->view('KanbanProyectos.html.twig');
     }
 
+    private function loadPhasesAndTasks(): void
+    {
+        $faseTarea = new FaseTarea();
+        $this->phases = $faseTarea->all([], [], 0, 0);
+
+        foreach ($this->phases as $phase) {
+            $this->tasksByPhase[$phase->idfase] = [];
+        }
+
+        if (empty($this->project->idproyecto)) {
+            return;
+        }
+
+        $where = [Where::eq('idproyecto', $this->project->idproyecto)];
+        $tasks = TareaProyecto::all($where, ['nombre' => 'ASC'], 0, 0);
+        foreach ($tasks as $task) {
+            if (isset($this->tasksByPhase[$task->idfase])) {
+                $this->tasksByPhase[$task->idfase][] = $task;
+            }
+        }
+    }
+
+    private function loadProjects(): void
+    {
+        $proyecto = new Proyecto();
+        $allProjects = $proyecto->all([], ['nombre' => 'ASC'], 0, 0);
+
+        foreach ($allProjects as $project) {
+            if ($project->userCanSee($this->user)) {
+                $this->projects[] = $project;
+            }
+        }
+    }
+
+    private function loadSelectedProject(): void
+    {
+        $idproyecto = (int) $this->request()->query('idproyecto', '0');
+
+        // solo se puede abrir un proyecto de la lista de proyectos visibles para el usuario
+        $this->project = new Proyecto();
+        foreach ($this->projects as $project) {
+            if ($idproyecto > 0 && (int) $project->idproyecto === $idproyecto) {
+                $this->project = $project;
+                break;
+            }
+        }
+
+        if (false === $this->project->exists() && !empty($this->projects)) {
+            $this->project = $this->projects[0];
+        }
+
+        if (!empty($this->project->idestado)) {
+            $this->projectStatus = $this->project->getStatus();
+        }
+    }
+
     private function moveTaskAction(): void
     {
         if (false === $this->permissions->allowUpdate) {
@@ -92,7 +148,7 @@ class KanbanProyectos extends Controller
             return;
         }
 
-        // el usuario debe poder ver el proyecto y este debe ser editable
+        // solo se pueden mover tareas de proyectos que el usuario puede ver y que son editables
         $project = $task->getProject();
         if (false === $project->userCanSee($this->user) || false === $project->editable) {
             $this->response()->json(['ok' => false, 'error' => 'not-allowed', 'token' => $token]);
@@ -101,58 +157,5 @@ class KanbanProyectos extends Controller
 
         $task->idfase = $idfase;
         $this->response()->json(['ok' => $task->save(), 'token' => $token]);
-    }
-
-    private function loadProjects(): void
-    {
-        $proyecto = new Proyecto();
-        $allProjects = $proyecto->all([], ['nombre' => 'ASC'], 0, 0);
-
-        foreach ($allProjects as $project) {
-            if ($project->userCanSee($this->user)) {
-                $this->projects[] = $project;
-            }
-        }
-    }
-
-    private function loadSelectedProject(): void
-    {
-        $idproyecto = (int) $this->request()->query('idproyecto', '0');
-
-        $this->project = new Proyecto();
-        if ($idproyecto > 0) {
-            // si el usuario no puede ver el proyecto, no lo cargamos
-            if ($this->project->load($idproyecto) && false === $this->project->userCanSee($this->user)) {
-                $this->project = new Proyecto();
-            }
-        } elseif (!empty($this->projects)) {
-            $this->project = $this->projects[0];
-        }
-
-        if (!empty($this->project->idestado)) {
-            $this->projectStatus = $this->project->getStatus();
-        }
-    }
-
-    private function loadPhasesAndTasks(): void
-    {
-        $faseTarea = new FaseTarea();
-        $this->phases = $faseTarea->all([], [], 0, 0);
-
-        foreach ($this->phases as $phase) {
-            $this->tasksByPhase[$phase->idfase] = [];
-        }
-
-        if (empty($this->project->idproyecto)) {
-            return;
-        }
-
-        $where = [Where::eq('idproyecto', $this->project->idproyecto)];
-        $tasks = TareaProyecto::all($where, ['nombre' => 'ASC'], 0, 0);
-        foreach ($tasks as $task) {
-            if (isset($this->tasksByPhase[$task->idfase])) {
-                $this->tasksByPhase[$task->idfase][] = $task;
-            }
-        }
     }
 }
