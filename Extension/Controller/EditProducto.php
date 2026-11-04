@@ -50,7 +50,7 @@ class EditProducto
     {
         return function ($viewName, $view) {
             if ($viewName === 'ListStockProyecto') {
-                $idproducto = $this->tabModelValue($this->mainTabName(), 'idproducto');
+                $idproducto = $this->mainTabModelValue('idproducto');
                 $where = [Where::eq('idproducto', $idproducto)];
                 $view->loadData('', $where);
             }

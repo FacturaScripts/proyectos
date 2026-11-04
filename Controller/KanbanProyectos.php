@@ -21,6 +21,7 @@ namespace FacturaScripts\Plugins\Proyectos\Controller;
 
 use FacturaScripts\Core\Template\Controller;
 use FacturaScripts\Core\Where;
+use FacturaScripts\Dinamic\Lib\MultiRequestProtection;
 use FacturaScripts\Dinamic\Model\EstadoProyecto;
 use FacturaScripts\Dinamic\Model\FaseTarea;
 use FacturaScripts\Dinamic\Model\Proyecto;
@@ -130,20 +131,31 @@ class KanbanProyectos extends Controller
         if (false === $this->permissions->allowUpdate) {
             $this->response()->json(['ok' => false, 'error' => 'not-allowed']);
             return;
+        } elseif (false === $this->validateFormToken()) {
+            $this->response()->json(['ok' => false, 'error' => 'invalid-request']);
+            return;
         }
+
+        // devolvemos un token nuevo para el siguiente movimiento
+        $token = (new MultiRequestProtection())->newToken();
 
         $idtarea = (int) $this->request()->input('idtarea', '0');
         $idfase = (int) $this->request()->input('idfase', '0');
 
-        // solo se pueden mover tareas de proyectos que el usuario puede ver
         $task = new TareaProyecto();
-        if ($idtarea > 0 && $task->load($idtarea) && $task->getProject()->userCanSee($this->user)) {
-            $task->idfase = $idfase;
-            $task->save();
-            $this->response()->json(['ok' => true]);
+        if ($idtarea <= 0 || false === $task->load($idtarea)) {
+            $this->response()->json(['ok' => false, 'token' => $token]);
             return;
         }
 
-        $this->response()->json(['ok' => false]);
+        // solo se pueden mover tareas de proyectos que el usuario puede ver y que son editables
+        $project = $task->getProject();
+        if (false === $project->userCanSee($this->user) || false === $project->editable) {
+            $this->response()->json(['ok' => false, 'error' => 'not-allowed', 'token' => $token]);
+            return;
+        }
+
+        $task->idfase = $idfase;
+        $this->response()->json(['ok' => $task->save(), 'token' => $token]);
     }
 }
