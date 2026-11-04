@@ -22,6 +22,7 @@ namespace FacturaScripts\Plugins\Proyectos;
 use FacturaScripts\Core\Cache;
 use FacturaScripts\Core\Template\CronClass;
 use FacturaScripts\Core\Tools;
+use FacturaScripts\Dinamic\Lib\ProjectAttachmentManager;
 use FacturaScripts\Dinamic\Lib\ProjectStockManager;
 use FacturaScripts\Dinamic\Lib\ProjectTotalManager;
 use FacturaScripts\Dinamic\Model\Proyecto;
@@ -40,6 +41,8 @@ class Cron extends CronClass
             ->every('1 month')
             ->run(function () {
                 foreach (Proyecto::all([], ['idproyecto' => 'DESC'], 0, 0) as $project) {
+                    // corrige los adjuntos creados o borrados sin pasar por el modelo (por ejemplo, en cascada)
+                    ProjectAttachmentManager::recalculate($project->idproyecto);
                     ProjectStockManager::rebuild($project->idproyecto);
                     ProjectTotalManager::recalculate($project->idproyecto);
                 }

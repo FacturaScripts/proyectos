@@ -73,6 +73,9 @@ class Proyecto extends ModelClass
     /** @var string Nombre del proyecto. */
     public $nombre;
 
+    /** @var int Número de archivos adjuntos al proyecto. Lo mantiene ProjectAttachmentManager. */
+    public $numdocs;
+
     /** @var bool Indica si el proyecto es privado y solo lo pueden ver los usuarios asignados. */
     public $privado;
 
@@ -91,6 +94,7 @@ class Proyecto extends ModelClass
         $this->editable = true;
         $this->fecha = Tools::date();
         $this->idempresa = Tools::settings('default', 'idempresa', 1);
+        $this->numdocs = 0;
         $this->privado = false;
         $this->totalcompras = 0.0;
         $this->totalpendientefacturar = 0.0;

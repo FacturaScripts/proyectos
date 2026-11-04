@@ -23,6 +23,7 @@ use FacturaScripts\Core\Lib\AjaxForms\AccountingHeaderHTML;
 use FacturaScripts\Core\Lib\AjaxForms\PurchasesHeaderHTML;
 use FacturaScripts\Core\Lib\AjaxForms\SalesHeaderHTML;
 use FacturaScripts\Core\Base\DataBase;
+use FacturaScripts\Core\Migrations;
 use FacturaScripts\Core\Plugins;
 use FacturaScripts\Core\Template\InitClass;
 use FacturaScripts\Core\Tools;
@@ -86,6 +87,7 @@ final class Init extends InitClass
         $this->loadExtension(new Extension\Controller\ListPresupuestoCliente());
         $this->loadExtension(new Extension\Controller\ListPresupuestoProveedor());
         $this->loadExtension(new Extension\Controller\NewServicioAT());
+        $this->loadExtension(new Extension\Model\AttachedFileRelation());
         $this->loadExtension(new Extension\Model\Base\BusinessDocument());
         $this->loadExtension(new Extension\Model\Stock());
         $this->loadExtension(new Extension\Model\FacturaProgramada());
@@ -129,6 +131,9 @@ final class Init extends InitClass
         new PedidoProveedor();
         new PresupuestoCliente();
         new PresupuestoProveedor();
+
+        // rellenamos una sola vez el número de adjuntos de los proyectos que ya existían
+        Migrations::runPluginMigration(new Migration\RecalculateProjectAttachments());
 
         $this->setupSettings();
         $this->createRoleForPlugin();
