@@ -24,6 +24,7 @@ use FacturaScripts\Core\Lib\ExtendedController\ListView;
 use FacturaScripts\Core\Tools;
 use FacturaScripts\Core\Where;
 use FacturaScripts\Dinamic\Model\EstadoProyecto;
+use FacturaScripts\Dinamic\Model\Proyecto;
 
 /**
  * Description of ListProyecto
@@ -95,11 +96,7 @@ class ListProyecto extends ListController
                     $view->loadData();
                     break;
                 }
-                $where = [
-                    Where::eq('idempresa', $this->user->idempresa),
-                    Where::eq('privado', false)
-                ];
-                $view->loadData('', $where);
+                $view->loadData('', Proyecto::publicWhere($this->user));
                 break;
 
             case 'ListProyecto-private':
@@ -117,11 +114,8 @@ class ListProyecto extends ListController
                     $view->loadData();
                     break;
                 }
-                $where = [
-                    Where::eq('idempresa', $this->user->idempresa),
-                    Where::eq('privado', false),
-                    Where::eq('editable', false),
-                ];
+                $where = Proyecto::publicWhere($this->user);
+                $where[] = Where::eq('editable', false);
                 $view->loadData('', $where);
                 break;
 
