@@ -3,6 +3,7 @@
     "generated-projects": "%quantity% proyectos generados",
     "import-tasks-from-another-project": "Importar tareas desde otro proyecto",
     "kanban": "Kanban",
+    "kanban-project-not-editable": "El estado de este proyecto no permite modificarlo, por lo que no se pueden mover sus tareas entre fases. Cambia el estado del proyecto para poder hacerlo.",
     "no-projects": "No hay proyectos",
     "open-projects": "Abiertos",
     "open-projects-last-month": "Proyectos del último mes",

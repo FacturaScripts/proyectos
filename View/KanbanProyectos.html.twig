@@ -98,6 +98,12 @@
         </div>
 
         {% if fsc.project.idproyecto %}
+            {# avisamos de que no se pueden mover tareas si el estado del proyecto no es editable #}
+            {% if not fsc.project.editable %}
+                <div class="alert alert-warning">
+                    <i class="fa-solid fa-lock me-1"></i> {{ trans('kanban-project-not-editable') }}
+                </div>
+            {% endif %}
             <div class="row flex-nowrap kanban-board pb-3">
                 {% for phase in fsc.phases %}
                     {% set tasks = fsc.tasksByPhase[phase.idfase] ?? [] %}
@@ -202,7 +208,8 @@
 {% block javascripts %}
     {{ parent() }}
 
-    <script src="{{ asset('Plugins/Proyectos/node_modules/sortablejs/Sortable.min.js') }}"></script>
+    {# Sortable se distribuye dentro del plugin (Assets/JS) para que vaya incluido en el zip de la Forja #}
+    <script src="{{ asset('Dinamic/Assets/JS/Sortable.min.js') }}"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             var editable = {{ fsc.project.editable and fsc.permissions.allowUpdate ? 'true' : 'false' }};
