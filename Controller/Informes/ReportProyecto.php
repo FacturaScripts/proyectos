@@ -17,12 +17,15 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace FacturaScripts\Plugins\Proyectos\Controller;
+namespace FacturaScripts\Plugins\Proyectos\Controller\Informes;
 
 use FacturaScripts\Core\Template\Controller;
 
 /**
  * Informe de proyectos: abiertos totales, del último mes, del último año y desglose por estado.
+ *
+ * Controlador condicional: al estar en Controller/Informes, el core solo lo despliega
+ * en Dinamic/Controller cuando el plugin Informes está activado.
  *
  * @author Esteban Sánchez Martínez <esteban@factura.city>
  */
