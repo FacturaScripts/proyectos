@@ -15,6 +15,8 @@ use FacturaScripts\Dinamic\Lib\BusinessDocumentGenerator;
 use FacturaScripts\Dinamic\Model\AlbaranProveedor;
 use FacturaScripts\Dinamic\Model\Cliente;
 use FacturaScripts\Dinamic\Model\FacturaProveedor;
+use FacturaScripts\Dinamic\Model\PagoCliente;
+use FacturaScripts\Dinamic\Model\PagoProveedor;
 use FacturaScripts\Dinamic\Model\PedidoCliente;
 use FacturaScripts\Dinamic\Model\PedidoProveedor;
 use FacturaScripts\Dinamic\Model\PresupuestoCliente;
@@ -39,6 +41,11 @@ final class ProjectTotalManagerTest extends TestCase
     public static function setUpBeforeClass(): void
     {
         self::setDefaultSettings();
+
+        // las tablas de pagos deben existir antes de borrar facturas: los recibos las consultan
+        // dentro de una transacción y en PostgreSQL no se pueden crear ahí
+        new PagoCliente();
+        new PagoProveedor();
     }
 
     public function testTotalCalculate(): void

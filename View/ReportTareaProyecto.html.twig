@@ -1,0 +1,338 @@
+{#
+ * This file is part of Proyectos plugin for FacturaScripts
+ * Copyright (C) 2026 Carlos Garcia Gomez <carlos@facturascripts.com>
+#}
+
+{% extends "Master/MenuBgTemplate.html.twig" %}
+
+{% macro kpi(label, value, icon, color) %}
+    <div class="col-xl col-md-4 col-sm-6 mb-4">
+        <div class="card border-left-{{ color }} shadow-sm h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-{{ color }} text-uppercase mb-1">{{ label }}</div>
+                        <div class="h4 mb-0 font-weight-bold text-gray-800">{{ value }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="{{ icon }} fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endmacro %}
+
+{% macro days(value) %}
+    {%- if value is null -%}
+        <span class="text-muted">-</span>
+    {%- else -%}
+        {{ number(value, 1) }} {{ trans('days') | lower }}
+    {%- endif -%}
+{% endmacro %}
+
+{% import _self as m %}
+
+{% block body %}
+    {# tipos de fase: 0 = completada, 1 = cancelada, 2 = en proceso #}
+    {% set phaseTypes = {0: 'completed', 1: 'canceled', 2: 'processing'} %}
+    {% set tasksByPhaseType = {'processing': 0, 'completed': 0, 'canceled': 0, 'without-type': 0} %}
+    {% for row in fsc.tasksByPhase %}
+        {% set key = phaseTypes[row.tipo] ?? 'without-type' %}
+        {% set tasksByPhaseType = tasksByPhaseType | merge({(key): tasksByPhaseType[key] + row.total}) %}
+    {% endfor %}
+    <div class="container-fluid">
+
+        {# Encabezado #}
+        <div class="row mt-3 mb-4">
+            <div class="col-12 text-center">
+                <h1 class="h3 mb-0">
+                    <i class="fa-solid fa-list-check me-2"></i>
+                    {{ trans('project-tasks') }} — {{ trans('report') | capitalize }}
+                </h1>
+            </div>
+        </div>
+
+        {# Totales y tiempo medio de resolución #}
+        <div class="row">
+            {{ m.kpi(trans('total-tasks'), fsc.totals.total, 'fa-solid fa-list-check', 'primary') }}
+            {{ m.kpi(trans('open-tasks'), fsc.totals.opened, 'fa-solid fa-lock-open', 'warning') }}
+            {{ m.kpi(trans('tasks-created-last-month'), fsc.totals.last_month, 'fa-solid fa-calendar-days', 'info') }}
+            {{ m.kpi(trans('tasks-created-last-year'), fsc.totals.last_year, 'fa-solid fa-calendar', 'success') }}
+            {{ m.kpi(trans('average-resolution-time'), fsc.totals.media is null ? trans('no-data') : m.days(fsc.totals.media), 'fa-solid fa-stopwatch', 'secondary') }}
+        </div>
+
+        {# Creadas y completadas por mes y por año #}
+        <div class="row">
+            <div class="col-12 col-lg-8 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header">
+                        <h6 class="m-0 font-weight-bold text-primary">
+                            <i class="fa-solid fa-chart-column me-2"></i>
+                            {{ trans('tasks-created-completed-by-month') }} ({{ trans('last-12-months') }})
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div id="chartTasksByMonth"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-4 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header">
+                        <h6 class="m-0 font-weight-bold text-primary">
+                            <i class="fa-solid fa-chart-column me-2"></i>
+                            {{ trans('tasks-created-completed-by-year') }}
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        {% if fsc.tasksByYear is empty %}
+                            <p class="text-center text-muted py-3 mb-0">{{ trans('no-data') }}</p>
+                        {% else %}
+                            <div id="chartTasksByYear"></div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# Por fase y por tipo de fase #}
+        <div class="row">
+            <div class="col-12 col-lg-6 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header">
+                        <h6 class="m-0 font-weight-bold text-primary">
+                            <i class="fa-solid fa-diagram-next me-2"></i>
+                            {{ trans('tasks-by-phase') }}
+                        </h6>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>{{ trans('phase') }}</th>
+                                        <th class="text-end">{{ trans('tasks') }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for row in fsc.tasksByPhase %}
+                                        <tr>
+                                            <td>{{ row.nombre }}</td>
+                                            <td class="text-end fw-bold">{{ row.total }}</td>
+                                        </tr>
+                                    {% else %}
+                                        <tr>
+                                            <td colspan="2" class="text-center text-muted py-3">{{ trans('no-data') }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-6 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header">
+                        <h6 class="m-0 font-weight-bold text-primary">
+                            <i class="fa-solid fa-chart-pie me-2"></i>
+                            {{ trans('tasks-by-phase-type') }}
+                        </h6>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>{{ trans('type') }}</th>
+                                        <th class="text-end">{{ trans('tasks') }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for type, total in tasksByPhaseType %}
+                                        <tr>
+                                            <td>{{ trans(type) }}</td>
+                                            <td class="text-end fw-bold">{{ total }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# Por usuario #}
+        <div class="row">
+            <div class="col-12 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-header">
+                        <h6 class="m-0 font-weight-bold text-primary">
+                            <i class="fa-solid fa-users me-2"></i>
+                            {{ trans('tasks-by-user') }}
+                        </h6>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>{{ trans('user') }}</th>
+                                        <th class="text-end">{{ trans('open-tasks') }}</th>
+                                        <th class="text-end">{{ trans('completed') }}</th>
+                                        <th class="text-end">{{ trans('canceled') }}</th>
+                                        <th class="text-end">{{ trans('average-resolution-time') }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for row in fsc.tasksByUser %}
+                                        <tr>
+                                            <td>
+                                                {% if row.nick %}
+                                                    {{ row.nick }}
+                                                {% else %}
+                                                    <span class="text-muted fst-italic">{{ trans('without-assigned-user') }}</span>
+                                                {% endif %}
+                                            </td>
+                                            <td class="text-end">{{ row.opened }}</td>
+                                            <td class="text-end">{{ row.completed }}</td>
+                                            <td class="text-end">{{ row.canceled }}</td>
+                                            <td class="text-end">
+                                                {{ m.days(row.media) }}
+                                            </td>
+                                        </tr>
+                                    {% else %}
+                                        <tr>
+                                            <td colspan="5" class="text-center text-muted py-3">{{ trans('no-data') }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# Proyectos con más tareas abiertas y tareas retrasadas #}
+        <div class="row">
+            <div class="col-12 col-xl-4 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header">
+                        <h6 class="m-0 font-weight-bold text-primary">
+                            <i class="fa-brands fa-stack-overflow me-2"></i>
+                            {{ trans('projects-with-most-open-tasks') }}
+                        </h6>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>{{ trans('project') }}</th>
+                                        <th class="text-end">{{ trans('open-tasks') }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for row in fsc.projectsWithMostOpenTasks %}
+                                        <tr>
+                                            <td>
+                                                {{ row.nombre }}
+                                            </td>
+                                            <td class="text-end fw-bold">{{ row.total }}</td>
+                                        </tr>
+                                    {% else %}
+                                        <tr>
+                                            <td colspan="2" class="text-center text-muted py-3">{{ trans('no-data') }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-xl-8 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header">
+                        <h6 class="m-0 font-weight-bold text-danger">
+                            <i class="fa-solid fa-triangle-exclamation me-2"></i>
+                            {{ trans('overdue-tasks') }}
+                        </h6>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+                            <table class="table table-hover table-sm mb-0">
+                                <thead class="table-light sticky-top">
+                                    <tr>
+                                        <th>{{ trans('task') }}</th>
+                                        <th>{{ trans('project') }}</th>
+                                        <th class="text-end">{{ trans('end-date') }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for row in fsc.overdueTasks %}
+                                        <tr>
+                                            <td>
+                                                <a href="EditTareaProyecto?code={{ row.idtarea }}">{{ row.nombre }}</a>
+                                            </td>
+                                            <td>{{ row.proyecto }}</td>
+                                            <td class="text-end">{{ row.fechafin | date('d-m-Y') }}</td>
+                                        </tr>
+                                    {% else %}
+                                        <tr>
+                                            <td colspan="3" class="text-center text-muted py-3">{{ trans('no-data') }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('Plugins/Informes/node_modules/apexcharts/dist/apexcharts.min.js') }}"></script>
+    <script>
+        $(document).ready(function () {
+            var createdLabel = {{ trans('created-tasks') | json_encode | raw }};
+            var completedLabel = {{ trans('completed-tasks') | json_encode | raw }};
+
+            function renderCreatedCompleted(selector, data, labelFormatter) {
+                var element = document.querySelector(selector);
+                if (!element) {
+                    return;
+                }
+
+                var keys = Object.keys(data);
+                new ApexCharts(element, {
+                    chart: {type: 'bar', height: 300, toolbar: {show: false}},
+                    series: [
+                        {name: createdLabel, data: keys.map(function (k) { return data[k].created; })},
+                        {name: completedLabel, data: keys.map(function (k) { return data[k].completed; })}
+                    ],
+                    colors: ['#4e73df', '#1cc88a'],
+                    xaxis: {categories: keys.map(labelFormatter)},
+                    yaxis: {min: 0, forceNiceScale: true, labels: {formatter: function (v) { return Math.round(v); }}},
+                    dataLabels: {enabled: false},
+                    legend: {position: 'top'}
+                }).render();
+            }
+
+            renderCreatedCompleted('#chartTasksByMonth', {{ fsc.tasksByMonth | json_encode | raw }}, function (k) {
+                var p = k.split('-');
+                return new Date(p[0], p[1] - 1).toLocaleDateString(undefined, {month: 'short', year: '2-digit'});
+            });
+            renderCreatedCompleted('#chartTasksByYear', {{ fsc.tasksByYear | json_encode | raw }}, function (k) {
+                return k;
+            });
+        });
+    </script>
+{% endblock %}
