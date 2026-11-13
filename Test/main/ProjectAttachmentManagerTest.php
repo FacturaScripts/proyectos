@@ -21,6 +21,7 @@ namespace FacturaScripts\Test\Plugins;
 
 use FacturaScripts\Dinamic\Model\AttachedFile;
 use FacturaScripts\Dinamic\Model\AttachedFileRelation;
+use FacturaScripts\Dinamic\Model\ProductoImagen;
 use FacturaScripts\Plugins\Proyectos\Lib\ProjectAttachmentManager;
 use FacturaScripts\Plugins\Proyectos\Model\Proyecto;
 use FacturaScripts\Test\Traits\LogErrorsTrait;
@@ -33,6 +34,13 @@ use PHPUnit\Framework\TestCase;
 final class ProjectAttachmentManagerTest extends TestCase
 {
     use LogErrorsTrait;
+
+    public static function setUpBeforeClass(): void
+    {
+        // la tabla productos_imagenes debe existir antes de borrar archivos:
+        // AttachedFile la consulta dentro de una transacción y en PostgreSQL no se puede crear ahí
+        new ProductoImagen();
+    }
 
     public function testNumDocsFollowsAttachments(): void
     {
