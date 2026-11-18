@@ -41,6 +41,9 @@
             <column name="end-date" order="130">
                 <widget type="date" fieldname="fechafin"/>
             </column>
+            <column name="completion-date" order="140">
+                <widget type="datetime" fieldname="fechacompletado" readonly="true"/>
+            </column>
         </group>
     </columns>
 </view>

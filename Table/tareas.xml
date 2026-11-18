@@ -21,6 +21,10 @@
         <null>NO</null>
     </column>
     <column>
+        <name>fechacompletado</name>
+        <type>timestamp</type>
+    </column>
+    <column>
         <name>fechafin</name>
         <type>date</type>
     </column>

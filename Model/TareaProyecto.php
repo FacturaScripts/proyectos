@@ -48,6 +48,9 @@ class TareaProyecto extends ModelClass
     /** @var string Fecha de creación de la tarea. */
     public $fecha;
 
+    /** @var string|null Fecha y hora en que la tarea pasó a una fase de tipo completada. */
+    public $fechacompletado;
+
     /** @var string Fecha de finalización de la tarea. */
     public $fechafin;
 
@@ -137,6 +140,8 @@ class TareaProyecto extends ModelClass
 
     public function save(): bool
     {
+        $this->updateCompletionDate();
+
         if (false === parent::save()) {
             return false;
         }
@@ -272,6 +277,38 @@ class TareaProyecto extends ModelClass
         }
 
         parent::onUpdate();
+    }
+
+    /**
+     * Rellena la fecha de completado cuando la tarea pasa a una fase de tipo completada
+     * y la vacía cuando está en una fase que no lo es.
+     */
+    protected function updateCompletionDate(): void
+    {
+        $phase = $this->getPhase();
+        if ($phase->tipo !== self::TYPE_COMPLETED) {
+            $this->fechacompletado = null;
+            return;
+        }
+
+        // si ya estaba en una fase completada, conservamos la fecha original
+        // (puede estar vacía en tareas completadas antes de existir este campo)
+        if ($this->exists() && $this->isCompletedPhase($this->getOriginal('idfase'))) {
+            $this->fechacompletado = $this->getOriginal('fechacompletado');
+            return;
+        }
+
+        $this->fechacompletado = Tools::dateTime();
+    }
+
+    protected function isCompletedPhase($idfase): bool
+    {
+        $phase = new FaseTarea();
+        if (empty($idfase) || false === $phase->load($idfase)) {
+            return false;
+        }
+
+        return $phase->tipo === self::TYPE_COMPLETED;
     }
 
     /**
