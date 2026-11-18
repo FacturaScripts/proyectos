@@ -62,6 +62,7 @@ class ReportProyecto extends Controller
     {
         $data = parent::getPageData();
         $data['menu'] = 'reports';
+        $data['submenu'] = 'projects';
         $data['title'] = 'projects';
         $data['icon'] = 'fa-brands fa-stack-overflow';
         return $data;

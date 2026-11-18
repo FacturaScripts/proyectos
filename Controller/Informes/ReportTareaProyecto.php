@@ -45,8 +45,9 @@ class ReportTareaProyecto extends Controller
     {
         $data = parent::getPageData();
         $data['menu'] = 'reports';
-        $data['title'] = 'project-tasks';
-        $data['icon'] = 'fa-solid fa-list-check';
+        $data['submenu'] = 'projects';
+        $data['title'] = 'tasks';
+        $data['icon'] = 'fa-solid fa-project-diagram';
         return $data;
     }
 
