@@ -34,6 +34,7 @@ use FacturaScripts\Core\Lib\InvoiceOperation;
 use FacturaScripts\Core\Model\Asiento;
 use FacturaScripts\Core\Tools;
 use FacturaScripts\Core\Where;
+use FacturaScripts\Dinamic\Lib\ProjectDocumentLinker;
 use FacturaScripts\Dinamic\Lib\ProjectStockManager;
 use FacturaScripts\Dinamic\Lib\ProjectTotalManager;
 use FacturaScripts\Dinamic\Model\EstadoAT;
@@ -789,9 +790,8 @@ class EditProyecto extends EditController
             return true;
         }
 
-        $modelClass = '\\FacturaScripts\\Dinamic\\Model\\' . $modelName;
-        $model = new $modelClass();
-        if (false === $model->load($code)) {
+        $model = ProjectDocumentLinker::loadRecord($modelName, $code);
+        if (null === $model) {
             Tools::log()->warning('record-not-found');
             return true;
         }
@@ -804,24 +804,10 @@ class EditProyecto extends EditController
             return true;
         }
 
-        $modelTable = $model->tableName();
-        $modelKey = $model->primaryColumn();
-        $idproyecto = $project->idproyecto;
-
-        $sql = "UPDATE $modelTable SET idproyecto = " . $this->dataBase->var2str($idproyecto)
-            . " WHERE " . $this->dataBase->escapeColumn($modelKey) . " = " . $this->dataBase->var2str($code) . ';';
-        if (false === $this->dataBase->exec($sql)) {
+        // vincula sin pasar por save() y recalcula este proyecto y el anterior
+        if (false === ProjectDocumentLinker::link($model, (int)$project->idproyecto)) {
             Tools::log()->error('record-save-error');
             return true;
-        }
-
-        ProjectStockManager::rebuild($idproyecto);
-        ProjectTotalManager::recalculate($idproyecto);
-
-        // recalculamos también el proyecto del que sale el documento
-        if ($origProject->exists() && $origProject->idproyecto != $idproyecto) {
-            ProjectStockManager::rebuild($origProject->idproyecto);
-            ProjectTotalManager::recalculate($origProject->idproyecto);
         }
 
         Tools::log()->info('record-updated-correctly');
@@ -966,10 +952,6 @@ class EditProyecto extends EditController
             return true;
         }
 
-        $modelClass = '\\FacturaScripts\\Dinamic\\Model\\' . $modelName;
-        $model = new $modelClass();
-        $modelTable = $model->tableName();
-        $modelKey = $model->primaryColumn();
         $codes = $this->request->request->getArray('codes');
         if (empty($codes)) {
             Tools::log()->warning('no-selected-item');
@@ -979,15 +961,12 @@ class EditProyecto extends EditController
         $unlinked = 0;
         foreach ($codes as $code) {
             // solo desvinculamos documentos de este proyecto
-            $doc = new $modelClass();
-            if (false === $doc->load($code) || $doc->idproyecto != $project->idproyecto) {
+            $doc = ProjectDocumentLinker::loadRecord($modelName, $code);
+            if (null === $doc || $doc->idproyecto != $project->idproyecto) {
                 continue;
             }
 
-            $sql = "UPDATE $modelTable SET idproyecto = NULL WHERE "
-                . $this->dataBase->escapeColumn($modelKey) . " = " . $this->dataBase->var2str($code)
-                . " AND idproyecto = " . $this->dataBase->var2str($project->idproyecto) . ';';
-            if (false === $this->dataBase->exec($sql)) {
+            if (false === ProjectDocumentLinker::link($doc, null)) {
                 Tools::log()->error('record-save-error');
                 return true;
             }
@@ -998,9 +977,6 @@ class EditProyecto extends EditController
             Tools::log()->warning('record-not-found');
             return true;
         }
-
-        ProjectStockManager::rebuild($project->idproyecto);
-        ProjectTotalManager::recalculate($project->idproyecto);
 
         Tools::log()->info('record-updated-correctly');
         return true;

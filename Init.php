@@ -23,6 +23,8 @@ use FacturaScripts\Core\Lib\AjaxForms\AccountingHeaderHTML;
 use FacturaScripts\Core\Lib\AjaxForms\PurchasesHeaderHTML;
 use FacturaScripts\Core\Lib\AjaxForms\SalesHeaderHTML;
 use FacturaScripts\Core\Base\DataBase;
+use FacturaScripts\Core\Controller\ApiRoot;
+use FacturaScripts\Core\Kernel;
 use FacturaScripts\Core\Migrations;
 use FacturaScripts\Core\Plugins;
 use FacturaScripts\Core\Template\InitClass;
@@ -65,6 +67,10 @@ final class Init extends InitClass
 
     public function init(): void
     {
+        // endpoint de la API para vincular documentos y asientos a un proyecto
+        Kernel::addRoute('/api/3/vincularProyecto', 'ApiVincularProyecto', -1);
+        ApiRoot::addCustomResource('vincularProyecto');
+
         $this->loadExtension(new Extension\Controller\DocumentStitcher());
         $this->loadExtension(new Extension\Controller\EditAlbaranCliente());
         $this->loadExtension(new Extension\Controller\EditAlbaranProveedor());
